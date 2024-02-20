@@ -12,10 +12,10 @@ import traceback
 @frappe.whitelist()
 def get_monthly_excel_report(month,year):
     try:
-        year = year
+        year_value = int(year)
         month_num = datetime.strptime(month, '%b').month
-        from_date = date(year, month_num, 1)
-        to_date = date(year, month_num, monthrange(year, month_num)[1])
+        from_date = date(year_value, month_num, 1)
+        to_date = date(year_value, month_num, monthrange(year_value, month_num)[1])
     
         site_name = cstr(frappe.local.site)
         folder_path = frappe.utils.get_bench_path()
@@ -25,7 +25,7 @@ def get_monthly_excel_report(month,year):
             + "/sites/"
             + site_name
         )
-        file_name = f"/private/files/Groupby_Salary_Summary_{month}.xlsx"
+        file_name = f"/private/files/Groupby_Salary_Summary_{month}-{year_value}.xlsx"
         file_path = path+file_name
         company = frappe.defaults.get_user_default("Company")
         
@@ -37,7 +37,7 @@ def get_monthly_excel_report(month,year):
             "docstatus":"Submitted"
         }
         
-        result = write_excel(filters,file_path,company)
+        result = write_excel(filters,file_path,company,month,year_value)
         
         if result:
             return {"message":True,"file_name":file_name}
@@ -47,9 +47,8 @@ def get_monthly_excel_report(month,year):
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "write_excel")
-        return {"message":False,"file_name":file_name}
     
-def write_excel(filters,filename,company):
+def write_excel(filters,filename,company,month,year):
     try:
         address = company_address(company)
         join_detail = joining_details(company,filters)
@@ -99,7 +98,7 @@ def write_excel(filters,filename,company):
                 
             worksheet.write('B1', company,header_format_other)
             worksheet.write('B2', address,header_format_other)
-            worksheet.write('B3', "Head Count Report For JUN 2023",header_format_other)
+            worksheet.write('B3', f"Head Count Report For {month} {year}",header_format_other)
         
             exit_details.to_excel(writer, sheet_name="Head Count",startrow=(8+len(join_detail)+3),index=False)
 
@@ -111,17 +110,16 @@ def write_excel(filters,filename,company):
             worksheet.write(f"B{(8+num_rows+3)}","Resignee Details",header_format)
             
             # prs details
-            salary_slip.to_excel(writer, sheet_name="PRS JUN 2023",startrow=0,index=False)
-            worksheet = writer.sheets['PRS JUN 2023']
+            salary_slip.to_excel(writer, sheet_name=f"PRS {month} {year}",startrow=0,index=False)
+            worksheet = writer.sheets[f'PRS {month} {year}']
             for col_num, value in enumerate(salary_slip.columns.values):
                 column_width = max(salary_slip[value].astype(str).map(len).max(), len(value))+2
                 worksheet.set_column(col_num, col_num, column_width)
                 worksheet.write(0, col_num, value, header_format)
             
-            cost_details.to_excel(writer, sheet_name="Cost Report JUN 2023",startrow=0,index=False)
-            
             # cost report
-            worksheet = writer.sheets['Cost Report JUN 2023']
+            cost_details.to_excel(writer, sheet_name=f"Cost Report {month} {year}",startrow=0,index=False)
+            worksheet = writer.sheets[f'Cost Report {month} {year}']
             for col_num, value in enumerate(cost_details.columns.values):
                 column_width = max(cost_details[value].astype(str).map(len).max(), len(value))+2
                 worksheet.set_column(col_num, col_num, column_width)
@@ -166,6 +164,7 @@ def write_excel(filters,filename,company):
                 # desig = list(final['Department'])[0]
                 worksheet = writer.sheets['Function wise report']
                 # worksheet.write("A2",desig,header_format)
+                
                 
                 for col_num, value in enumerate(final.columns.values):
                     column_width = max(final[value].astype(str).map(len).max(), len(value))+2
@@ -340,6 +339,8 @@ def cost_report_details(filters):
        
         return result
     
+    
+
 def designation_wise_summary(filters):
     
     row_data = execute_(filters)
@@ -633,6 +634,7 @@ def joining_details(company,filters):
         ,(filters.get("from_date"),filters.get("to_date"),company),
         as_dict=True
     )
+    print(row_data,"ppppppppppppppppp")
     
     columns = ["employee_number",
         "employee_name",
@@ -658,6 +660,7 @@ def joining_details(company,filters):
     },inplace=True)
     
     return df
+
 
 def resignee_details(company,filters):
     
@@ -736,7 +739,8 @@ def employee_details(row_data):
             })
             inital.update({
                     
-            }) 
+            })
+            
             employee_data.append(inital)
 
     df_employee = pd.DataFrame.from_records(employee_data)
