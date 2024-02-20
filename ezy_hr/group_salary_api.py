@@ -10,12 +10,12 @@ import traceback
 
 
 @frappe.whitelist()
-def get_monthly_excel_report():
+def get_monthly_excel_report(month,year):
     try:
-        year = 2023
-        month = 1
-        begin = date(year, month, 1)
-        end = date(year, month, monthrange(year, month)[1])
+        year = year
+        month_num = datetime.strptime(month, '%b').month
+        from_date = date(year, month_num, 1)
+        to_date = date(year, month_num, monthrange(year, month_num)[1])
     
         site_name = cstr(frappe.local.site)
         folder_path = frappe.utils.get_bench_path()
@@ -25,13 +25,13 @@ def get_monthly_excel_report():
             + "/sites/"
             + site_name
         )
-        file_name = "/private/files/Groupby_Salary_Summary_DEC.xlsx"
+        file_name = f"/private/files/Groupby_Salary_Summary_{month}.xlsx"
         file_path = path+file_name
         company = frappe.defaults.get_user_default("Company")
         
         filters = {
-        "from_date":"2024-01-01",
-            "to_date":"2024-01-31",
+            "from_date":from_date,
+            "to_date":to_date,
             "currency":"INR",
             "company":company,
             "docstatus":"Submitted"
@@ -52,20 +52,18 @@ def get_monthly_excel_report():
 def write_excel(filters,filename,company):
     try:
         address = company_address(company)
-        join_detail = joining_details(company)
-        exit_details =resignee_details(company)
+        join_detail = joining_details(company,filters)
+        exit_details =resignee_details(company,filters)
         salary_slip=salary_slip_details(filters)
         cost_details = cost_report_details(filters)
-        designation_detail= groupby_designation_details(filters)
-        individual_desig_detail = individual_designation_details(filters)
-        department_details = groupby_department_details(filters)
-        individual_dep_detail = individual_department_details(filters)
+        designation_detail= designation_wise_summary(filters)
+        individual_desig_detail = designation_wise_report(filters)
+        department_details = department_wise_summary(filters)
+        individual_dep_detail = department_wise_report(filters)
         cost_center_summ = cost_center_wise_cost_summary(filters)
         cost_center_details = cost_center_wise_report(filters)
         
         with pd.ExcelWriter(filename, engine='xlsxwriter', mode='w') as writer:
-            
-            
             workBook = writer.book
             header_format_other = workBook.add_format({
                 'bold': True,            # Bold text
@@ -99,9 +97,9 @@ def write_excel(filters,filename,company):
                 worksheet.set_column(col_num, col_num, column_width)
                 worksheet.write(8, col_num, value, header_format)
                 
-            worksheet.write('B1', company,header_format)
-            worksheet.write('B2', address,header_format)
-            worksheet.write('B3', "Head Count Report For JUN 2023",header_format)
+            worksheet.write('B1', company,header_format_other)
+            worksheet.write('B2', address,header_format_other)
+            worksheet.write('B3', "Head Count Report For JUN 2023",header_format_other)
         
             exit_details.to_excel(writer, sheet_name="Head Count",startrow=(8+len(join_detail)+3),index=False)
 
@@ -342,9 +340,7 @@ def cost_report_details(filters):
        
         return result
     
-    
-
-def groupby_designation_details(filters):
+def designation_wise_summary(filters):
     
     row_data = execute_(filters)
     
@@ -382,12 +378,20 @@ def groupby_designation_details(filters):
             "employee":"employee_count"
         },inplace=True)
         
-        group_data.columns = group_data.columns.str.replace("_"," ")
-        group_data.columns = group_data.columns.str.title()
+        # chnage position of column
+        column_to_move = "employee_count"
+        column_after_which_to_insert = 'designation'
+        df_copy = group_data.copy()
+        df_copy.drop(columns=column_to_move, inplace=True)
+        insert_index = df_copy.columns.get_loc(column_after_which_to_insert) + 1
+        df_copy.insert(insert_index, column_to_move, group_data[column_to_move])
         
-        return group_data
+        df_copy.columns = df_copy.columns.str.replace("_"," ")
+        df_copy.columns = df_copy.columns.str.title()
+        
+        return df_copy
 
-def individual_designation_details(filters):
+def designation_wise_report(filters):
     
     row_data = execute_(filters)
     
@@ -416,7 +420,7 @@ def individual_designation_details(filters):
         
         return second_final_data
 
-def groupby_department_details(filters):
+def department_wise_summary(filters):
     
     row_data = execute_(filters)
     
@@ -454,12 +458,19 @@ def groupby_department_details(filters):
             "employee":"employee_count"
         },inplace=True)
         
-        group_data.columns = group_data.columns.str.replace("_"," ")
-        group_data.columns = group_data.columns.str.title()
+        column_to_move = "employee_count"
+        column_after_which_to_insert = 'department'
+        df_copy = group_data.copy()
+        df_copy.drop(columns=column_to_move, inplace=True)
+        insert_index = df_copy.columns.get_loc(column_after_which_to_insert) + 1
+        df_copy.insert(insert_index, column_to_move, group_data[column_to_move])
         
-        return group_data
+        df_copy.columns = df_copy.columns.str.replace("_"," ")
+        df_copy.columns = df_copy.columns.str.title()
+        
+        return df_copy
 
-def individual_department_details(filters):
+def department_wise_report(filters):
    
     row_data = execute_(filters)
     
@@ -537,10 +548,17 @@ def cost_center_wise_cost_summary(filters):
             "employee_number":"employee_count"
         },inplace=True)
         
-        result.columns = result.columns.str.replace("_"," ")
-        result.columns = result.columns.str.title()
+        column_to_move = "employee_count"
+        column_after_which_to_insert = 'cost_center'
+        df_copy = result.copy()
+        df_copy.drop(columns=column_to_move, inplace=True)
+        insert_index = df_copy.columns.get_loc(column_after_which_to_insert) + 1
+        df_copy.insert(insert_index, column_to_move, result[column_to_move])
+        
+        df_copy.columns = df_copy.columns.str.replace("_"," ")
+        df_copy.columns = df_copy.columns.str.title()
        
-        return result
+        return df_copy
     
 
 def cost_center_wise_report(filters):
@@ -602,19 +620,31 @@ def company_address(company):
     
     return completed_add
 
-def joining_details(company):
+def joining_details(company,filters):
     
     row_data = frappe.db.sql(
         """
         SELECT employee as employee_number,employee_name,date_of_joining,gender,branch,
         department,designation,payroll_cost_center as cost_centre
         FROM `tabEmployee`
-        WHERE date_of_joining BETWEEN "2024-01-01" AND "2024-01-31"
+        WHERE date_of_joining BETWEEN %s AND %s
         AND company = %s
-        """,(company),as_dict=True
+        """
+        ,(filters.get("from_date"),filters.get("to_date"),company),
+        as_dict=True
     )
     
-    df = pd.DataFrame.from_records(row_data)
+    columns = ["employee_number",
+        "employee_name",
+        "date_of_joining",
+        "gender",
+        "branch",
+        "department",
+        "designation",
+        "cost_centre"
+    ]
+    
+    df = pd.DataFrame.from_records(row_data,columns=columns)
     
     df.rename(columns={
         "employee_number":"Employee Number",
@@ -629,20 +659,29 @@ def joining_details(company):
     
     return df
 
-
-def resignee_details(company):
+def resignee_details(company,filters):
     
     row_data = frappe.db.sql(
         """
         SELECT employee as employee_number,employee_name,relieving_date as exit_date,
         gender,branch,designation,department,payroll_cost_center as cost_centre
         FROM `tabEmployee`
-        WHERE relieving_date BETWEEN "2024-01-01" AND "2024-01-31"
+        WHERE relieving_date BETWEEN %s AND %s
         AND company = %s
-        """,(company),as_dict=True
+        """,
+        (filters.get("from_date"),filters.get("to_date"),company),
+        as_dict=True
     )
-    
-    df = pd.DataFrame.from_records(row_data)
+    columns = ["employee_number",
+        "employee_name",
+        "exit_date",
+        "gender",
+        "branch",
+        "department",
+        "designation",
+        "cost_centre"
+    ]
+    df = pd.DataFrame.from_records(row_data,columns=columns)
     
     df.rename(columns={
         "employee_number":"Employee Number",
@@ -697,8 +736,7 @@ def employee_details(row_data):
             })
             inital.update({
                     
-            })
-            
+            }) 
             employee_data.append(inital)
 
     df_employee = pd.DataFrame.from_records(employee_data)
