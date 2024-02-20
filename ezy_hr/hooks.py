@@ -69,6 +69,8 @@ app_license = "mit"
 
 # before_install = "ezy_hr.install.before_install"
 # after_install = "ezy_hr.install.after_install"
+after_install = "ezy_hr.setup.setup_fixtures"
+
 
 # Uninstallation
 # ------------
