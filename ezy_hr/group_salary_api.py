@@ -11,32 +11,43 @@ import traceback
 
 @frappe.whitelist()
 def get_monthly_excel_report():
-
-    year = 2023
-    month = 1
-    begin = date(year, month, 1)
-    end = date(year, month, monthrange(year, month)[1])
-   
-    site_name = cstr(frappe.local.site)
-    folder_path = frappe.utils.get_bench_path()
+    try:
+        year = 2023
+        month = 1
+        begin = date(year, month, 1)
+        end = date(year, month, monthrange(year, month)[1])
     
-    path = (
-        folder_path
-        + "/sites/"
-        + site_name
-    )
-    file_name = "/private/files/Groupby_Salary_Summary_DEC.xlsx"
-    file_path = path+file_name
-    company = frappe.defaults.get_user_default("Company")
-    filters = {
-       "from_date":"2024-01-01",
-        "to_date":"2024-01-31",
-        "currency":"INR",
-        "company":company,
-        "docstatus":"Submitted"
-    }
-    
-    write_excel(filters,file_path,company)
+        site_name = cstr(frappe.local.site)
+        folder_path = frappe.utils.get_bench_path()
+        
+        path = (
+            folder_path
+            + "/sites/"
+            + site_name
+        )
+        file_name = "/private/files/Groupby_Salary_Summary_DEC.xlsx"
+        file_path = path+file_name
+        company = frappe.defaults.get_user_default("Company")
+        
+        filters = {
+        "from_date":"2024-01-01",
+            "to_date":"2024-01-31",
+            "currency":"INR",
+            "company":company,
+            "docstatus":"Submitted"
+        }
+        
+        result = write_excel(filters,file_path,company)
+        
+        if result:
+            return {"message":True,"file_name":file_name}
+        else:
+            return {"message":False,"file_name":file_name}
+        
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "write_excel")
+        return {"message":False,"file_name":file_name}
     
 def write_excel(filters,filename,company):
     try:
@@ -245,9 +256,11 @@ def write_excel(filters,filename,company):
 
 
             # workBook.save(filename)
+        return True
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
-        frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "write_excel")  
+        frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "write_excel")
+        return False
                 
 
 def salary_slip_details(filters):
