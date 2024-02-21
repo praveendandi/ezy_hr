@@ -1,1 +1,7 @@
-# ezy_hr
+## Ezy HR
+
+Ezy HR
+
+#### License
+
+mit
