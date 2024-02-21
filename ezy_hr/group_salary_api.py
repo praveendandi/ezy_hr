@@ -91,7 +91,6 @@ def write_excel(filters,filename,company,month,year):
                             'align': 'center',
                         }
             )
-            
             # Head count
             join_detail.to_excel(writer, sheet_name="Head Count",startrow=13,index=False)
             exit_details.to_excel(writer, sheet_name="Head Count",startrow=(13+len(join_detail)+3),index=False)
@@ -199,15 +198,16 @@ def write_excel(filters,filename,company,month,year):
                 
                 startrow = 1 + previous_df
                 if is_first_dataframe:
-                    final.to_excel(writer, sheet_name="Function wise report",startrow=1,index=False)
+                    final.to_excel(writer, sheet_name="Function wise report",startrow=4,header=False,index=False)
                     worksheet_5 = writer.sheets['Function wise report']
                     desig = list(final['Designation'])[0]
                     worksheet_5.set_row(1,30)
                     worksheet_5.merge_range(0,num_cols-1,0,0, salary_title)
-                    worksheet_5.merge_range(2,num_cols-1,2,0, desig,merge_format_dep_deg)
+                    worksheet_5.merge_range(2,num_cols-1,2,0, None,merge_format_dep_deg)
+                    worksheet_5.merge_range(3,num_cols-1,3,0, desig,merge_format_dep_deg)
                     
                     is_first_dataframe = False
-                    previous_df+= 4+num_rows
+                    previous_df+= 6+num_rows
                 else:
                     final.to_excel(writer, sheet_name="Function wise report",startrow=startrow,header=False,index=False)
                     worksheet_5 = writer.sheets['Function wise report']
@@ -251,15 +251,16 @@ def write_excel(filters,filename,company,month,year):
                 startrow = 1 + previous_df
                 
                 if is_first_dataframe:
-                    final.to_excel(writer, sheet_name="Dept wise Report",startrow=1,index=False)
+                    final.to_excel(writer, sheet_name="Dept wise Report",startrow=4,header=False,index=False)
                     worksheet_7 = writer.sheets['Dept wise Report']
                     dep = list(final['Department'])[0]
                     worksheet_7.set_row(1,30)
                     worksheet_7.merge_range(0,num_cols-1,0,0, salary_title)
-                    worksheet_7.merge_range(2,num_cols-1,2,0, dep,merge_format_dep_deg)
+                    worksheet_7.merge_range(2,num_cols-1,2,0, None,merge_format_dep_deg)
+                    worksheet_7.merge_range(3,num_cols-1,3,0, dep,merge_format_dep_deg)
                     
                     is_first_dataframe = False
-                    previous_df+= 4+num_rows
+                    previous_df+= 6+num_rows
                 else:
                     final.to_excel(writer, sheet_name="Dept wise Report",startrow=startrow,header=False,index=False)
                     worksheet_7 = writer.sheets['Dept wise Report']
@@ -297,15 +298,16 @@ def write_excel(filters,filename,company,month,year):
                 num_rows, num_cols = dataframe.shape
                 
                 if is_first_dataframe:
-                    dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=1,index=False)
+                    dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=4,header=False,index=False)
                     worksheet_9 = writer.sheets['Cost Center wise Report']
                     cost = list(final['Cost Center'])[0]
                     worksheet_9.set_row(1,30)
                     worksheet_9.merge_range(0,num_cols-1,0,0, salary_title)
-                    worksheet_9.merge_range(2,num_cols-1,2,0, cost,merge_format_dep_deg)
+                    worksheet_9.merge_range(2,num_cols-1,2,0, None,merge_format_dep_deg)
+                    worksheet_9.merge_range(3,num_cols-1,3,0, cost,merge_format_dep_deg)
                     
                     is_first_dataframe = False
-                    previous_df+= 4+num_rows
+                    previous_df+= 6+num_rows
                 else:
                     dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=startrow,header=False,index=False)
                     worksheet_9 = writer.sheets['Cost Center wise Report']
