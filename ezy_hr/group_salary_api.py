@@ -88,9 +88,10 @@ def write_excel(filters,filename,company,month,year):
                             'valign': 'vcenter',
                             'fg_color': '#CACACD',
                             'border': 1,
-                            'align': 'center',
+                            'align': 'center'
                         }
             )
+            
             # Head count
             join_detail.to_excel(writer, sheet_name="Head Count",startrow=13,index=False)
             exit_details.to_excel(writer, sheet_name="Head Count",startrow=(13+len(join_detail)+3),index=False)
@@ -162,11 +163,12 @@ def write_excel(filters,filename,company,month,year):
             worksheet_3 = writer.sheets[f'Cost Report {month} {year}']
             worksheet_3.set_row(1,30)
             worksheet_3.merge_range(0,cost_details.shape[1],0,0, salary_title)
+            
             for col_num, value in enumerate(cost_details.columns.values):
                 column_width = max(cost_details[value].astype(str).map(len).max(), len(value))+2
                 worksheet_3.set_column(col_num, col_num, column_width)
                 worksheet_3.write(1, col_num, value, header_format)
-
+                
             # function wise cost summary
             designation_detail.to_excel(writer, sheet_name="Function wise cost summary",startrow=1,index=False)
             worksheet_4 = writer.sheets['Function wise cost summary']
@@ -354,6 +356,7 @@ def cost_report_details(filters):
     if len(row_data[1]) >0:
         
         final_employee_details = employee_details(row_data[1])
+        final_employee_details['employee_count'] = 0
         
         empl_colunms = list(final_employee_details.columns)
         
@@ -377,7 +380,7 @@ def cost_report_details(filters):
         
         agg_functions = {}
         for each_cat in empl_colunms:
-            agg_functions.update({each_cat:"first","employee_number":"count"})
+            agg_functions.update({each_cat:"first","employee_count":"count"})
         
         for each_num in colunms:
             agg_functions.update({
@@ -389,11 +392,15 @@ def cost_report_details(filters):
         del final['salary_slip_id']
         
         result = final.groupby(by=['company'],as_index=False).agg(agg_functions)
+        object_columns = result.select_dtypes(include=['object','datetime64']).columns.tolist()
         
-        result.rename(columns={
-            "employee_number":"employee_count"
-        },inplace=True)
+        for each in object_columns:
+            result[each] = None
         
+        count = list(result['employee_count'])[0]
+        result['employee_name'] = str(f"Total Employees = {str(count)}")
+        
+        del result["employee_count"]
         result.columns = result.columns.str.replace("_"," ")
         result.columns = result.columns.str.title()
        
