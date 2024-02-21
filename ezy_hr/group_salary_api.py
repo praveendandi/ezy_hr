@@ -25,7 +25,8 @@ def get_monthly_excel_report(month,year):
             + "/sites/"
             + site_name
         )
-        file_name = f"/private/files/Groupby_Salary_Summary_{month}-{year_value}.xlsx"
+        file_path_ = f"/files/Groupby_Salary_Summary_{month}-{year_value}.xlsx"
+        file_name = f"/public{file_path_}"
         file_path = path+file_name
         company = frappe.defaults.get_user_default("Company")
         
@@ -40,9 +41,9 @@ def get_monthly_excel_report(month,year):
         result = write_excel(filters,file_path,company,month,year_value)
         
         if result:
-            return {"message":True,"file_name":file_name}
+            return {"message":True,"file_name":file_path_}
         else:
-            return {"message":False,"file_name":file_name}
+            return {"message":False,"file_name":file_path_}
         
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -62,76 +63,113 @@ def write_excel(filters,filename,company,month,year):
         cost_center_summ = cost_center_wise_cost_summary(filters)
         cost_center_details = cost_center_wise_report(filters)
         
+        total_employee = frappe.db.count("Employee",{"status":"Active","date_of_joining":("<",(filters.get("from_date").strftime('%Y-%m-%d')))})
+        
         with pd.ExcelWriter(filename, engine='xlsxwriter', mode='w') as writer:
             workBook = writer.book
+            merge_format_comp = workBook.add_format({'align': 'center', 'valign': 'vcenter','bold': True,'fg_color': '#FFFFFF'})
+            merge_format_join_ext_title = workBook.add_format({'align': 'center',  'border': 1,'valign': 'vcenter','bold': True,'fg_color': '#FFFFFF'})
+
             header_format_other = workBook.add_format({
-                'bold': True,            # Bold text
+                # 'bold': True,            # Bold text
                 'text_wrap': True,       # Wrap text
                 'valign': 'vcenter',     # Vertical centering
-                'align': 'left',         # Left-align text
-                'border': 1,
-                'fg_color': '#D7E4BC',
+                'align': 'center',         # Left-align text
+                # 'border': 1,
+                'fg_color': '#FFFFFF', # white color
             })
-            # Head count
-            join_detail.to_excel(writer, sheet_name="Head Count",startrow=8,index=False)
-            
-            worksheet = writer.sheets['Head Count']
             header_format = workBook.add_format({
                             'bold': True,
                             # 'text_wrap': True,
                             # 'valign': 'top',
                             'valign': 'vcenter',
-                            'fg_color': '#D7E4BC',
+                            'fg_color': '#CACACD',
                             'border': 1,
                             'align': 'center',
-                            }
-                        )
-
-            # worksheet.set_row(0, 30)
-            # worksheet.write('A1', 'Header 1', header_format)
-            worksheet.write(f"B8","New Joining Details",header_format)
-            # Write the column headers with the defined format.
-            for col_num, value in enumerate(join_detail.columns.values):
-                column_width = max(join_detail[value].astype(str).map(len).max(), len(value))+2
-                worksheet.set_column(col_num, col_num, column_width)
-                worksheet.write(8, col_num, value, header_format)
-                
-            worksheet.write('B1', company,header_format_other)
-            worksheet.write('B2', address,header_format_other)
-            worksheet.write('B3', f"Head Count Report For {month} {year}",header_format_other)
-        
-            exit_details.to_excel(writer, sheet_name="Head Count",startrow=(8+len(join_detail)+3),index=False)
-
-            # Write the column headers with the defined format.
-            num_rows, num_cols = join_detail.shape
-            for col_num, value in enumerate(exit_details.columns.values):
-                worksheet.write((8+num_rows+3), col_num, value, header_format)
+                        }
+            )
             
-            worksheet.write(f"B{(8+num_rows+3)}","Resignee Details",header_format)
+            # Head count
+            join_detail.to_excel(writer, sheet_name="Head Count",startrow=13,index=False)
+            exit_details.to_excel(writer, sheet_name="Head Count",startrow=(13+len(join_detail)+3),index=False)
+
+            num_rows, num_cols = join_detail.shape
+            
+            worksheet_1 = writer.sheets['Head Count']
+            worksheet_1.merge_range(0,num_cols-1,0,0, company, merge_format_comp)
+            worksheet_1.merge_range(1,num_cols-1,1,0, address, header_format_other)
+            worksheet_1.merge_range(2,num_cols-1,2,0, f"Head Count Report For {month} {year}", merge_format_comp)
+            # Opening balance And
+            worksheet_1.write(3, 0, None,header_format)
+            worksheet_1.merge_range(3,num_cols-2,3,1,f"Opening Balance For {month} {year}",header_format)
+            worksheet_1.write(3, num_cols-1, total_employee,header_format)
+            # Add New Joining
+            new_join_num = num_rows
+            worksheet_1.write(5, 0, 'Add')
+            worksheet_1.merge_range(5,num_cols-2,5,1,f"New Joinee")
+            worksheet_1.write(5, num_cols-1, new_join_num)
+           # white space
+            worksheet_1.write(6, 0, None)
+            worksheet_1.merge_range(6,num_cols-1,6,1, None)
+            worksheet_1.write(6, num_cols-1, None)
+            # Resigness 
+            num_ex_row = exit_details.shape[0]
+            worksheet_1.write(7, 0, 'Less')
+            worksheet_1.merge_range(7,num_cols-2,7,1,f"Resignee")
+            worksheet_1.write(7, num_cols-1, num_ex_row)
+            # White space
+            worksheet_1.write(8, 0, None)
+            worksheet_1.merge_range(8,num_cols-1,8,1, None)
+            worksheet_1.write(8, num_cols-1, None)
+            # Closing balance
+            closing_bala = total_employee+(new_join_num-num_ex_row)
+            worksheet_1.merge_range(9,num_cols-2,9,1,f"Closing Balance For - {month} {year}")
+            worksheet_1.write(9, num_cols-1, closing_bala)
+
+            worksheet_1.set_row(13,30) # set row height
+            worksheet_1.merge_range(12,num_cols-1,12,0, "New Joining Details", merge_format_join_ext_title)
+                
+            for col_num, value in enumerate(join_detail.columns.values):
+                # Adjust the multiplier (e.g., 1.5) based on your preference for column width
+                worksheet_1.set_column(col_num, col_num, len(value) * 1.5)
+                worksheet_1.write(13, col_num, value, header_format)
+        
+            exit_details.to_excel(writer, sheet_name="Head Count",startrow=(13+len(join_detail)+3),index=False)
+            worksheet_1.set_row((13+len(join_detail)+3),30)
+
+            # Write the column headers with the defined format.
+            for col_num, value in enumerate(exit_details.columns.values):
+                worksheet_1.write((13+num_rows+3), col_num,value, header_format)
+            
+            worksheet_1.merge_range((13+num_rows+2),num_cols-1,(13+num_rows+2),0, "Resignee Details", merge_format_join_ext_title)
             
             # prs details
             salary_slip.to_excel(writer, sheet_name=f"PRS {month} {year}",startrow=0,index=False)
-            worksheet = writer.sheets[f'PRS {month} {year}']
+            worksheet_2 = writer.sheets[f'PRS {month} {year}']
+            worksheet_2.set_row(0,30)
             for col_num, value in enumerate(salary_slip.columns.values):
                 column_width = max(salary_slip[value].astype(str).map(len).max(), len(value))+2
-                worksheet.set_column(col_num, col_num, column_width)
-                worksheet.write(0, col_num, value, header_format)
+                worksheet_2.set_column(col_num, col_num, column_width)
+                worksheet_2.write(0, col_num, value, header_format)
+               
             
             # cost report
             cost_details.to_excel(writer, sheet_name=f"Cost Report {month} {year}",startrow=0,index=False)
-            worksheet = writer.sheets[f'Cost Report {month} {year}']
+            worksheet_3 = writer.sheets[f'Cost Report {month} {year}']
+            worksheet_3.set_row(0,30)
             for col_num, value in enumerate(cost_details.columns.values):
                 column_width = max(cost_details[value].astype(str).map(len).max(), len(value))+2
-                worksheet.set_column(col_num, col_num, column_width)
-                worksheet.write(0, col_num, value, header_format)
+                worksheet_3.set_column(col_num, col_num, column_width)
+                worksheet_3.write(0, col_num, value, header_format)
 
             # function wise cost summary
             designation_detail.to_excel(writer, sheet_name="Function wise cost summary",startrow=0,index=False)
-            worksheet = writer.sheets['Function wise cost summary']
+            worksheet_4 = writer.sheets['Function wise cost summary']
+            worksheet_4.set_row(0,30)
             for col_num, value in enumerate(designation_detail.columns.values):
                 column_width = max(designation_detail[value].astype(str).map(len).max(), len(value))+2
-                worksheet.set_column(col_num, col_num, column_width)
-                worksheet.write(0, col_num, value, header_format)
+                worksheet_4.set_column(col_num, col_num, column_width)
+                worksheet_4.write(0, col_num, value, header_format)
             
             # Function wise report
             previous_df = 0
@@ -155,6 +193,8 @@ def write_excel(filters,filename,company,month,year):
                 startrow = 0 + previous_df
                 if is_first_dataframe:
                     final.to_excel(writer, sheet_name="Function wise report",startrow=0,index=False)
+                    worksheet_5 = writer.sheets['Function wise report']
+                    worksheet_5.set_row(0,30)
                     is_first_dataframe = False
                 else:
                     final.to_excel(writer, sheet_name="Function wise report",startrow=startrow,header=False,index=False)
@@ -162,23 +202,23 @@ def write_excel(filters,filename,company,month,year):
                 previous_df+= num_rows + 2
                 
                 # desig = list(final['Department'])[0]
-                worksheet = writer.sheets['Function wise report']
+                worksheet_5 = writer.sheets['Function wise report']
                 # worksheet.write("A2",desig,header_format)
                 
                 
                 for col_num, value in enumerate(final.columns.values):
                     column_width = max(final[value].astype(str).map(len).max(), len(value))+2
-                    worksheet.set_column(col_num, col_num, column_width)
-                    worksheet.write(0, col_num, value, header_format)
+                    worksheet_5.set_column(col_num, col_num, column_width)
+                    worksheet_5.write(0, col_num, value, header_format)
 
             # Dept Wise Cost Summary
             department_details.to_excel(writer, sheet_name="Dept Wise Cost Summary",startrow=0,index=False)
-            
-            worksheet = writer.sheets['Dept Wise Cost Summary']
+            worksheet_6 = writer.sheets['Dept Wise Cost Summary']
+            worksheet_6.set_row(0,30)
             for col_num, value in enumerate(department_details.columns.values):
                 column_width = max(department_details[value].astype(str).map(len).max(), len(value))+2
-                worksheet.set_column(col_num, col_num, column_width)
-                worksheet.write(0, col_num, value, header_format)
+                worksheet_6.set_column(col_num, col_num, column_width)
+                worksheet_6.write(0, col_num, value, header_format)
             
             # Dept wise Report
             previous_df = 0
@@ -202,26 +242,29 @@ def write_excel(filters,filename,company,month,year):
                 
                 if is_first_dataframe:
                     final.to_excel(writer, sheet_name="Dept wise Report",startrow=0,index=False)
+                    worksheet_7 = writer.sheets['Dept wise Report']
+                    worksheet_7.set_row(0,30)
                     is_first_dataframe = False
                 else:
                     final.to_excel(writer, sheet_name="Dept wise Report",startrow=startrow,header=False,index=False)
                     
                 previous_df+= num_rows+2
                 
-                worksheet = writer.sheets['Dept wise Report']
+                worksheet_7 = writer.sheets['Dept wise Report']
                 for col_num, value in enumerate(final.columns.values):
                     column_width = max(final[value].astype(str).map(len).max(), len(value))+2
-                    worksheet.set_column(col_num, col_num, column_width)
-                    worksheet.write(0, col_num, value, header_format)
+                    worksheet_7.set_column(col_num, col_num, column_width)
+                    worksheet_7.write(0, col_num, value, header_format)
             
             # Cost Center wise cost summary
             cost_center_summ.to_excel(writer, sheet_name="Cost Center wise cost summary",startrow=0,index=False)
     
-            worksheet = writer.sheets['Cost Center wise cost summary']
+            worksheet_8 = writer.sheets['Cost Center wise cost summary']
+            worksheet_8.set_row(0,30)
             for col_num, value in enumerate(cost_center_summ.columns.values):
                 column_width = max(cost_center_summ[value].astype(str).map(len).max(), len(value))+2
-                worksheet.set_column(col_num, col_num, column_width)
-                worksheet.write(0, col_num, value, header_format)
+                worksheet_8.set_column(col_num, col_num, column_width)
+                worksheet_8.write(0, col_num, value, header_format)
 
             # Cost Center Report
             previous_df = 0
@@ -238,18 +281,20 @@ def write_excel(filters,filename,company,month,year):
                 
                 if is_first_dataframe:
                     dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=0,index=False)
+                    worksheet_9 = writer.sheets['Cost Center wise Report']
+                    worksheet_9.set_row(0,30)
                     is_first_dataframe = False
                 else:
                     dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=startrow,header=False,index=False)
                 
                 previous_df+= num_rows+2
                 
-                worksheet = writer.sheets['Cost Center wise Report']
+                worksheet_9 = writer.sheets['Cost Center wise Report']
                 
                 for col_num, value in enumerate(dataframe.columns.values):
                     column_width = max(dataframe[value].astype(str).map(len).max(), len(value))+2
-                    worksheet.set_column(col_num, col_num, column_width)
-                    worksheet.write(0, col_num, value, header_format)
+                    worksheet_9.set_column(col_num, col_num, column_width)
+                    worksheet_9.write(0, col_num, value, header_format)
 
 
             # workBook.save(filename)
@@ -622,19 +667,17 @@ def company_address(company):
     return completed_add
 
 def joining_details(company,filters):
-    
+   
     row_data = frappe.db.sql(
         """
         SELECT employee as employee_number,employee_name,date_of_joining,gender,branch,
         department,designation,payroll_cost_center as cost_centre
         FROM `tabEmployee`
-        WHERE date_of_joining BETWEEN %s AND %s
-        AND company = %s
-        """
-        ,(filters.get("from_date"),filters.get("to_date"),company),
+        WHERE date_of_joining BETWEEN '{}' AND '{}'
+        AND company = '{}'
+        """.format(filters.get("from_date").strftime('%Y-%m-%d'),filters.get("to_date").strftime('%Y-%m-%d'),company),
         as_dict=True
     )
-    print(row_data,"ppppppppppppppppp")
     
     columns = ["employee_number",
         "employee_name",
@@ -669,10 +712,9 @@ def resignee_details(company,filters):
         SELECT employee as employee_number,employee_name,relieving_date as exit_date,
         gender,branch,designation,department,payroll_cost_center as cost_centre
         FROM `tabEmployee`
-        WHERE relieving_date BETWEEN %s AND %s
-        AND company = %s
-        """,
-        (filters.get("from_date"),filters.get("to_date"),company),
+        WHERE relieving_date BETWEEN '{}' AND '{}'
+        AND company = '{}'
+        """.format(filters.get("from_date").strftime('%Y-%m-%d'),filters.get("to_date").strftime('%Y-%m-%d'),company),
         as_dict=True
     )
     columns = ["employee_number",
