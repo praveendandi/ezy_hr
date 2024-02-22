@@ -9,7 +9,6 @@ import sys
 import traceback
 
 
-
 @frappe.whitelist()
 def get_monthly_excel_report(month,year):
     try:
