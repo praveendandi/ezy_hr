@@ -51,7 +51,7 @@ fixtures = [
                 "in",
                 {
                     "Employee-custom_work_location_type",
-                    "Employee-custom_work_location_type"
+                    "Employee-custom_current_work_address"
                 },
                 
             ]]
