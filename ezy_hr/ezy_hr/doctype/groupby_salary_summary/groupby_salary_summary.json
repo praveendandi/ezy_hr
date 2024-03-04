@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-02-21 16:39:05.345925",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "year",
+  "column_break_ncsy",
+  "month"
+ ],
+ "fields": [
+  {
+   "fieldname": "year",
+   "fieldtype": "Select",
+   "label": "Year",
+   "options": "\n2024\n2023\n2022"
+  },
+  {
+   "fieldname": "column_break_ncsy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Select",
+   "label": "Month",
+   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJul\nAug\nSept\nOct\nNov\nDec"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-02-21 16:41:07.888155",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Groupby Salary Summary",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
