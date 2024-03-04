@@ -41,6 +41,23 @@ app_license = "mit"
 # Home Pages
 # ----------
 
+
+fixtures = [
+    {
+        "dt":
+            "Custom Field",
+            "filters":[[
+                "name",
+                "in",
+                {
+                    "Employee-custom_work_location_type",
+                    "Employee-custom_work_location_type"
+                },
+                
+            ]]
+    }
+]
+
 # application home page (will override Website Settings)
 # home_page = "login"
 
