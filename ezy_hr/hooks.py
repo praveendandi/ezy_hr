@@ -118,7 +118,13 @@ fixtures = [
                     "Department-custom_outlet",
                     "Department-custom_cost_centre_code",
                     "Department-custom_department_code",
-                    "Department-custom_gl_code"
+                    "Department-custom_gl_code",
+                    "Employee Health Insurance-custom_column_break_9pzcf",
+                    "Employee Health Insurance-custom_father_name",
+                    "Employee Health Insurance-custom_mother_name",
+                    "Employee Health Insurance-custom_child_first",
+                    "Employee Health Insurance-custom_child_second",
+                    "Employee-custom_employment_status"
                 },
                 
             ]]
