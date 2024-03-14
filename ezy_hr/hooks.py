@@ -115,6 +115,10 @@ fixtures = [
                     "Employee-custom_column_break_qgspz",
                     "Employee-custom_nominee_address_line_4",
                     "Employee-custom_nominee_state_2",
+                    "Department-custom_outlet",
+                    "Department-custom_cost_centre_code",
+                    "Department-custom_department_code",
+                    "Department-custom_gl_code"
                 },
                 
             ]]
