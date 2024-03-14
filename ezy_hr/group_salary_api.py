@@ -88,7 +88,7 @@ def write_excel(filters,filename,company,month,year):
                             'valign': 'vcenter',
                             'fg_color': '#CACACD',
                             'border': 1,
-                            'align': 'center',
+                            'align': 'center'
                         }
             )
             
@@ -163,10 +163,12 @@ def write_excel(filters,filename,company,month,year):
             worksheet_3 = writer.sheets[f'Cost Report {month} {year}']
             worksheet_3.set_row(1,30)
             worksheet_3.merge_range(0,cost_details.shape[1],0,0, salary_title)
+            
             for col_num, value in enumerate(cost_details.columns.values):
                 column_width = max(cost_details[value].astype(str).map(len).max(), len(value))+2
                 worksheet_3.set_column(col_num, col_num, column_width)
                 worksheet_3.write(1, col_num, value, header_format)
+                
             # function wise cost summary
             designation_detail.to_excel(writer, sheet_name="Function wise cost summary",startrow=1,index=False)
             worksheet_4 = writer.sheets['Function wise cost summary']
@@ -198,15 +200,16 @@ def write_excel(filters,filename,company,month,year):
                 
                 startrow = 1 + previous_df
                 if is_first_dataframe:
-                    final.to_excel(writer, sheet_name="Function wise report",startrow=1,index=False)
+                    final.to_excel(writer, sheet_name="Function wise report",startrow=4,header=False,index=False)
                     worksheet_5 = writer.sheets['Function wise report']
                     desig = list(final['Designation'])[0]
                     worksheet_5.set_row(1,30)
                     worksheet_5.merge_range(0,num_cols-1,0,0, salary_title)
-                    worksheet_5.merge_range(2,num_cols-1,2,0, desig,merge_format_dep_deg)
+                    worksheet_5.merge_range(2,num_cols-1,2,0, None,merge_format_dep_deg)
+                    worksheet_5.merge_range(3,num_cols-1,3,0, desig,merge_format_dep_deg)
                     
                     is_first_dataframe = False
-                    previous_df+= 4+num_rows
+                    previous_df+= 6+num_rows
                 else:
                     final.to_excel(writer, sheet_name="Function wise report",startrow=startrow,header=False,index=False)
                     worksheet_5 = writer.sheets['Function wise report']
@@ -250,15 +253,16 @@ def write_excel(filters,filename,company,month,year):
                 startrow = 1 + previous_df
                 
                 if is_first_dataframe:
-                    final.to_excel(writer, sheet_name="Dept wise Report",startrow=1,index=False)
+                    final.to_excel(writer, sheet_name="Dept wise Report",startrow=4,header=False,index=False)
                     worksheet_7 = writer.sheets['Dept wise Report']
                     dep = list(final['Department'])[0]
                     worksheet_7.set_row(1,30)
                     worksheet_7.merge_range(0,num_cols-1,0,0, salary_title)
-                    worksheet_7.merge_range(2,num_cols-1,2,0, dep,merge_format_dep_deg)
+                    worksheet_7.merge_range(2,num_cols-1,2,0, None,merge_format_dep_deg)
+                    worksheet_7.merge_range(3,num_cols-1,3,0, dep,merge_format_dep_deg)
                     
                     is_first_dataframe = False
-                    previous_df+= 4+num_rows
+                    previous_df+= 6+num_rows
                 else:
                     final.to_excel(writer, sheet_name="Dept wise Report",startrow=startrow,header=False,index=False)
                     worksheet_7 = writer.sheets['Dept wise Report']
@@ -296,15 +300,16 @@ def write_excel(filters,filename,company,month,year):
                 num_rows, num_cols = dataframe.shape
                 
                 if is_first_dataframe:
-                    dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=1,index=False)
+                    dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=4,header=False,index=False)
                     worksheet_9 = writer.sheets['Cost Center wise Report']
                     cost = list(final['Cost Center'])[0]
                     worksheet_9.set_row(1,30)
                     worksheet_9.merge_range(0,num_cols-1,0,0, salary_title)
-                    worksheet_9.merge_range(2,num_cols-1,2,0, cost,merge_format_dep_deg)
+                    worksheet_9.merge_range(2,num_cols-1,2,0, None,merge_format_dep_deg)
+                    worksheet_9.merge_range(3,num_cols-1,3,0, cost,merge_format_dep_deg)
                     
                     is_first_dataframe = False
-                    previous_df+= 4+num_rows
+                    previous_df+= 6+num_rows
                 else:
                     dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=startrow,header=False,index=False)
                     worksheet_9 = writer.sheets['Cost Center wise Report']
@@ -351,6 +356,7 @@ def cost_report_details(filters):
     if len(row_data[1]) >0:
         
         final_employee_details = employee_details(row_data[1])
+        final_employee_details['employee_count'] = 0
         
         empl_colunms = list(final_employee_details.columns)
         
@@ -374,7 +380,7 @@ def cost_report_details(filters):
         
         agg_functions = {}
         for each_cat in empl_colunms:
-            agg_functions.update({each_cat:"first","employee_number":"count"})
+            agg_functions.update({each_cat:"first","employee_count":"count"})
         
         for each_num in colunms:
             agg_functions.update({
@@ -386,11 +392,15 @@ def cost_report_details(filters):
         del final['salary_slip_id']
         
         result = final.groupby(by=['company'],as_index=False).agg(agg_functions)
+        object_columns = result.select_dtypes(include=['object','datetime64']).columns.tolist()
         
-        result.rename(columns={
-            "employee_number":"employee_count"
-        },inplace=True)
+        for each in object_columns:
+            result[each] = None
         
+        count = list(result['employee_count'])[0]
+        result['employee_name'] = str(f"Total Employees = {str(count)}")
+        
+        del result["employee_count"]
         result.columns = result.columns.str.replace("_"," ")
         result.columns = result.columns.str.title()
        
@@ -798,4 +808,3 @@ def employee_details(row_data):
     df_employee = pd.DataFrame.from_records(employee_data)
     
     return df_employee
-
