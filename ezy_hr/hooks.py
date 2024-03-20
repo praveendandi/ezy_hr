@@ -124,7 +124,10 @@ fixtures = [
                     "Employee Health Insurance-custom_mother_name",
                     "Employee Health Insurance-custom_child_first",
                     "Employee Health Insurance-custom_child_second",
-                    "Employee-custom_employment_status"
+                    "Employee-custom_employment_status",
+                    "Employee-custom_salary_breakdown",
+                    "Employee-custom_earnings",
+                    "Employee-custom_deductions"
                 },
                 
             ]]
