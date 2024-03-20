@@ -144,7 +144,7 @@ fixtures = [
                     "Job Applicant-custom_reference_previous_second_company",
                     "Job Applicant-custom_reference_check_authorisation_letter",
                     "Job Applicant-custom_reference_check",
-                    "Job Applicant-custom_authorisation_letter"
+                    "Job Applicant-custom_authorisation_letter",
                     "Employee-custom_salary_breakdown",
                     "Employee-custom_earnings",
                     "Employee-custom_deductions"
