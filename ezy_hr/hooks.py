@@ -148,6 +148,8 @@ fixtures = [
                     "Employee-custom_salary_breakdown",
                     "Employee-custom_earnings",
                     "Employee-custom_deductions"
+                    "Job Applicant-custom_current_unit",
+                    "Job Applican-custom_receiving_unit"
                 },
                 
             ]]
