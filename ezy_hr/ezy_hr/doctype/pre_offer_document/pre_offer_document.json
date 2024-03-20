@@ -1,0 +1,162 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:job_applicant_id",
+ "creation": "2024-03-19 14:20:47.499156",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ptnj",
+  "job_applicant_id",
+  "unit",
+  "column_break_tjbz",
+  "applicant_name",
+  "creation_date",
+  "current_ctc_structure_detail_section",
+  "current_ctc_structure",
+  "payslips_of_last_three_months_section",
+  "first_slip",
+  "second_slip",
+  "column_break_fxsr",
+  "third_slip"
+ ],
+ "fields": [
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Company"
+  },
+  {
+   "fetch_from": "job_applicant_id.applicant_name",
+   "fieldname": "applicant_name",
+   "fieldtype": "Data",
+   "label": "Applicant Name"
+  },
+  {
+   "fieldname": "current_ctc_structure",
+   "fieldtype": "Attach",
+   "label": "Current CTC Structure"
+  },
+  {
+   "fieldname": "column_break_tjbz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_applicant_id",
+   "fieldtype": "Link",
+   "label": "Job Applicant Id",
+   "options": "Job Applicant",
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_ptnj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Now",
+   "fieldname": "creation_date",
+   "fieldtype": "Date",
+   "label": "Creation Date"
+  },
+  {
+   "fieldname": "payslips_of_last_three_months_section",
+   "fieldtype": "Section Break",
+   "label": "Payslips of Last Three Months"
+  },
+  {
+   "fieldname": "first_slip",
+   "fieldtype": "Attach",
+   "label": "First Slip"
+  },
+  {
+   "fieldname": "second_slip",
+   "fieldtype": "Attach",
+   "label": "Second Slip"
+  },
+  {
+   "fieldname": "third_slip",
+   "fieldtype": "Attach",
+   "label": "Third Slip"
+  },
+  {
+   "fieldname": "column_break_fxsr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_ctc_structure_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Current CTC Structure Detail"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-03-20 13:14:56.210736",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Pre-Offer Document",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Employee",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
