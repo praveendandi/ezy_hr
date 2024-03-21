@@ -1,0 +1,429 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-03-21 10:08:48.070912",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_6l2k",
+  "job_applicant_id",
+  "employee_id",
+  "unit",
+  "column_break_vqvv",
+  "applicant_name",
+  "employee_name",
+  "pre_offer_documents_section",
+  "current_ctc_structure",
+  "column_break_zld1",
+  "payslips_of_last_three_months",
+  "pre_joining_documents_section",
+  "copy_of_the_resume",
+  "authorisation_letter",
+  "reference_check_form_to_filled",
+  "image",
+  "loi",
+  "educational_and_professional",
+  "column_break_1d1r",
+  "employment_certificate",
+  "form_16_12ba",
+  "dob_proof",
+  "id_proof_and_address",
+  "pan_card",
+  "aadhar_card",
+  "time_of_joining",
+  "appointment_letter",
+  "description",
+  "application_form",
+  "vigil_mechanism_form",
+  "cancel_cheque",
+  "locker_form",
+  "issue_of_badge",
+  "uniform_issue_form",
+  "nomination_mediclaim_form",
+  "column_break_2qwx",
+  "mediclaim_family_details",
+  "nomination_from_for_gpa",
+  "epfo_form",
+  "nomination_form_from_2_revised",
+  "esic_declaration",
+  "form_gratuity",
+  "medical_report",
+  "copy_of_relieving_letter",
+  "post_joining_section",
+  "review_form",
+  "confirmation_form",
+  "on_separation_section",
+  "resignation_copy",
+  "resig_acceptance_copy",
+  "final_settlement_statement",
+  "column_break_tndm",
+  "exit_clearance_copy",
+  "exit_interview_form"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_6l2k",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "job_applicant_id",
+   "fieldtype": "Link",
+   "label": "Job Applicant Id",
+   "options": "Job Applicant"
+  },
+  {
+   "fieldname": "applicant_name",
+   "fieldtype": "Data",
+   "label": "Applicant Name"
+  },
+  {
+   "fieldname": "employee_id",
+   "fieldtype": "Link",
+   "label": "Employee Id",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_vqvv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pre_offer_documents_section",
+   "fieldtype": "Section Break",
+   "label": "Pre-Offer Documents"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_ctc_structure",
+   "fieldtype": "Check",
+   "label": "Current CTC Structure"
+  },
+  {
+   "default": "0",
+   "fieldname": "payslips_of_last_three_months",
+   "fieldtype": "Check",
+   "label": "Payslips of Last Three Months"
+  },
+  {
+   "fieldname": "column_break_zld1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pre_joining_documents_section",
+   "fieldtype": "Section Break",
+   "label": "Pre Joining Documents"
+  },
+  {
+   "default": "0",
+   "fieldname": "copy_of_the_resume",
+   "fieldtype": "Check",
+   "label": "Copy of the Resume"
+  },
+  {
+   "default": "0",
+   "fieldname": "authorisation_letter",
+   "fieldtype": "Check",
+   "label": "Reference Check Authorisation Letter"
+  },
+  {
+   "default": "0",
+   "fieldname": "image",
+   "fieldtype": "Check",
+   "label": "Formal Photographs With White Background  (soft copy)"
+  },
+  {
+   "default": "0",
+   "fieldname": "loi",
+   "fieldtype": "Check",
+   "label": "Letter of intent (LOI)"
+  },
+  {
+   "default": "0",
+   "fieldname": "educational_and_professional",
+   "fieldtype": "Check",
+   "label": "Certificate In Support Of Educational & Professional"
+  },
+  {
+   "default": "0",
+   "fieldname": "employment_certificate",
+   "fieldtype": "Check",
+   "label": "Employment Certificate Of Previous Employer"
+  },
+  {
+   "default": "0",
+   "fieldname": "form_16_12ba",
+   "fieldtype": "Check",
+   "label": "From 16/12BA Of Previous Employer"
+  },
+  {
+   "default": "0",
+   "fieldname": "dob_proof",
+   "fieldtype": "Check",
+   "label": "Date of Birth Proof"
+  },
+  {
+   "default": "0",
+   "fieldname": "id_proof_and_address",
+   "fieldtype": "Check",
+   "label": "Photo ID Proof/ Address proof"
+  },
+  {
+   "default": "0",
+   "fieldname": "pan_card",
+   "fieldtype": "Check",
+   "label": "Pan Card"
+  },
+  {
+   "default": "0",
+   "fieldname": "aadhar_card",
+   "fieldtype": "Check",
+   "label": "Aadhar Card"
+  },
+  {
+   "fieldname": "column_break_1d1r",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "time_of_joining",
+   "fieldtype": "Section Break",
+   "label": "Documents To Be Collected At The Time Of Joining"
+  },
+  {
+   "default": "0",
+   "fieldname": "appointment_letter",
+   "fieldtype": "Check",
+   "label": "Appointment Letter"
+  },
+  {
+   "default": "0",
+   "fieldname": "description",
+   "fieldtype": "Check",
+   "label": "Job Description"
+  },
+  {
+   "default": "0",
+   "fieldname": "application_form",
+   "fieldtype": "Check",
+   "label": "Application Form Of Employment"
+  },
+  {
+   "default": "0",
+   "fieldname": "vigil_mechanism_form",
+   "fieldtype": "Check",
+   "label": "Vigil Mechanism Form PRHPL"
+  },
+  {
+   "default": "0",
+   "fieldname": "cancel_cheque",
+   "fieldtype": "Check",
+   "label": "Cancel Cheque for Salary Process"
+  },
+  {
+   "default": "0",
+   "fieldname": "locker_form",
+   "fieldtype": "Check",
+   "label": "Locker Allotment Form"
+  },
+  {
+   "default": "0",
+   "fieldname": "issue_of_badge",
+   "fieldtype": "Check",
+   "label": "Issue of Name Badge"
+  },
+  {
+   "default": "0",
+   "fieldname": "uniform_issue_form",
+   "fieldtype": "Check",
+   "label": "Uniform Issue Confirmation Form"
+  },
+  {
+   "default": "0",
+   "fieldname": "nomination_mediclaim_form",
+   "fieldtype": "Check",
+   "label": "Nomination Form for Group Mediclaim Policy"
+  },
+  {
+   "default": "0",
+   "fieldname": "mediclaim_family_details",
+   "fieldtype": "Check",
+   "label": "Mediclaim Family Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "nomination_from_for_gpa",
+   "fieldtype": "Check",
+   "label": "Declaration and Nomination From for GPA"
+  },
+  {
+   "default": "0",
+   "fieldname": "epfo_form",
+   "fieldtype": "Check",
+   "label": "EPFO Form"
+  },
+  {
+   "default": "0",
+   "fieldname": "nomination_form_from_2_revised",
+   "fieldtype": "Check",
+   "label": "Nomination and Declaration Form From 2 Revised"
+  },
+  {
+   "default": "0",
+   "fieldname": "esic_declaration",
+   "fieldtype": "Check",
+   "label": "ESIC Declaration Form"
+  },
+  {
+   "default": "0",
+   "fieldname": "form_gratuity",
+   "fieldtype": "Check",
+   "label": "Form F Gratuity"
+  },
+  {
+   "default": "0",
+   "fieldname": "medical_report",
+   "fieldtype": "Check",
+   "label": "Medical Report"
+  },
+  {
+   "default": "0",
+   "fieldname": "copy_of_relieving_letter",
+   "fieldtype": "Check",
+   "label": "Copy of Relieving Letter From The Previous Employer"
+  },
+  {
+   "fieldname": "column_break_2qwx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_check_form_to_filled",
+   "fieldtype": "Attach",
+   "label": "Reference Check Form To Filled"
+  },
+  {
+   "fieldname": "post_joining_section",
+   "fieldtype": "Section Break",
+   "label": "Post Joining"
+  },
+  {
+   "default": "0",
+   "fieldname": "review_form",
+   "fieldtype": "Check",
+   "label": "Probation Review Form"
+  },
+  {
+   "default": "0",
+   "fieldname": "confirmation_form",
+   "fieldtype": "Check",
+   "label": "Probation Confirmation Form"
+  },
+  {
+   "fieldname": "on_separation_section",
+   "fieldtype": "Section Break",
+   "label": "On separation"
+  },
+  {
+   "default": "0",
+   "fieldname": "resignation_copy",
+   "fieldtype": "Check",
+   "label": "Resignation Copy"
+  },
+  {
+   "default": "0",
+   "fieldname": "resig_acceptance_copy",
+   "fieldtype": "Check",
+   "label": "Resignation Acceptance Copy"
+  },
+  {
+   "default": "0",
+   "fieldname": "final_settlement_statement",
+   "fieldtype": "Check",
+   "label": "Full & Final Settlement Statement"
+  },
+  {
+   "fieldname": "column_break_tndm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "exit_clearance_copy",
+   "fieldtype": "Check",
+   "label": "Exit Clearance Copy"
+  },
+  {
+   "default": "0",
+   "fieldname": "exit_interview_form",
+   "fieldtype": "Check",
+   "label": "Exit Interview form"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-03-21 12:19:18.931660",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Personal file Check list",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit HR",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit Head",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "GGM (Group General Manager)",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
