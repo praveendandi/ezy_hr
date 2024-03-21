@@ -1,0 +1,190 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:job_applicant_id",
+ "creation": "2024-03-20 10:04:50.461913",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_oamv",
+  "job_applicant_id",
+  "unit",
+  "column_break_4z0k",
+  "applicant_name",
+  "creation_date",
+  "section_break_r2oi",
+  "image",
+  "dob_proof",
+  "column_break_fvfz",
+  "educational_and_professional",
+  "employment_certificate",
+  "form_16_12ba",
+  "section_break_yyes",
+  "id_proof_and_address",
+  "pan_card",
+  "aadhar_card"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_oamv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "job_applicant_id",
+   "fieldtype": "Link",
+   "label": "Job Applicant Id",
+   "options": "Job Applicant",
+   "unique": 1
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_4z0k",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "job_applicant_id.applicant_name",
+   "fieldname": "applicant_name",
+   "fieldtype": "Data",
+   "label": "Applicant Name"
+  },
+  {
+   "fieldname": "section_break_r2oi",
+   "fieldtype": "Section Break",
+   "label": "Document Attach Details"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Formal Photographs with white background  ( soft copy)"
+  },
+  {
+   "fieldname": "educational_and_professional",
+   "fieldtype": "Attach",
+   "label": "Certificate in support of Educational & Professional"
+  },
+  {
+   "fieldname": "column_break_fvfz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employment_certificate",
+   "fieldtype": "Attach",
+   "label": "Employment Certificate of Previous Employer"
+  },
+  {
+   "fieldname": "form_16_12ba",
+   "fieldtype": "Attach",
+   "label": "From 16/12BA of Previous Employer"
+  },
+  {
+   "fieldname": "dob_proof",
+   "fieldtype": "Attach",
+   "label": "Date of Birth Proof"
+  },
+  {
+   "fieldname": "id_proof_and_address",
+   "fieldtype": "Attach",
+   "label": "Photo ID Proof/ Address proof"
+  },
+  {
+   "fieldname": "pan_card",
+   "fieldtype": "Attach",
+   "label": "Pan Card"
+  },
+  {
+   "fieldname": "aadhar_card",
+   "fieldtype": "Attach",
+   "label": "Aadhar Card"
+  },
+  {
+   "fieldname": "section_break_yyes",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Now",
+   "fieldname": "creation_date",
+   "fieldtype": "Date",
+   "label": "Creation Date"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-03-20 11:52:05.091699",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Pre-joining document",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit HR",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1
+}
