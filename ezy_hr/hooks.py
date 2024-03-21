@@ -148,7 +148,7 @@ fixtures = [
                     "Employee-custom_earnings",
                     "Employee-custom_deductions",
                     "Job Applicant-custom_current_unit",
-                    "Job Applican-custom_receiving_unit",
+                    "Job Applicant-custom_receiving_unit",
                     "Job Opening-custom_internal_job_posting",
                     "Job Applicant-custom_section_break_yac9f",
                     "Job Applicant-custom_external_job_posting",
