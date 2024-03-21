@@ -1,0 +1,64 @@
+.container .my-4 {
+    background-color: antiquewhite !important;
+}
+
+#page-login {
+
+    position: relative;    
+    overflow: hidden;
+    height: 100%;
+    animation: slideshow 15s infinite alternate;
+	background-repeat: no-repeat;
+	background-position: -50% 20%;
+	/* background-position-x: right; */
+	background-size: cover;
+
+    /* background-image: url('/assets/doppio/images/klr.jpg'); */
+    /* background-size: cover; */
+    background-position: center;
+}
+
+#page-login::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Overlay color */
+    z-index: 1;
+  }
+
+
+
+  /* Animation for background images */
+  @keyframes slideshow {
+    0% {
+      background-image: url('/assets/ezy_hr/images/KLR.jpg');
+    }
+    25% {
+      background-image: url('/assets/ezy_hr/images/pauljohnlogo.jpg');
+    }
+    50% {
+      background-image: url('/assets/ezy_hr/images/FK.jpg');
+    }
+    75% {
+      background-image: url('/assets/ezy_hr/images/Ranch.jpg');
+    }
+    100% {
+      background-image: url('/assets/ezy_hr/images/KLR.jpg');
+    }
+  }
+
+  
+  .page-content-wrapper{
+	position: relative;
+	z-index: 100;
+  }
+
+  .navbar-light{
+    background-color: black;border-bottom: 0px;
+  }
+ .navbar-light .container > *{
+    color: white !important;
+ }
