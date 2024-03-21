@@ -128,6 +128,7 @@ fixtures = [
                     "Job Applicant-custom_employee_id",
                     "Job Applicant-custom_eligibility_criteria",
                     "Job Applicant-custom_total_overall_work_experience",
+                    "Job Applicant-custom_column_break_dxdne",
                     "Job Applicant-custom_unit_experience_",
                     "Job Applicant-custom_current_gross_salary",
                     "Job Applicant-custom_reference_details",
