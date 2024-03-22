@@ -29,6 +29,10 @@
     z-index: 1;
   }
 
+.page-card-head h4 {
+  display:none !important;
+  visibility:hidden !important;
+}
 
 
   /* Animation for background images */
@@ -37,7 +41,7 @@
       background-image: url('/assets/ezy_hr/images/KLR.jpg');
     }
     25% {
-      background-image: url('/assets/ezy_hr/images/pauljohnlogo.jpg');
+      background-image: url('/assets/ezy_hr/images/the-paul-bangalore-banner-1.jpg');
     }
     50% {
       background-image: url('/assets/ezy_hr/images/FK.jpg');
