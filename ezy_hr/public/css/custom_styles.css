@@ -8,10 +8,10 @@
     overflow: hidden;
     height: 100%;
     animation: slideshow 15s infinite alternate;
-	background-repeat: no-repeat;
-	background-position: -50% 20%;
-	/* background-position-x: right; */
-	background-size: cover;
+    background-repeat: no-repeat;
+    background-position: -50% 20%;
+    /* background-position-x: right; */
+    background-size: cover;
 
     /* background-image: url('/assets/doppio/images/klr.jpg'); */
     /* background-size: cover; */
@@ -65,4 +65,9 @@
   }
  .navbar-light .container > *{
     color: white !important;
+ }
+
+ 
+#login-content {
+    margin-left: 770px !important;
  }
