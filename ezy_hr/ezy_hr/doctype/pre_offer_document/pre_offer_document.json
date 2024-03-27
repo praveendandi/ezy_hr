@@ -1,16 +1,18 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:job_applicant_id",
+ "autoname": "field:job_applicant_email",
  "creation": "2024-03-19 14:20:47.499156",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_ptnj",
-  "job_applicant_id",
+  "job_applicant_email",
+  "aadhar_no",
   "unit",
   "column_break_tjbz",
   "applicant_name",
+  "mobile_no",
   "creation_date",
   "current_ctc_structure_detail_section",
   "current_ctc_structure",
@@ -41,13 +43,6 @@
   {
    "fieldname": "column_break_tjbz",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "job_applicant_id",
-   "fieldtype": "Link",
-   "label": "Job Applicant Id",
-   "options": "Job Applicant",
-   "unique": 1
   },
   {
    "fieldname": "section_break_ptnj",
@@ -87,11 +82,28 @@
    "fieldname": "current_ctc_structure_detail_section",
    "fieldtype": "Section Break",
    "label": "Current CTC Structure Detail"
+  },
+  {
+   "fieldname": "job_applicant_email",
+   "fieldtype": "Link",
+   "label": "Job Applicant Email",
+   "options": "Job Applicant",
+   "unique": 1
+  },
+  {
+   "fieldname": "aadhar_no",
+   "fieldtype": "Data",
+   "label": "Aadhar No"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-20 13:14:56.210736",
+ "modified": "2024-03-26 11:35:29.457045",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Pre-Offer Document",

@@ -1,17 +1,19 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:aadhar_no",
  "creation": "2024-03-21 10:08:48.070912",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_6l2k",
-  "job_applicant_id",
+  "job_applicant_email",
   "employee_id",
   "unit",
   "column_break_vqvv",
   "applicant_name",
   "employee_name",
+  "aadhar_no",
   "pre_offer_documents_section",
   "current_ctc_structure",
   "column_break_zld1",
@@ -64,12 +66,6 @@
   {
    "fieldname": "section_break_6l2k",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "job_applicant_id",
-   "fieldtype": "Link",
-   "label": "Job Applicant Id",
-   "options": "Job Applicant"
   },
   {
    "fieldname": "applicant_name",
@@ -133,7 +129,7 @@
    "default": "0",
    "fieldname": "authorisation_letter",
    "fieldtype": "Check",
-   "label": "Reference Check Authorisation Letter"
+   "label": "Reference Check Authorisation"
   },
   {
    "default": "0",
@@ -364,14 +360,28 @@
    "fieldname": "exit_interview_form",
    "fieldtype": "Check",
    "label": "Exit Interview form"
+  },
+  {
+   "fieldname": "job_applicant_email",
+   "fieldtype": "Link",
+   "label": "Job Applicant Email",
+   "options": "Job Applicant"
+  },
+  {
+   "fieldname": "aadhar_no",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Aadhar No",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-21 12:19:18.931660",
+ "modified": "2024-03-26 15:15:58.000884",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Personal file Check list",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

@@ -154,7 +154,9 @@ fixtures = [
                     "Job Applicant-custom_section_break_yac9f",
                     "Job Applicant-custom_external_job_posting",
                     "Job Applicant-custom__internal_job_posting",
-                    "Job Applicant-custom_current_ctc"
+                    "Job Applicant-custom_current_ctc",
+                    "Job Applicant-custom_aadhar_no",
+                    "Employee-custom_gross_amount"
                 },
                 
             ]]
@@ -244,13 +246,22 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	# "*": {
+	# 	"on_update": "method",
+	# 	"on_cancel": "method",
+	# 	"on_trash": "method"
+	# }
+    "Job Applicant":{
+        "on_update":"ezy_hr.job_applicant.new_job_condidate_application"
+    },
+    "Pre-Offer Document":{
+        "on_update":"ezy_hr.pre_offer_document.creating_pre_offer_document"
+        },
+    "Pre-joining document":{
+        "on_update":"ezy_hr.pre_joining_document.creating_new_pre_joining_document"
+    }
+}
 
 # Scheduled Tasks
 # ---------------
