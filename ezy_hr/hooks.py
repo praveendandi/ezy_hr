@@ -260,6 +260,9 @@ doc_events = {
         },
     "Pre-joining document":{
         "on_update":"ezy_hr.pre_joining_document.creating_new_pre_joining_document"
+    },
+    "Personal Files":{
+        "on_update":"ezy_hr.personl_file.create_personal_file_through_employee"
     }
 }
 

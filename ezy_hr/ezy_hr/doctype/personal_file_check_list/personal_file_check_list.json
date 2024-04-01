@@ -51,6 +51,7 @@
   "form_gratuity",
   "medical_report",
   "copy_of_relieving_letter",
+  "police_verification_form",
   "post_joining_section",
   "review_form",
   "confirmation_form",
@@ -70,6 +71,7 @@
   {
    "fieldname": "applicant_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Applicant Name"
   },
   {
@@ -117,7 +119,7 @@
   {
    "fieldname": "pre_joining_documents_section",
    "fieldtype": "Section Break",
-   "label": "Pre Joining Documents"
+   "label": "Pre-Joining Documents"
   },
   {
    "default": "0",
@@ -301,8 +303,9 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "0",
    "fieldname": "reference_check_form_to_filled",
-   "fieldtype": "Attach",
+   "fieldtype": "Check",
    "label": "Reference Check Form To Filled"
   },
   {
@@ -373,11 +376,17 @@
    "in_standard_filter": 1,
    "label": "Aadhar No",
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "police_verification_form",
+   "fieldtype": "Check",
+   "label": "Police Verification Form"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-26 15:15:58.000884",
+ "modified": "2024-04-01 12:34:32.456475",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Personal file Check list",
@@ -435,5 +444,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1,
+ "track_views": 1
 }

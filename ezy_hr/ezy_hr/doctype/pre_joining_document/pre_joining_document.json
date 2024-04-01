@@ -45,6 +45,7 @@
    "fetch_from": "job_applicant_id.applicant_name",
    "fieldname": "applicant_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Applicant Name"
   },
   {
@@ -117,6 +118,7 @@
   {
    "fieldname": "aadhar_no",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Aadhar No",
    "unique": 1
   },
@@ -128,7 +130,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-27 11:30:00.458905",
+ "modified": "2024-03-27 17:08:00.047867",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Pre-joining document",

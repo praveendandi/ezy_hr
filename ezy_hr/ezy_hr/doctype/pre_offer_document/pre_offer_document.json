@@ -33,6 +33,7 @@
    "fetch_from": "job_applicant_id.applicant_name",
    "fieldname": "applicant_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Applicant Name"
   },
   {
@@ -93,6 +94,7 @@
   {
    "fieldname": "aadhar_no",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Aadhar No"
   },
   {
@@ -103,7 +105,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-26 11:35:29.457045",
+ "modified": "2024-03-27 17:08:28.546833",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Pre-Offer Document",
@@ -124,17 +126,6 @@
   },
   {
    "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Guest",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
@@ -144,15 +135,6 @@
    "role": "HR Manager",
    "share": 1,
    "write": 1
-  },
-  {
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Employee",
-   "share": 1
   },
   {
    "create": 1,
@@ -165,10 +147,23 @@
    "role": "HR User",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit HR",
+   "share": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "track_changes": 1
+ "track_changes": 1,
+ "track_views": 1
 }
