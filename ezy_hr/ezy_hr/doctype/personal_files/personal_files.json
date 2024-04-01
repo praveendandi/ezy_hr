@@ -1,0 +1,350 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:employee_id",
+ "creation": "2024-03-27 17:11:57.288532",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_k2tm",
+  "employee_id",
+  "unit",
+  "column_break_9xqi",
+  "employee_name",
+  "aadhar_no",
+  "pre_offer_documents_section",
+  "current_ctc_structure",
+  "section_break_xobs",
+  "column_break_bfqc",
+  "first_slip",
+  "column_break_jjl8",
+  "second_slip",
+  "column_break_lll2",
+  "third_slip",
+  "pre_joining_documents_section",
+  "reference_check_form_to_filled",
+  "image",
+  "dob_proof",
+  "column_break_7sem",
+  "educational_and_professional",
+  "employment_certificate",
+  "form_16_12ba",
+  "column_break_yokf",
+  "id_proof_and_address",
+  "pan_card",
+  "aadhar_card",
+  "other_decuments_section",
+  "vigil_mechanism_form",
+  "cancel_cheque",
+  "locker_form",
+  "uniform_issue_form",
+  "column_break_trga",
+  "locker_no",
+  "issue_of_badge",
+  "badge_name",
+  "nomination_mediclaim_form",
+  "column_break_rnfr",
+  "nomination_form_from_2_revised",
+  "esic_declaration",
+  "form_gratuity",
+  "medical_report",
+  "section_break_na2r",
+  "copy_of_relieving_letter",
+  "column_break_7xq6",
+  "police_verification_form"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_k2tm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "employee_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee Id",
+   "options": "Employee",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_9xqi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_id.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fetch_from": "employee_id.custom_aadhar_no",
+   "fetch_if_empty": 1,
+   "fieldname": "aadhar_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Aadhar No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pre_offer_documents_section",
+   "fieldtype": "Section Break",
+   "label": "Pre-Offer Documents"
+  },
+  {
+   "fieldname": "current_ctc_structure",
+   "fieldtype": "Attach",
+   "label": "Current CTC Structure"
+  },
+  {
+   "fieldname": "first_slip",
+   "fieldtype": "Attach",
+   "label": "First Slip"
+  },
+  {
+   "fieldname": "column_break_jjl8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "second_slip",
+   "fieldtype": "Attach",
+   "label": "Second Slip"
+  },
+  {
+   "fieldname": "column_break_lll2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "third_slip",
+   "fieldtype": "Attach",
+   "label": "Third Slip"
+  },
+  {
+   "fieldname": "column_break_bfqc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pre_joining_documents_section",
+   "fieldtype": "Section Break",
+   "label": "Pre-Joining Documents"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Formal Photographs with white background (soft copy)"
+  },
+  {
+   "fieldname": "dob_proof",
+   "fieldtype": "Attach",
+   "label": "Date of Birth Proof"
+  },
+  {
+   "fieldname": "educational_and_professional",
+   "fieldtype": "Attach",
+   "label": "Certificate in support of Educational & Professional"
+  },
+  {
+   "fieldname": "employment_certificate",
+   "fieldtype": "Attach",
+   "label": "Employment Certificate of Previous Employer"
+  },
+  {
+   "fieldname": "form_16_12ba",
+   "fieldtype": "Attach",
+   "label": "From 16/12BA of Previous Employer"
+  },
+  {
+   "fieldname": "id_proof_and_address",
+   "fieldtype": "Attach",
+   "label": "Photo ID Proof/ Address proof"
+  },
+  {
+   "fieldname": "pan_card",
+   "fieldtype": "Attach",
+   "label": "Pan Card"
+  },
+  {
+   "fieldname": "aadhar_card",
+   "fieldtype": "Attach",
+   "label": "Aadhar Card"
+  },
+  {
+   "fieldname": "section_break_xobs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_7sem",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yokf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "other_decuments_section",
+   "fieldtype": "Section Break",
+   "label": "Other Decuments"
+  },
+  {
+   "fieldname": "vigil_mechanism_form",
+   "fieldtype": "Attach",
+   "label": "Vigil Mechanism Form PRHPL"
+  },
+  {
+   "fieldname": "cancel_cheque",
+   "fieldtype": "Attach",
+   "label": "Cancel Cheque for Salary Process"
+  },
+  {
+   "fieldname": "locker_form",
+   "fieldtype": "Attach",
+   "label": "Locker Allotment Form"
+  },
+  {
+   "fieldname": "locker_no",
+   "fieldtype": "Data",
+   "label": "Locker No."
+  },
+  {
+   "fieldname": "column_break_trga",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "No",
+   "fieldname": "issue_of_badge",
+   "fieldtype": "Select",
+   "label": "Issue of Name Badge",
+   "options": "\nYes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.issue_of_badge== \"Yes\"",
+   "fieldname": "badge_name",
+   "fieldtype": "Data",
+   "label": "Badge Name"
+  },
+  {
+   "fieldname": "uniform_issue_form",
+   "fieldtype": "Attach",
+   "label": "Uniform Issue Confirmation Form"
+  },
+  {
+   "fieldname": "nomination_mediclaim_form",
+   "fieldtype": "Attach",
+   "label": "Nomination Form for Group Mediclaim Policy"
+  },
+  {
+   "fieldname": "column_break_rnfr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "nomination_form_from_2_revised",
+   "fieldtype": "Attach",
+   "label": "Nomination and Declaration Form From 2 Revised"
+  },
+  {
+   "fieldname": "esic_declaration",
+   "fieldtype": "Attach",
+   "label": "ESIC Declaration Form"
+  },
+  {
+   "fieldname": "form_gratuity",
+   "fieldtype": "Attach",
+   "label": "Form F Gratuity"
+  },
+  {
+   "fieldname": "medical_report",
+   "fieldtype": "Attach",
+   "label": "Medical Report"
+  },
+  {
+   "fieldname": "section_break_na2r",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "copy_of_relieving_letter",
+   "fieldtype": "Attach",
+   "label": "Copy of Relieving Letter From The Previous Employer"
+  },
+  {
+   "fieldname": "police_verification_form",
+   "fieldtype": "Attach",
+   "label": "Police Verification Form"
+  },
+  {
+   "fieldname": "column_break_7xq6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Company"
+  },
+  {
+   "fieldname": "reference_check_form_to_filled",
+   "fieldtype": "Attach",
+   "label": "Reference Check Form To Filled"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-04-01 12:07:20.483187",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Personal Files",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit HR",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit Head",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
+}

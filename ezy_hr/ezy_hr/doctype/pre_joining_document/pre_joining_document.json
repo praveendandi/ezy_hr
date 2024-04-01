@@ -1,25 +1,27 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:job_applicant_id",
+ "autoname": "field:aadhar_no",
  "creation": "2024-03-20 10:04:50.461913",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_oamv",
-  "job_applicant_id",
+  "job_applicant_email",
+  "aadhar_no",
   "unit",
   "column_break_4z0k",
   "applicant_name",
+  "mobile_no",
   "creation_date",
-  "section_break_r2oi",
+  "document_attach_details_section",
   "image",
   "dob_proof",
   "column_break_fvfz",
   "educational_and_professional",
   "employment_certificate",
   "form_16_12ba",
-  "section_break_yyes",
+  "proof_details_section",
   "id_proof_and_address",
   "pan_card",
   "aadhar_card"
@@ -28,13 +30,6 @@
   {
    "fieldname": "section_break_oamv",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "job_applicant_id",
-   "fieldtype": "Link",
-   "label": "Job Applicant Id",
-   "options": "Job Applicant",
-   "unique": 1
   },
   {
    "fieldname": "unit",
@@ -50,17 +45,13 @@
    "fetch_from": "job_applicant_id.applicant_name",
    "fieldname": "applicant_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Applicant Name"
-  },
-  {
-   "fieldname": "section_break_r2oi",
-   "fieldtype": "Section Break",
-   "label": "Document Attach Details"
   },
   {
    "fieldname": "image",
    "fieldtype": "Attach Image",
-   "label": "Formal Photographs with white background  ( soft copy)"
+   "label": "Formal Photographs with white background (soft copy)"
   },
   {
    "fieldname": "educational_and_professional",
@@ -102,19 +93,44 @@
    "label": "Aadhar Card"
   },
   {
-   "fieldname": "section_break_yyes",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "Now",
+   "default": "now",
    "fieldname": "creation_date",
    "fieldtype": "Date",
    "label": "Creation Date"
+  },
+  {
+   "fieldname": "proof_details_section",
+   "fieldtype": "Section Break",
+   "label": "Proof Details"
+  },
+  {
+   "fieldname": "document_attach_details_section",
+   "fieldtype": "Section Break",
+   "label": "Document Attach Details"
+  },
+  {
+   "fieldname": "job_applicant_email",
+   "fieldtype": "Link",
+   "label": "Job Applicant Email",
+   "options": "Job Applicant",
+   "unique": 1
+  },
+  {
+   "fieldname": "aadhar_no",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Aadhar No",
+   "unique": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-20 11:52:05.091699",
+ "modified": "2024-03-27 17:08:00.047867",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Pre-joining document",
