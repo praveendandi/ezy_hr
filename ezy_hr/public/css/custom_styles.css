@@ -55,20 +55,20 @@
   }
 
   
-  .page-content-wrapper{
+.page-content-wrapper{
 	position: relative;
 	z-index: 100;
   }
 
-  .navbar-light{
+.navbar-light{
     background-color: black;border-bottom: 0px;
   }
- .navbar-light .container > *{
+.navbar-light .container > *{
     color: white !important;
  }
 
- .login-content.page-card{
-  position: absolute;
+.login-content.page-card{
+    position: absolute;
     right: 0;
     min-height: 100dvh;
     top: -16px;
@@ -81,39 +81,39 @@
     min-width: 28%;
  }
  .login-content.page-card > .form-signin{
-  max-width: 100% !important;
+    max-width: 100% !important;
     margin: 0px 55px;
  }
 
- .app-logo{
+.app-logo{
   position: absolute;
     right: 13.5%;
     z-index: 11;
  }
 
- .form-signin input{
+.form-signin input{
   font-size: 16px;
   height:  55px !important;
 
  }
- .form-signin svg{
+.form-signin svg{
   top : 21px !important
  }
 
- .form-signin a,.form-signin button.btn-login{
+.form-signin a,.form-signin button.btn-login{
   height:  55px !important;
   font-size: 16px;
   align-items: center !important;
 
  }
 
- span.toggle-password{
+span.toggle-password{
   top : 20px !important
  }
 
 
- @media (max-width:1441px){
-  .form-signin a,.form-signin button.btn-login{
+@media (max-width:1441px){
+.form-signin a,.form-signin button.btn-login{
     height:  45px !important;
    }
    .form-signin svg{
