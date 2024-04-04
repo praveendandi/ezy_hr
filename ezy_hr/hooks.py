@@ -156,7 +156,11 @@ fixtures = [
                     "Job Applicant-custom__internal_job_posting",
                     "Job Applicant-custom_current_ctc",
                     "Job Applicant-custom_aadhar_no",
-                    "Employee-custom_gross_amount"
+                    "Employee-custom_gross_amount",
+                    "Employee-custom_income_tax_slab",
+                    "Employee-custom_tax_slabe_and_effective",
+                    "Employee-custom_effective_date",
+                    "Employee-custom_select_break_of_earning_and_deduction",
                 },
                 
             ]]
@@ -263,6 +267,9 @@ doc_events = {
     },
     "Personal Files":{
         "on_update":"ezy_hr.personl_file.create_personal_file_through_employee"
+    },
+    "Employee":{
+        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee"
     }
 }
 
