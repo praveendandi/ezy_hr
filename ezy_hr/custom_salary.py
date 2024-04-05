@@ -30,9 +30,22 @@ def create_salary_structure_through_employee(doc,mothod=None):
                         "parentfield" :"deductions",
                         "parenttype":"Salary Structure",
                         "salary_component":each_deduc.get("salary_component"),
-                        "abbr":each_deduc.get("abbr"),
-                        "amount":each_deduc.get("amount"),
+                        "abbr":each_deduc.get("abbr"), 
                     }
+                    
+                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula"):
+                        deduction.update({
+                            "condition":"B < 15000",
+                            "amount_based_on_formula":1,
+                            "formula":each_deduc.get("formula")
+                        })
+                    else:
+                        deduction.update({
+                            "condition":"B > 15000",
+                            "amount":each_deduc.get("amount")
+                        })
+                        
+
                     deductions.append(deduction)
                     
                 details = {
@@ -156,13 +169,17 @@ def custom_earnings_updates(doc):
                         "amount": each_earn.get("amount"),
                     }
                     new_child_records.append(earning)
-
-                for child_record in new_child_records:
-                    child = frappe.get_doc(child_record)
-                    child.insert(ignore_permissions=True)
                     
                 document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}")
+                
+                for record in new_child_records:
+                    child_doc = frappe.new_doc('Salary Detail')
+                    child_doc.update(record)
+                    document.append('earnings', child_doc)
+                    
                 document.save()
+                
+                frappe.msgprint()
                 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -233,12 +250,14 @@ def custom_deductions_updates(doc):
                         "amount": each_earn.get("amount"),
                     }
                     new_child_records.append(deduction)
-
-                for child_record in new_child_records:
-                    child = frappe.get_doc(child_record)
-                    child.insert(ignore_permissions=True)
                     
                 document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}")
+                
+                for record in new_child_records:
+                    child_doc = frappe.new_doc('Salary Detail')
+                    child_doc.update(record)
+                    document.append('deductions', child_doc)
+                    
                 document.save()
         else:
             is_change = False
