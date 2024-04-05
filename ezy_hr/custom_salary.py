@@ -33,17 +33,22 @@ def create_salary_structure_through_employee(doc,mothod=None):
                         "abbr":each_deduc.get("abbr"), 
                     }
                     
-                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula"):
+                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula") and each_deduc.get("abbr") == "PF":
                         deduction.update({
                             "condition":"B < 15000",
                             "amount_based_on_formula":1,
                             "formula":each_deduc.get("formula")
                         })
                     else:
-                        deduction.update({
-                            "condition":"B > 15000",
-                            "amount":each_deduc.get("amount")
-                        })
+                        if each_deduc.get("abbr") == "PF":
+                            deduction.update({
+                                "condition":"B > 15000",
+                                "amount":each_deduc.get("amount")
+                            })
+                        else:
+                            deduction.update({
+                                "amount":each_deduc.get("amount")
+                            })
                     
                     deductions.append(deduction)
                     
@@ -248,17 +253,22 @@ def custom_deductions_updates(doc):
                         "abbr":each_deduc.get("abbr"), 
                     }
                     
-                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula"):
+                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula") and each.get("abbr") == "PF":
                         deduction.update({
                             "condition":"B < 15000",
                             "amount_based_on_formula":1,
                             "formula":each_deduc.get("formula")
                         })
                     else:
-                        deduction.update({
-                            "condition":"B > 15000",
-                            "amount":each_deduc.get("amount")
-                        })
+                        if each.get("abbr") == "PF":
+                            deduction.update({
+                                "condition":"B > 15000",
+                                "amount":each_deduc.get("amount")
+                            })
+                        else:
+                            deduction.update({
+                                "amount":each_deduc.get("amount")
+                            })
                     
                     new_child_records.append(deduction)
                     
