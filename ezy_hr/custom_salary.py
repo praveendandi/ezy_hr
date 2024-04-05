@@ -44,8 +44,7 @@ def create_salary_structure_through_employee(doc,mothod=None):
                             "condition":"B > 15000",
                             "amount":each_deduc.get("amount")
                         })
-                        
-
+                    
                     deductions.append(deduction)
                     
                 details = {
@@ -239,16 +238,28 @@ def custom_deductions_updates(doc):
                     frappe.db.commit()
                     
                 new_child_records = []
-                for each_earn in new_row_data.get("custom_deductions"):
+                for each_deduc in new_row_data.get("custom_deductions"):
                     deduction = {
-                        "doctype": "Salary Detail",
-                        "parent": f"{doc.name}-{doc.employee_name}",
-                        "parentfield": "deductions",
-                        "parenttype": "Salary Structure",
-                        "salary_component": each_earn.get("salary_component"),
-                        "abbr": each_earn.get("abbr"),
-                        "amount": each_earn.get("amount"),
+                        "doctype":"Salary Detail",
+                        "parent":f"{doc.name}-{doc.employee_name}",
+                        "parentfield" :"deductions",
+                        "parenttype":"Salary Structure",
+                        "salary_component":each_deduc.get("salary_component"),
+                        "abbr":each_deduc.get("abbr"), 
                     }
+                    
+                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula"):
+                        deduction.update({
+                            "condition":"B < 15000",
+                            "amount_based_on_formula":1,
+                            "formula":each_deduc.get("formula")
+                        })
+                    else:
+                        deduction.update({
+                            "condition":"B > 15000",
+                            "amount":each_deduc.get("amount")
+                        })
+                    
                     new_child_records.append(deduction)
                     
                 document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}")
