@@ -63,7 +63,7 @@ def write_excel(filters,filename,company,month,year):
         cost_center_summ = cost_center_wise_cost_summary(filters)
         cost_center_details = cost_center_wise_report(filters)
         
-        total_employee = frappe.db.count("Employee",{"status":"Active","date_of_joining":("<",(filters.get("from_date").strftime('%Y-%m-%d')))})
+        total_employee = frappe.db.count("Employee",{"status":"Active","date_of_joining":("<",(filters.get("from_date").strftime('%Y-%m-%d'))),"company":company})
         salary_title = f"{company} > Salary Statement for the month of {month} {year} | Currency : INR"
         
         with pd.ExcelWriter(filename, engine='xlsxwriter', mode='w') as writer:
@@ -302,7 +302,7 @@ def write_excel(filters,filename,company,month,year):
                 if is_first_dataframe:
                     dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=4,header=False,index=False)
                     worksheet_9 = writer.sheets['Cost Center wise Report']
-                    cost = list(final['Cost Center'])[0]
+                    cost = list(dataframe['Cost Center'])[0]
                     worksheet_9.set_row(1,30)
                     worksheet_9.merge_range(0,num_cols-1,0,0, salary_title)
                     worksheet_9.merge_range(2,num_cols-1,2,0, None,merge_format_dep_deg)
@@ -313,7 +313,7 @@ def write_excel(filters,filename,company,month,year):
                 else:
                     dataframe.to_excel(writer, sheet_name="Cost Center wise Report",startrow=startrow,header=False,index=False)
                     worksheet_9 = writer.sheets['Cost Center wise Report']
-                    cost = list(final['Cost Center'])[0]
+                    cost = list(dataframe['Cost Center'])[0]
                     worksheet_9.merge_range(startrow-1,num_cols-1,startrow-1,0, cost,merge_format_dep_deg)
                     previous_df+= num_rows+3
                     
