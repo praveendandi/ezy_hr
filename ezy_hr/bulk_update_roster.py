@@ -49,4 +49,15 @@ def roster_update(data):
 #     print(row_data,"poooooooooooooooo,,,,,,,,,,,,,,,,,,,,")
     
 #     return row_data
+
+
+@frappe.whitelist()
+def activate_workflow():
+    get_workflows = []
+    get_all_workflows = frappe.db.get_list("Workflow", filters = {"name": "employee", "document_type": "Employee"}, fields = ["name", "document_type", "is_active"])
+    print(get_all_workflows.values())
     
+    for workflow in get_all_workflows:
+        print(workflow.values())
+
+    print(get_all_workflows, "7w4y5876943679743698345769837")
