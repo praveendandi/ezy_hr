@@ -2,6 +2,8 @@ import frappe
 import erpnext
 import sys
 import traceback
+from datetime import datetime
+
 
 def create_salary_structure_through_employee(doc,mothod=None):
     try:
@@ -9,70 +11,80 @@ def create_salary_structure_through_employee(doc,mothod=None):
         earnings = []
         deductions = []
         
-        if not frappe.db.exists("Salary Structure",{"name":f"{doc.name}-{doc.employee_name}","is_active":"Yes","docstatus":1}):
-            if len(row_data.get("custom_earnings",[])) >0 and doc.custom_income_tax_slab:
-                for each_earn in row_data.get("custom_earnings"):
-                    earning = {
-                        "doctype":"Salary Detail",
-                        "parent": f"{doc.name}-{doc.employee_name}",
-                        "parentfield" :"earnings",
-                        "parenttype":"Salary Structure",
-                        "salary_component":each_earn.get("salary_component"),
-                        "abbr":each_earn.get("abbr"),
-                        "amount":each_earn.get("amount"),
-                    }
-                    earnings.append(earning)
-                    
-                for each_deduc in row_data.get("custom_deductions"):
-                    deduction = {
-                        "doctype":"Salary Detail",
-                        "parent":f"{doc.name}-{doc.employee_name}",
-                        "parentfield" :"deductions",
-                        "parenttype":"Salary Structure",
-                        "salary_component":each_deduc.get("salary_component"),
-                        "abbr":each_deduc.get("abbr"), 
-                    }
-                    
-                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula") and each_deduc.get("abbr") == "PF":
-                        deduction.update({
-                            "condition":"B < 15000",
-                            "amount_based_on_formula":1,
-                            "formula":each_deduc.get("formula")
-                        })
-                    else:
-                        if each_deduc.get("abbr") == "PF":
+        current_month = None
+        current_year = None
+        
+        if doc.custom_effective_date:
+            change_str = doc.custom_effective_date
+            # change_date = datetime.strptime(change_str, '%Y-%m-%d')
+            current_year = change_str.year
+            current_month = change_str.month
+            
+        if doc.custom_effective_date:
+            if not frappe.db.exists("Salary Structure",{"name":f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})","is_active":"Yes","docstatus":1}):
+                if len(row_data.get("custom_earnings",[])) >0 and doc.custom_income_tax_slab:
+                    for each_earn in row_data.get("custom_earnings"):
+                        earning = {
+                            "doctype":"Salary Detail",
+                            "parent": f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",
+                            "parentfield" :"earnings",
+                            "parenttype":"Salary Structure",
+                            "salary_component":each_earn.get("salary_component"),
+                            "abbr":each_earn.get("abbr"),
+                            "amount":each_earn.get("amount"),
+                        }
+                        earnings.append(earning)
+                        
+                    for each_deduc in row_data.get("custom_deductions"):
+                        deduction = {
+                            "doctype":"Salary Detail",
+                            "parent":f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",
+                            "parentfield" :"deductions",
+                            "parenttype":"Salary Structure",
+                            "salary_component":each_deduc.get("salary_component"),
+                            "abbr":each_deduc.get("abbr"), 
+                        }
+                        
+                        if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula") and each_deduc.get("abbr") == "PF":
                             deduction.update({
-                                "condition":"B > 15000",
-                                "amount":each_deduc.get("amount")
+                                "condition":"B < 15000",
+                                "amount_based_on_formula":1,
+                                "formula":each_deduc.get("formula")
                             })
                         else:
-                            deduction.update({
-                                "amount":each_deduc.get("amount")
-                            })
+                            if each_deduc.get("abbr") == "PF":
+                                deduction.update({
+                                    "condition":"B > 15000",
+                                    "amount":each_deduc.get("amount")
+                                })
+                            else:
+                                deduction.update({
+                                    "amount":each_deduc.get("amount")
+                                })
+                        
+                        deductions.append(deduction)
+                        
+                    details = {
+                        "doctype": "Salary Structure",
+                        "name": f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",
+                        "company": doc.company or erpnext.get_default_company(),
+                        "earnings": earnings,
+                        "deductions":deductions,
+                        "payroll_frequency": "Monthly",
+                        "currency": "INR",
+                        "is_active":"Yes",
+                        "docstatus":1
+                    }
                     
-                    deductions.append(deduction)
+                    salary_structure_doc = frappe.get_doc(details)
+                    salary_structure_doc.insert()
                     
-                details = {
-                    "doctype": "Salary Structure",
-                    "name": f"{doc.name}-{doc.employee_name}",
-                    "company": doc.company or erpnext.get_default_company(),
-                    "earnings": earnings,
-                    "deductions":deductions,
-                    "payroll_frequency": "Monthly",
-                    "currency": "INR",
-                    "is_active":"Yes",
-                    "docstatus":1
-                }
+                    if salary_structure_doc.name and salary_structure_doc.docstatus == 1:
+                        salary_structure_assignment(doc,salary_structure_doc.name)
                 
-                salary_structure_doc = frappe.get_doc(details)
-                salary_structure_doc.insert()
+            else:
+                update_salary_structure(doc,current_year,current_month)
                 
-                if salary_structure_doc.name and salary_structure_doc.docstatus == 1:
-                    salary_structure_assignment(doc,salary_structure_doc.name)
-            
-        else:
-            update_salary_structure(doc)
-            
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "create_salary_structure_through_employee")
@@ -81,7 +93,6 @@ def salary_structure_assignment(doc,salary_structure):
     
     def get_income_tax_slab():
         
-        # current_year = frappe.utils.today().year
         income_tax_slab = frappe.db.get_value(
             'Income Tax Slab',
             filters={"name":("like",("%Old Tax%")),"disable":0,"company":doc.company or erpnext.get_default_company()},
@@ -104,13 +115,13 @@ def salary_structure_assignment(doc,salary_structure):
     
     
  
-def update_salary_structure(doc):
+def update_salary_structure(doc,current_year,current_month):
     
-    custom_earnings_updates(doc)
-    custom_deductions_updates(doc)
+    custom_earnings_updates(doc,current_year,current_month)
+    custom_deductions_updates(doc,current_year,current_month)
     
         
-def custom_earnings_updates(doc):
+def custom_earnings_updates(doc,current_year,current_month):
    
     try:  
         new_row_data = doc.as_dict()
@@ -131,7 +142,7 @@ def custom_earnings_updates(doc):
                 And ss.docstatus=1 
                 And ss.name = (%s)
                 And ss.company =(%s)
-                """,(f"{doc.name}-{doc.employee_name}",doc.company),
+                """,(f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",doc.company),
                 as_list=1
             )[0][0]
 
@@ -147,13 +158,13 @@ def custom_earnings_updates(doc):
                 And ss.docstatus=1 
                 And ss.name = (%s)
                 And ss.company =(%s)
-                """,(f"{doc.name}-{doc.employee_name}",doc.company),
+                """,(f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",doc.company),
                 as_list=1
             )[0][0]
 
             if new_component_counts != previous_component_counts or new_component_amount != previous_component_amount:
                 
-                for each in frappe.get_all("Salary Detail",filters={"parent":f"{doc.name}-{doc.employee_name}","parentfield":"earnings","docstatus":1,"parenttype":"Salary Structure"}):
+                for each in frappe.get_all("Salary Detail",filters={"parent":f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})","parentfield":"earnings","docstatus":1,"parenttype":"Salary Structure"}):
                     
                     frappe.db.delete("Salary Detail",{"name":each.name,"parentfield":"earnings","docstatus":1,"parenttype":"Salary Structure"})
                     
@@ -165,7 +176,7 @@ def custom_earnings_updates(doc):
                 for each_earn in new_row_data.get("custom_earnings"):
                     earning = {
                         "doctype": "Salary Detail",
-                        "parent": f"{doc.name}-{doc.employee_name}",
+                        "parent": f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",
                         "parentfield": "earnings",
                         "parenttype": "Salary Structure",
                         "salary_component": each_earn.get("salary_component"),
@@ -174,7 +185,7 @@ def custom_earnings_updates(doc):
                     }
                     new_child_records.append(earning)
                     
-                document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}")
+                document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})")
                 
                 for record in new_child_records:
                     child_doc = frappe.new_doc('Salary Detail')
@@ -190,7 +201,7 @@ def custom_earnings_updates(doc):
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "custom_earnings_updates")
 
            
-def custom_deductions_updates(doc):
+def custom_deductions_updates(doc,current_year,current_month):
     
     try:
         new_row_data = doc.as_dict()
@@ -212,7 +223,7 @@ def custom_deductions_updates(doc):
                 And ss.docstatus=1 
                 And ss.name = (%s)
                 And ss.company =(%s)
-                """,(f"{doc.name}-{doc.employee_name}",doc.company),
+                """,(f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",doc.company),
                 as_list=1
             )[0][0]
 
@@ -228,13 +239,13 @@ def custom_deductions_updates(doc):
                 And ss.docstatus=1 
                 And ss.name = (%s)
                 And ss.company =(%s)
-                """,(f"{doc.name}-{doc.employee_name}",doc.company),
+                """,(f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",doc.company),
                 as_list=1
             )[0][0]
 
             if new_component_counts != previous_component_counts or new_component_amount != previous_component_amount:
                 
-                for each in frappe.get_all("Salary Detail",filters={"parent":f"{doc.name}-{doc.employee_name}","parentfield":"deductions","docstatus":1,"parenttype":"Salary Structure"}):
+                for each in frappe.get_all("Salary Detail",filters={"parent":f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})","parentfield":"deductions","docstatus":1,"parenttype":"Salary Structure"}):
                     
                     frappe.db.delete("Salary Detail",{"name":each.name,"parentfield":"deductions","docstatus":1,"parenttype":"Salary Structure"})
                     
@@ -246,7 +257,7 @@ def custom_deductions_updates(doc):
                 for each_deduc in new_row_data.get("custom_deductions"):
                     deduction = {
                         "doctype":"Salary Detail",
-                        "parent":f"{doc.name}-{doc.employee_name}",
+                        "parent":f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})",
                         "parentfield" :"deductions",
                         "parenttype":"Salary Structure",
                         "salary_component":each_deduc.get("salary_component"),
@@ -273,7 +284,7 @@ def custom_deductions_updates(doc):
                     
                     new_child_records.append(deduction)
                     
-                document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}")
+                document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})")
                 
                 for record in new_child_records:
                     child_doc = frappe.new_doc('Salary Detail')
@@ -283,7 +294,7 @@ def custom_deductions_updates(doc):
                 document.save()
         else:
             is_change = False
-            for each in frappe.get_all("Salary Detail",filters={"parent":f"{doc.name}-{doc.employee_name}","parentfield":"deductions","docstatus":1,"parenttype":"Salary Structure"}):
+            for each in frappe.get_all("Salary Detail",filters={"parent":f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})","parentfield":"deductions","docstatus":1,"parenttype":"Salary Structure"}):
                     
                 frappe.db.delete("Salary Detail",{"name":each.name,"parentfield":"deductions","docstatus":1,"parenttype":"Salary Structure"})
                 
@@ -293,7 +304,7 @@ def custom_deductions_updates(doc):
                 is_change = True
              
             if is_change:       
-                document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}")
+                document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})")
                 document.save()
     
     except Exception as e:
