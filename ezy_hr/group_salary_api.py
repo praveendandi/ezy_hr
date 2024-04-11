@@ -7,10 +7,10 @@ import pandas as pd
 import numpy as np
 import sys
 import traceback
-
+import random
 
 @frappe.whitelist()
-def get_monthly_excel_report(month,year):
+def get_monthly_excel_report(month,year,unit):
     try:
         year_value = int(year)
         month_num = datetime.strptime(month, '%b').month
@@ -25,10 +25,11 @@ def get_monthly_excel_report(month,year):
             + "/sites/"
             + site_name
         )
-        file_path_ = f"/files/Groupby_Salary_Summary_{month}-{year_value}.xlsx"
+        random_num = random.randint(1,100)
+        file_path_ = f"/files/Groupby_Salary_Summary_{month}-{year_value}_{random_num}.xlsx"
         file_name = f"/public{file_path_}"
         file_path = path+file_name
-        company = frappe.defaults.get_user_default("Company")
+        company = unit
         
         filters = {
             "from_date":from_date,
@@ -193,6 +194,10 @@ def write_excel(filters,filename,company,month,year):
                 final = pd.concat([emp,filters_df],join="inner",axis=1)
                 del final['salary_slip_id']
                 
+                final["start_date"]= final['start_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+                final["end_date"]= final['end_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+                
+                
                 num_rows, num_cols = final.shape
                 
                 final.columns = final.columns.str.replace("_"," ")
@@ -246,6 +251,9 @@ def write_excel(filters,filename,company,month,year):
                 final = pd.concat([emp,filters_df],join="inner",axis=1)
                 del final['salary_slip_id']
                 
+                final["start_date"]= final['start_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+                final["end_date"]= final['end_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+                                
                 num_rows, num_cols = final.shape
                 
                 final.columns = final.columns.str.replace("_"," ")
@@ -293,6 +301,10 @@ def write_excel(filters,filename,company,month,year):
             for each_cost in cost_center_details:
                 
                 dataframe = pd.DataFrame.from_records(each_cost)
+                
+                dataframe["start_date"]= dataframe['start_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+                dataframe["end_date"]= dataframe['end_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+                
                 dataframe.columns = dataframe.columns.str.replace("_"," ")
                 dataframe.columns = dataframe.columns.str.title()
                 
@@ -344,6 +356,9 @@ def salary_slip_details(filters):
         
         final = pd.concat([final_employee_details,filters_df],join="inner",axis=1)
         del final['salary_slip_id']
+        
+        final["start_date"]= final['start_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+        final["end_date"]= final['end_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
         
         final.columns = final.columns.str.replace("_"," ")
         final.columns = final.columns.str.title()
@@ -710,6 +725,10 @@ def joining_details(company,filters):
     ]
     
     df = pd.DataFrame.from_records(row_data,columns=columns)
+    df["date_of_joining"]= df['date_of_joining'].apply(lambda date: date.strftime('%d/%m/%Y'))
+    
+    # pd.to_datetime(df['date_of_joining'], format='%d/%m/%Y')
+    
     
     df.rename(columns={
         "employee_number":"Employee Number",
@@ -747,7 +766,8 @@ def resignee_details(company,filters):
         "cost_centre"
     ]
     df = pd.DataFrame.from_records(row_data,columns=columns)
-    
+    df["exit_date"]= df['exit_date'].apply(lambda date: date.strftime('%d/%m/%Y'))
+        
     df.rename(columns={
         "employee_number":"Employee Number",
         "employee_name":"Employee Name",
@@ -767,7 +787,7 @@ def employee_details(row_data):
     
     for each in row_data:
         inital = {}
-        employee_details = frappe.db.sql(
+        employee_detail = frappe.db.sql(
             """
             SELECT date_of_birth,employment_type,default_shift,pan_number,provident_fund_account,salary_mode,
             bank_name,bank_ac_no,ifsc_code,gender,payroll_cost_center
@@ -777,34 +797,39 @@ def employee_details(row_data):
             (each['employee']),
             as_dict=True    
         )
-        if len(employee_details)>0:
+        if len(employee_detail)>0:
             inital.update({
                 "salary_slip_id":each['salary_slip_id'],
                 "employee_number":each['employee'],
                 "employee_name":each['employee_name'],
                 "data_of_joining":each['data_of_joining'],
-                "gender":employee_details[0].get("gender",None),
-                "date_of_birth":employee_details[0].get("date_of_birth",None),
-                "pan_number":employee_details[0].get("pan_number",None),
-                "worker_type":employee_details[0].get("employment_type",None),
-                "time_type":employee_details[0].get("default_shift",None),
+                "gender":employee_detail[0].get("gender",None),
+                "date_of_birth":employee_detail[0].get("date_of_birth",None),
+                "pan_number":employee_detail[0].get("pan_number",None),
+                "worker_type":employee_detail[0].get("employment_type",None),
+                "time_type":employee_detail[0].get("default_shift",None),
                 "designation":each.get('designation',None),
                 "department":each.get('department',None),
                 "location":each.get("branch",None),
-                "bank_name":employee_details[0].get("bank_name",None),
-                "bank_account_no":employee_details[0].get("bank_ac_no",None),
-                "salary_payment_mode":employee_details[0].get("salary_mode",None),
-                "ifsc_code":employee_details[0].get("ifsc_code",None),
-                "pf_number":employee_details[0].get("pf_number",None),
-                "provident_fund_account":employee_details[0].get("provident_fund_account",None),
-                "cost_center":employee_details[0].get("payroll_cost_center",None)
+                "bank_name":employee_detail[0].get("bank_name",None),
+                "bank_account_no":employee_detail[0].get("bank_ac_no",None),
+                "salary_payment_mode":employee_detail[0].get("salary_mode",None),
+                "ifsc_code":employee_detail[0].get("ifsc_code",None),
+                "pf_number":employee_detail[0].get("pf_number",None),
+                "provident_fund_account":employee_detail[0].get("provident_fund_account",None),
+                "cost_center":employee_detail[0].get("payroll_cost_center",None)
             })
             inital.update({
                     
             })
             
             employee_data.append(inital)
+            
 
     df_employee = pd.DataFrame.from_records(employee_data)
+    df_employee["data_of_joining"]= df_employee['data_of_joining'].apply(lambda date: date.strftime('%d/%m/%Y'))
+    df_employee["date_of_birth"]= df_employee['date_of_birth'].apply(lambda date: date.strftime('%d/%m/%Y'))
+
+    
     
     return df_employee

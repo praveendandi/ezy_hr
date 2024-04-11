@@ -5,6 +5,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "unit",
   "year",
   "column_break_ncsy",
   "month"
@@ -25,12 +26,18 @@
    "fieldtype": "Select",
    "label": "Month",
    "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJul\nAug\nSept\nOct\nNov\nDec"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Company"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-21 16:41:07.888155",
+ "modified": "2024-04-11 12:45:40.789745",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Groupby Salary Summary",
@@ -43,6 +50,36 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Unit HR",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Unit Head",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "GM-HR (General Manager- Human Resources)",
    "share": 1,
    "write": 1
   }
