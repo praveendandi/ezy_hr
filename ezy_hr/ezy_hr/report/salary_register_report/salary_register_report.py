@@ -49,7 +49,7 @@ def execute(filters=None):
 				"salary_slip_id": ss.name,
 				"employee": ss.employee,
 				"employee_name": ss.employee_name,
-				"data_of_joining": doj_map.get(ss.employee),
+				"data_of_joining": formatdate(doj_map.get(ss.employee),"dd-mm-yy"),
 				"branch": ss.branch,
 				"department": department_name,
 				"designation": ss.designation,
@@ -180,6 +180,24 @@ def get_columns(earning_types, ded_types):
 			"width": 120,
 		},
 		{
+			"label": _("Bank Name"),
+			"fieldname": "bank_name",
+			"fieldtype": "data",
+			"width": 120,
+		},
+		{
+			"label": _("Account No"),
+			"fieldname": "bank_account_no",
+			"fieldtype": "data",
+			"width": 120,
+		},
+		{
+			"label": _("IFSC Code"),
+			"fieldname": "ifsc_code",
+			"fieldtype": "data",
+			"width": 120,
+		},
+		{
 			"label": _("Start Date"),
 			"fieldname": "start_date",
 			"fieldtype": "Data",
@@ -203,24 +221,7 @@ def get_columns(earning_types, ded_types):
 			"fieldtype": "Float",
 			"width": 120,
 		},
-		{
-			"label": _("Bank Name"),
-			"fieldname": "bank_name",
-			"fieldtype": "data",
-			"width": 120,
-		},
-		{
-			"label": _("Account No"),
-			"fieldname": "bank_account_no",
-			"fieldtype": "data",
-			"width": 120,
-		},
-		{
-			"label": _("IFSC Code"),
-			"fieldname": "ifsc_code",
-			"fieldtype": "data",
-			"width": 120,
-		},
+		
 	]
 
 	for earning in earning_types:
@@ -240,12 +241,12 @@ def get_columns(earning_types, ded_types):
 			"fieldname": "actual_gross_pay",
 			"fieldtype": "Currency",
 			"options": "currency",
-			"width": 120,
+			"width": 140,
 		}
 	)	
 	columns.append(
 		{
-			"label": _("Gross Pay"),
+			"label": _("Earned Gross Pay"),
 			"fieldname": "gross_pay",
 			"fieldtype": "Currency",
 			"options": "currency",
