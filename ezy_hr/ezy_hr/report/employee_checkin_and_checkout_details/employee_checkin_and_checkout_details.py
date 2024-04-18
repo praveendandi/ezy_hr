@@ -4,22 +4,24 @@
 
 import frappe
 
+
 def execute(filters=None):
     columns = [
-        {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Link", "options": "Employee", "width": 150},
+        {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "width": 150},
         {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
-        {"label": "Department", "fieldname": "department", "fieldtype": "Link", "options": "Department", "width": 180},
+        {"label": "Department", "fieldname": "department", "fieldtype": "Link", "options": "Department", "text-align": "Center", "width": 180},
         {"label": "Date Of Joining", "fieldname": "date_of_joining", "fieldtype": "Date", "width": 150},
         {"label": "Date", "fieldname": "date", "fieldtype": "Date", "width": 150},
         {"label": "First Checkin", "fieldname": "in_time", "fieldtype": "Datetime", "width": 180},
         {"label": "Last Checkout", "fieldname": "out_time", "fieldtype": "Datetime", "width": 180},
         {"label": "Total Working Hours", "fieldname": "working_hours", "fieldtype": "Data", "width": 180},
-        {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 180}
+        {"label": "Status", "fieldname": "status", "fieldtype": "Data", "text-align": "Center", "width": 180}
     ]
 
     data = get_data(filters)
     
     return columns, data
+
 
 
 
@@ -40,13 +42,12 @@ def get_data(filters):
         employee_condition = ""
 
     sql_query = f"""
-        SELECT ec.employee, e.employee_name, e.date_of_joining, date(ec.time) as date,
-               ec.time as in_time,
+        SELECT ec.employee as employee, e.employee_name, e.date_of_joining, date(ec.time) as date,
+               MIN(ec.time) as in_time,
                (
-                   SELECT time
+                   SELECT MIN(time)
                    FROM `tabEmployee Checkin`
                    WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                   LIMIT 1
                ) as out_time,
                CONCAT(
                    LPAD(
@@ -54,12 +55,11 @@ def get_data(filters):
                            ABS(
                                TIMESTAMPDIFF(
                                    MINUTE,
-                                   ec.time,
+                                   MIN(ec.time),
                                    (
-                                       SELECT time
+                                       SELECT MIN(time)
                                        FROM `tabEmployee Checkin`
                                        WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                                       LIMIT 1
                                    )
                                ) / 60
                            )
@@ -70,12 +70,11 @@ def get_data(filters):
                        ABS(
                            TIMESTAMPDIFF(
                                MINUTE,
-                               ec.time,
+                               MIN(ec.time),
                                (
-                                   SELECT time
+                                   SELECT MIN(time)
                                    FROM `tabEmployee Checkin`
                                    WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                                   LIMIT 1
                                )
                            ) % 60
                        ), 2, '0'
@@ -84,31 +83,28 @@ def get_data(filters):
                REPLACE(e.department, ' - TPB', '') as department,
                e.company,
                CASE 
-                   WHEN ec.time IS NOT NULL AND 
+                   WHEN MIN(ec.time) IS NOT NULL AND 
                         (
-                            SELECT time
+                            SELECT MIN(time)
                             FROM `tabEmployee Checkin`
                             WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                            LIMIT 1
                         ) IS NOT NULL THEN 'Present'
-                   WHEN ec.time IS NOT NULL AND 
+                   WHEN MIN(ec.time) IS NOT NULL AND 
                         (
-                            SELECT time
+                            SELECT MIN(time)
                             FROM `tabEmployee Checkin`
                             WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                            LIMIT 1
                         ) IS NULL THEN 'Check-Out Is Missing'
                    ELSE 'Check-In Is Missing'
                END as status
         FROM `tabEmployee Checkin` ec
         JOIN `tabEmployee` e ON ec.employee = e.name
         WHERE {condition_str} AND {employee_condition}ec.time IS NOT NULL
-        ORDER BY ec.time DESC
+        GROUP BY ec.employee, e.employee_name, e.date_of_joining, date(ec.time), e.department, e.company
+        ORDER BY MIN(ec.time) DESC
     """
 
     data = frappe.db.sql(sql_query, as_dict=1)
 
     return data
-
-
 
