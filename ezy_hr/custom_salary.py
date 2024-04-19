@@ -45,16 +45,16 @@ def create_salary_structure_through_employee(doc,mothod=None):
                             "abbr":each_deduc.get("abbr"), 
                         }
                         
-                        if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula") and each_deduc.get("abbr") == "PF":
+                        if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula"):
                             deduction.update({
-                                "condition":"B < 15000",
+                                "condition":each_deduc.get("custom_employee_condition"),
                                 "amount_based_on_formula":1,
                                 "formula":each_deduc.get("formula")
                             })
                         else:
-                            if each_deduc.get("abbr") == "PF":
+                            if each_deduc.get("custom_employee_condition"):
                                 deduction.update({
-                                    "condition":"B > 15000",
+                                    "condition":each_deduc.get("custom_employee_condition"),
                                     "amount":each_deduc.get("amount")
                                 })
                             else:
@@ -108,7 +108,8 @@ def salary_structure_assignment(doc,salary_structure):
         "salary_structure":salary_structure,
         "from_date":frappe.get_value("Employee",{"name":doc.name},['date_of_joining']) if not doc.custom_effective_date else doc.custom_effective_date,
         "income_tax_slab":doc.custom_income_tax_slab if doc.custom_income_tax_slab else get_income_tax_slab() ,
-        "docstatus":1
+        "docstatus":1,
+        "base":doc.custom_gross_amount
     }
     salary_structure_assig = frappe.get_doc(assignment_details)
     salary_structure_assig.insert()
@@ -264,24 +265,23 @@ def custom_deductions_updates(doc,current_year,current_month):
                         "abbr":each_deduc.get("abbr"), 
                     }
                     
-                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula") and each_deduc.get("abbr") == "PF":
-                        deduction.update({
-                            "condition":"B < 15000",
-                            "amount_based_on_formula":1,
-                            "formula":each_deduc.get("formula")
-                        })
-                        
-                    else:
-                        if each_deduc.get("abbr") == "PF":
+                    if each_deduc.get("amount_based_on_formula") and each_deduc.get("formula"):
                             deduction.update({
-                                "condition":"B > 15000",
+                                "condition":each_deduc.get("custom_employee_condition"),
+                                "amount_based_on_formula":1,
+                                "formula":each_deduc.get("formula")
+                            })
+                    else:
+                        if each_deduc.get("custom_employee_condition"):
+                            deduction.update({
+                                "condition":each_deduc.get("custom_employee_condition"),
                                 "amount":each_deduc.get("amount")
                             })
                         else:
                             deduction.update({
                                 "amount":each_deduc.get("amount")
                             })
-                    
+                        
                     new_child_records.append(deduction)
                     
                 document = frappe.get_doc("Salary Structure",f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})")
