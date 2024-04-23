@@ -22,7 +22,7 @@ def create_salary_structure_through_employee(doc,mothod=None):
             
         if doc.custom_effective_date:
             if not frappe.db.exists("Salary Structure",{"name":f"{doc.name}-{doc.employee_name}-({current_month}-{current_year})","is_active":"Yes","docstatus":1}):
-                if len(row_data.get("custom_earnings",[])) >0 and doc.custom_income_tax_slab:
+                if len(row_data.get("custom_earnings",[])) >0:
                     for each_earn in row_data.get("custom_earnings"):
                         earning = {
                             "doctype":"Salary Detail",
@@ -49,13 +49,15 @@ def create_salary_structure_through_employee(doc,mothod=None):
                             deduction.update({
                                 "condition":each_deduc.get("custom_employee_condition"),
                                 "amount_based_on_formula":1,
-                                "formula":each_deduc.get("formula")
+                                "formula":each_deduc.get("formula"),
+                                "do_not_include_in_total": 1 if each_deduc.get("do_not_include_in_total") else 0
                             })
                         else:
                             if each_deduc.get("custom_employee_condition"):
                                 deduction.update({
                                     "condition":each_deduc.get("custom_employee_condition"),
-                                    "amount":each_deduc.get("amount")
+                                    "amount":each_deduc.get("amount"),
+                                    "do_not_include_in_total": 1 if each_deduc.get("do_not_include_in_total") else 0
                                 })
                             else:
                                 deduction.update({
@@ -95,7 +97,7 @@ def salary_structure_assignment(doc,salary_structure):
         
         income_tax_slab = frappe.db.get_value(
             'Income Tax Slab',
-            filters={"name":("like",("%Old Tax%")),"disable":0,"company":doc.company or erpnext.get_default_company()},
+            filters={"name":("like",("%Old Tax%")),"disabled":0,"company":doc.company or erpnext.get_default_company()},
             fieldname=['name']
         )
         
@@ -269,13 +271,15 @@ def custom_deductions_updates(doc,current_year,current_month):
                             deduction.update({
                                 "condition":each_deduc.get("custom_employee_condition"),
                                 "amount_based_on_formula":1,
-                                "formula":each_deduc.get("formula")
+                                "formula":each_deduc.get("formula"),
+                                "do_not_include_in_total": 1 if each_deduc.get("do_not_include_in_total") else 0
                             })
                     else:
                         if each_deduc.get("custom_employee_condition"):
                             deduction.update({
                                 "condition":each_deduc.get("custom_employee_condition"),
-                                "amount":each_deduc.get("amount")
+                                "amount":each_deduc.get("amount"),
+                                "do_not_include_in_total": 1 if each_deduc.get("do_not_include_in_total") else 0
                             })
                         else:
                             deduction.update({
