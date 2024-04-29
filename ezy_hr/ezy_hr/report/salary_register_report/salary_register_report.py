@@ -1,19 +1,47 @@
 # Copyright (c) 2024, Ganu Reddy and contributors
 # For license information, please see license.txt
 
-# import frappe
-
-
 import frappe
 from frappe import _
 from frappe.utils import flt
 from frappe.utils import formatdate
 
 import erpnext
+import json
 
 salary_slip = frappe.qb.DocType("Salary Slip")
 salary_detail = frappe.qb.DocType("Salary Detail")
 salary_component = frappe.qb.DocType("Salary Component")
+
+
+def get_salary_structure_earnings(salary_slip):
+    # Get the salary structure linked to the salary slip
+    salary_structure = frappe.db.get_value("Salary Slip", salary_slip, "salary_structure")
+    
+    # Construct and execute raw SQL query to fetch earnings
+    sql_query = """
+        SELECT sd.salary_component, sd.amount 
+        FROM `tabSalary Detail` sd 
+        WHERE sd.parent = %s AND sd.amount > 0 AND sd.salary_component NOT LIKE 'Deduction%%'
+    """
+    earnings_data = frappe.db.sql(sql_query, (salary_structure,), as_dict=True)
+    print(earnings_data, 'earnings_data')
+    
+    earnings_list = []
+    
+    # Iterate through the earnings data to extract components and amounts
+    for item in earnings_data:
+        earnings_list.append({
+            "salary_component": item.get("salary_component"),
+            "amount": item.get("amount")
+        })
+    
+    
+    # Print actual earning values
+    for earning in earnings_list:
+        print(f"Actual earning value for {earning['salary_component']}: {earning['amount']}")
+    
+    return earnings_list
 
 
 def execute(filters=None):
@@ -39,65 +67,71 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		
-		employee_data = frappe.db.get_list("Employee",{"name":ss.employee},["name","bank_name","bank_ac_no","ifsc_code","custom_gross_amount"])
+		employee_data = frappe.db.get_list("Employee",{"name":ss.employee},["name","bank_name","bank_ac_no","ifsc_code","custom_gross_amount","attendance_device_id"])
 
 		for emp in employee_data:
-			department_name = ss.department.split(" - ")[0] if " - " in ss.department else ss.department
+			department_name = None
+			if ss.department:
+				department_name = ss.department.split(" - ")[0] if " - " in ss.department else ss.department
+
 			actual_gross = emp.custom_gross_amount
 			row = {
 				"salary_slip_id": ss.name,
 				"employee": ss.employee,
 				"employee_name": ss.employee_name,
-				"data_of_joining": formatdate(doj_map.get(ss.employee),"dd-mm-yy"),
+				"data_of_joining": formatdate(doj_map.get(ss.employee), "dd-mm-yyyy"),
 				"branch": ss.branch,
 				"department": department_name,
 				"designation": ss.designation,
+				"attendance_device_id":emp.attendance_device_id,
 				"company": ss.company,
-				"start_date": formatdate(ss.start_date, "dd-mm-yy"),
-				"end_date": formatdate(ss.end_date, "dd-mm-yy"),
+				"start_date": formatdate(ss.start_date, "dd-mm-yyyy"),
+				"end_date": formatdate(ss.end_date, "dd-mm-yyyy"),
 				"leave_without_pay": ss.leave_without_pay,
 				"payment_days": ss.payment_days,
 				"currency": currency or company_currency,
 				"bank_name":ss.bank_name,
-				"bank_account_no":ss.bank_account_no,
-				"ifsc_code":emp.ifsc_code,
+               	"bank_account_no":ss.bank_account_no,
+               	"ifsc_code":emp.ifsc_code,
 				"total_loan_repayment": ss.total_loan_repayment,
 				"actual_gross_pay": actual_gross
-				
-				
 			}
 
 			update_column_width(ss, columns)
 
-		for e in earning_types:
-			row.update({frappe.scrub(e): round(ss_earning_map.get(ss.name, {}).get(e) or 0)})
+			salary_structure_earnings = get_salary_structure_earnings(ss)
 
-		for d in ded_types:
-			row.update({frappe.scrub(d): round(ss_ded_map.get(ss.name, {}).get(d) or 0)})
+			for e in earning_types:
+				actual_earning_value = next(
+					(item["amount"] for item in salary_structure_earnings if item.get("salary_component") == e),
+					0
+				)
+				row.update({
+					frappe.scrub(e): round(ss_earning_map.get(ss.name, {}).get(e) or 0),
+					f"actual_{frappe.scrub(e)}": round(actual_earning_value)
+				})
 
-		if currency == company_currency:
-			row.update(
-				{
-					"gross_pay": round(flt(ss.gross_pay) * flt(ss.exchange_rate)),
-                    "total_deduction": round(flt(ss.total_deduction) * flt(ss.exchange_rate)),
-                    "net_pay": round(flt(ss.net_pay) * flt(ss.exchange_rate)),
-				}
-			)
+			for d in ded_types:
+				row.update({frappe.scrub(d): round(ss_ded_map.get(ss.name, {}).get(d) or 0)})
 
-		else:
-			row.update(
-				{"gross_pay": ss.gross_pay, "total_deduction": ss.total_deduction, "net_pay": ss.net_pay}
-			)
+			if currency == company_currency:
+				row.update(
+					{
+						"gross_pay": round(flt(ss.gross_pay) * flt(ss.exchange_rate)),
+						"total_deduction": round(flt(ss.total_deduction) * flt(ss.exchange_rate)),
+						"net_pay": round(flt(ss.net_pay) * flt(ss.exchange_rate)),
+					}
+				)
+			else:
+				row.update(
+					{"gross_pay": ss.gross_pay, "total_deduction": ss.total_deduction, "net_pay": ss.net_pay}
+				)
 
-		data.append(row)
+			data.append(row)
 
 	return columns, data
-def get_department_name_without_abbreviation(department):
-	# Check if the department contains the company abbreviation followed by a space
-	if department and " - " in department:
-		return department.split(" - ")[1]  # Return the part after the space
-	return department
+
+# ... (rest of your code remains unchanged)
 
 
 
@@ -125,19 +159,13 @@ def update_column_width(ss, columns):
 
 
 def get_columns(earning_types, ded_types):
+	not_include_net = []
+
 	columns = [
-		# {
-		# 	"label": _("Salary Slip ID"),
-		# 	"fieldname": "salary_slip_id",
-		# 	"fieldtype": "Link",
-		# 	"options": "Salary Slip",
-		# 	"width": 150,
-		# },
 		{
 			"label": _("Employee"),
 			"fieldname": "employee",
-			"fieldtype": "Link",
-			"options": "Employee",
+			"fieldtype": "Data",
 			"width": 120,
 		},
 		{
@@ -221,10 +249,18 @@ def get_columns(earning_types, ded_types):
 			"fieldtype": "Float",
 			"width": 120,
 		},
-		
 	]
 
 	for earning in earning_types:
+		columns.append(
+			{
+				"label": f"Actual {earning}",
+				"fieldname": f"actual_{frappe.scrub(earning)}",
+				"fieldtype": "Currency",
+				"options": "currency",
+				"width": 120,
+			}
+		)
 		columns.append(
 			{
 				"label": earning,
@@ -234,7 +270,8 @@ def get_columns(earning_types, ded_types):
 				"width": 120,
 			}
 		)
-  	
+		
+
 	columns.append(
 		{
 			"label": _("Actual Gross Pay"),
@@ -243,7 +280,7 @@ def get_columns(earning_types, ded_types):
 			"options": "currency",
 			"width": 140,
 		}
-	)	
+	)
 	columns.append(
 		{
 			"label": _("Earned Gross Pay"),
@@ -255,15 +292,27 @@ def get_columns(earning_types, ded_types):
 	)
 
 	for deduction in ded_types:
-		columns.append(
-			{
-				"label": deduction,
-				"fieldname": frappe.scrub(deduction),
-				"fieldtype": "Currency",
-				"options": "currency",
-				"width": 120,
-			}
-		)
+		if deduction not in ["PF-Employer", "ESIE"]:
+			columns.append(
+				{
+					"label": deduction,
+					"fieldname": frappe.scrub(deduction),
+					"fieldtype": "Currency",
+					"options": "currency",
+					"width": 120,
+				}
+			)
+			# columns.append(
+			#     {
+			#         "label": f"Actual {deduction}",
+			#         "fieldname": f"actual_{frappe.scrub(deduction)}",
+			#         "fieldtype": "Currency",
+			#         "options": "currency",
+			#         "width": 120,
+			#     }
+			# )
+		else:
+			not_include_net.append(deduction)
 
 	columns.extend(
 		[
@@ -295,8 +344,35 @@ def get_columns(earning_types, ded_types):
 				"options": "Currency",
 				"hidden": 1,
 			},
+			{
+				"label": _("Attendance Device Id"),
+				"fieldname": "attendance_device_id",
+				"fieldtype": "Data",
+				"width": 100,
+			},
 		]
 	)
+
+	for not_in in not_include_net:
+		columns.append(
+			{
+				"label": not_in,
+				"fieldname": frappe.scrub(not_in),
+				"fieldtype": "Currency",
+				"options": "currency",
+				"width": 100,
+			}
+		)
+		columns.append(
+			{
+				"label": f"Actual {not_in}",
+				"fieldname": f"actual_{frappe.scrub(not_in)}",
+				"fieldtype": "Currency",
+				"options": "currency",
+				"width": 100,
+			}
+		)
+
 	return columns
 
 
