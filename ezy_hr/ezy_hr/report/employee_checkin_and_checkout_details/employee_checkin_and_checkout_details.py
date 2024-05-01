@@ -1,6 +1,9 @@
 # # Copyright (c) 2024, Ganu Reddy and contributors
 # # For license information, please see license.txt
 
+# import frappe
+
+
 import frappe
 
 def execute(filters=None):
@@ -22,40 +25,35 @@ def execute(filters=None):
     
     return columns, data
 
+
+
 def get_data(filters):
     conditions = []
 
     if filters.get("from_date"):
-        conditions.append(f"date(ec.time) >= '{filters['from_date']}'")
+        conditions.append(f"(date(ec.time) >= '{filters['from_date']}' OR ec.time IS NULL)")
     if filters.get("to_date"):
-        conditions.append(f"date(ec.time) <= '{filters['to_date']}'")
+        conditions.append(f"(date(ec.time) <= '{filters['to_date']}' OR ec.time IS NULL)")
     if filters.get("employee"):
         conditions.append(f"ec.employee = '{filters['employee']}'")
-    if filters.get("unit"):
-        conditions.append(f"e.unit = '{filters['unit']}'")
+    if filters.get("company"):
+        conditions.append(f"e.company = '{filters['company']}'")
 
     condition_str = " AND ".join(conditions) if conditions else "1=1"
 
     sql_query = f"""
-        SELECT ec.employee as employee, e.employee_name,e.company, e.date_of_joining, date(ec.time) as date,
-               MIN(ec.time) as in_time,
-               (
-                   SELECT MIN(time)
-                   FROM `tabEmployee Checkin`
-                   WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-               ) as out_time,
+        SELECT e.employee,e.employee_name,ec.time, e.company, e.date_of_joining, 
+               COALESCE(date(ec.time), date(ec.time)) as date,
+               MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END) as in_time,
+               MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END) as out_time,
                CONCAT(
                    LPAD(
                        FLOOR(
                            ABS(
                                TIMESTAMPDIFF(
                                    MINUTE,
-                                   MIN(ec.time),
-                                   (
-                                       SELECT MIN(time)
-                                       FROM `tabEmployee Checkin`
-                                       WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                                   )
+                                   MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END),
+                                   MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END)
                                ) / 60
                            )
                        ), 2, '0'
@@ -65,61 +63,46 @@ def get_data(filters):
                        ABS(
                            TIMESTAMPDIFF(
                                MINUTE,
-                               MIN(ec.time),
-                               (
-                                   SELECT MIN(time)
-                                   FROM `tabEmployee Checkin`
-                                   WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                               )
+                               MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END),
+                               MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END)
                            ) % 60
                        ), 2, '0'
                    )
                ) as working_hours,
                REPLACE(e.department, ' - TPB', '') as department,
-               e.company,
                CASE 
-                   WHEN (TIMESTAMPDIFF(MINUTE, MIN(ec.time), (
-                           SELECT MIN(time)
-                           FROM `tabEmployee Checkin`
-                           WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                       )) = 0) THEN ''
-                   WHEN MIN(ec.time) IS NOT NULL AND 
-                        (
-                            SELECT MIN(time)
-                            FROM `tabEmployee Checkin`
-                            WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                        ) IS NOT NULL THEN 'Present'
-                   WHEN MIN(ec.time) IS NOT NULL AND 
-                        (
-                            SELECT MIN(time)
-                            FROM `tabEmployee Checkin`
-                            WHERE employee = ec.employee AND log_type = 'OUT' AND date(time) = date(ec.time)
-                        ) IS NULL THEN 'Check-Out Is Missing'
-                   ELSE 'Check-In Is Missing'
+                   WHEN MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END) IS NULL AND MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END) IS NULL THEN 'Missing Punches'
+                   WHEN MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END) IS NULL THEN 'Check-In Is Missing'
+                   WHEN MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END) IS NULL THEN 'Check-Out Is Missing'
+                   WHEN TIMESTAMPDIFF(MINUTE,
+                                       MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END),
+                                       MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END)
+                                   ) = 0 THEN ''
+                   ELSE 'Present'
                END as status
-        FROM `tabEmployee Checkin` ec
-        JOIN `tabEmployee` e ON ec.employee = e.name
-        WHERE {condition_str} AND ec.time IS NOT NULL
-        GROUP BY ec.employee, e.employee_name, e.date_of_joining, date(ec.time), e.department, e.company
-        ORDER BY MIN(ec.time) DESC
+        FROM `tabEmployee` e
+        LEFT JOIN `tabEmployee Checkin` ec ON e.name = ec.employee
+        WHERE {condition_str}
+        GROUP BY e.employee_name, e.company, e.date_of_joining, date(ec.time), e.department
+        ORDER BY e.employee_name, date(ec.time)
     """
 
     data = frappe.db.sql(sql_query, as_dict=1)
-    
+
     for row in data:
         if not row.get("in_time"):
             row["log_type"] = "IN"
-            row["device_id"] = "Manual"
+            row["custom_correction"] = "Manual"
         elif not row.get("out_time"):
             row["log_type"] = "OUT"
-            row["device_id"] = "Manual"
+            row["custom_correction"] = "Manual"
         else:
             row["log_type"] = ""
-            row["device_id"] = ""
+            row["custom_correction"] = ""
 
         if not row.get("in_time") or not row.get("out_time"):
             base_url = frappe.utils.get_url()
-            row["actions"] = f'<button class="btn btn-secondary btn-sm edit-btn" data-employee="{row["employee"]}" data-in-time="{row["in_time"]}" data-out-time="{row["out_time"]}" data-log-type="{row["log_type"]}" data-device-id="{row["device_id"]}"><a href="{base_url}/app/employee-checkin/new-employee-checkin?employee={row["employee"]}&log_type={row["log_type"]}&device_id=Manual">Edit</a></button>'
+            row["actions"] = f'<button class="btn btn-secondary btn-sm edit-btn" data-employee="{row["employee"]}" data-in-time="{row["in_time"]}" data-out-time="{row["out_time"]}" data-log-type="{row["log_type"]}" data-custom-correction="{row["custom_correction"]}"><a href="{base_url}/app/employee-checkin/new-employee-checkin?employee={row["employee"]}&log_type={row["log_type"]}&custom_correction=Manual">Edit</a></button>'
         else:
             row["actions"] = ''
 

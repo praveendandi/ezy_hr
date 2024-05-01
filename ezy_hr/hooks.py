@@ -162,6 +162,8 @@ fixtures = [
                     "Employee-custom_effective_date",
                     "Employee-custom_select_break_of_earning_and_deduction",
                     "Salary Detail-custom_employee_condition",
+                    "Employee Checkin-custom_correction",
+                    
                 },
                 
             ]]
