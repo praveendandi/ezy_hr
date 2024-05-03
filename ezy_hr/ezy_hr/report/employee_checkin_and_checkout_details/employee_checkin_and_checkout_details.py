@@ -78,7 +78,7 @@ def get_data(filters):
                                        MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END),
                                        MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END)
                                    ) = 0 THEN ''
-                   ELSE 'Present'
+                   ELSE 'P'
                END as status
         FROM `tabEmployee` e
         LEFT JOIN `tabEmployee Checkin` ec ON e.name = ec.employee
