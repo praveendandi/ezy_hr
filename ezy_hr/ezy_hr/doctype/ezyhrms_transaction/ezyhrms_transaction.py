@@ -39,6 +39,7 @@ class EzyHrmsTransaction(Document):
 def sync_transaction_month_wise(list_of_ids):
 	# pass list of ids of records as parameter
 
+
 	import ast
 	try:
 		if isinstance(list_of_ids,str):

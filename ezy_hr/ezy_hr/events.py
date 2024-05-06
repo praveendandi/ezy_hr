@@ -30,7 +30,7 @@ def weekoff_limit_for_month(doc,method=None):
 
 	# Check if any employee has exceeded the leave limit or total_leave_days
 	for emp_id, info in leave_info.items():
-		if info['total_leave_days'] > 2:
+		if info['total_leave_days'] > 5:
 			frappe.throw(f"Employee {emp_id} has applied for more than 5 week off leaves in the specified month.")
 		# if info['total_leave_days'] > 2:
 		# 	frappe.throw(f"Employee {emp_id} has total leave days exceeding 2 in the specified month.")

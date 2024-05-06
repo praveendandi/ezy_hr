@@ -273,6 +273,9 @@ doc_events = {
     },
     "Employee":{
         "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee"
+    },
+    "Leave Application":{
+        "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
     }
 }
 
