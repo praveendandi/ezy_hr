@@ -36,9 +36,13 @@ class EzyHrmsTransaction(Document):
 
 
 @frappe.whitelist()
-def sync_transaction_month_wise(list_of_ids: list|None):
+def sync_transaction_month_wise(list_of_ids):
 	# pass list of ids of records as parameter
+
+	import ast
 	try:
+		if isinstance(list_of_ids,str):
+			list_of_ids=ast.literal_eval(list_of_ids)
 		if len(list_of_ids)<=0:
 			return {"success":False,"message":"Select atleast one record for syncing data."}
 		
@@ -54,19 +58,13 @@ def sync_transaction_month_wise(list_of_ids: list|None):
 		transaction_cols['terminal_alias'] = transaction_cols.apply(lambda x: 'App' if "App" in str(x["terminal_sn"]) else x['terminal_alias'],axis=1)
 		
 		transaction_cols = transaction_cols[['emp_code','punch_time','terminal_alias','in_out']]
-
 		dict_of_trx_records = transaction_cols.to_dict("records")
-		
 		for i in range(0,len(dict_of_trx_records)):
 			data = dict_of_trx_records[i]
-			data = {
-				'employee_field_value' : data['emp_code'],
-				'timestamp' : data['punch_time'].__str__(),
-				'device_id' : data['terminal_alias'],
-				'log_type' : data['in_out']
-			}
 			
-			add_log_based_on_employee_field(data)
+			add_log_based_on_employee_field(employee_field_value =data['emp_code'],timestamp=data['punch_time'],device_id=data["terminal_alias"],log_type=data['in_out'])
+
+
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("Sync Error in EzyHrms", "line No:{}\n{}".format(
