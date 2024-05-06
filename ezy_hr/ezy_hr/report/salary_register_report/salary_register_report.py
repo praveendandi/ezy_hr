@@ -2,12 +2,10 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe import _
-from frappe.utils import flt
-from frappe.utils import formatdate
-
+from frappe.utils import flt, formatdate
 import erpnext
-import json
+from frappe import _
+
 
 salary_slip = frappe.qb.DocType("Salary Slip")
 salary_detail = frappe.qb.DocType("Salary Detail")
@@ -15,33 +13,27 @@ salary_component = frappe.qb.DocType("Salary Component")
 
 
 def get_salary_structure_earnings(salary_slip):
-    # Get the salary structure linked to the salary slip
-    salary_structure = frappe.db.get_value("Salary Slip", salary_slip, "salary_structure")
-    
-    # Construct and execute raw SQL query to fetch earnings
-    sql_query = """
-        SELECT sd.salary_component, sd.amount 
-        FROM `tabSalary Detail` sd 
-        WHERE sd.parent = %s AND sd.amount > 0 AND sd.salary_component NOT LIKE 'Deduction%%'
-    """
-    earnings_data = frappe.db.sql(sql_query, (salary_structure,), as_dict=True)
-    print(earnings_data, 'earnings_data')
-    
-    earnings_list = []
-    
-    # Iterate through the earnings data to extract components and amounts
-    for item in earnings_data:
-        earnings_list.append({
-            "salary_component": item.get("salary_component"),
-            "amount": item.get("amount")
-        })
-    
-    
-    # Print actual earning values
-    for earning in earnings_list:
-        print(f"Actual earning value for {earning['salary_component']}: {earning['amount']}")
-    
-    return earnings_list
+	# Get the salary structure linked to the salary slip
+	salary_structure = frappe.db.get_value("Salary Slip", salary_slip, "salary_structure")
+	
+	# Construct and execute raw SQL query to fetch earnings
+	sql_query = """
+		SELECT sd.salary_component, sd.amount 
+		FROM `tabSalary Detail` sd 
+		WHERE sd.parent = %s AND sd.amount > 0 AND sd.salary_component NOT LIKE 'Deduction%%'
+	"""
+	earnings_data = frappe.db.sql(sql_query, (salary_structure,), as_dict=True)
+	
+	earnings_list = []
+	
+	# Iterate through the earnings data to extract components and amounts
+	for item in earnings_data:
+		earnings_list.append({
+			"salary_component": item.get("salary_component"),
+			"amount": item.get("amount")
+		})
+	
+	return earnings_list
 
 
 def execute(filters=None):
@@ -67,7 +59,7 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		employee_data = frappe.db.get_list("Employee",{"name":ss.employee},["name","bank_name","bank_ac_no","ifsc_code","custom_gross_amount","attendance_device_id"])
+		employee_data = frappe.db.get_list("Employee", {"name": ss.employee}, ["name", "bank_name", "bank_ac_no", "ifsc_code", "custom_gross_amount", "attendance_device_id"])
 
 		for emp in employee_data:
 			department_name = None
@@ -83,16 +75,16 @@ def execute(filters=None):
 				"branch": ss.branch,
 				"department": department_name,
 				"designation": ss.designation,
-				"attendance_device_id":emp.attendance_device_id,
+				"attendance_device_id": emp.attendance_device_id,
 				"company": ss.company,
 				"start_date": formatdate(ss.start_date, "dd-mm-yyyy"),
 				"end_date": formatdate(ss.end_date, "dd-mm-yyyy"),
 				"leave_without_pay": ss.leave_without_pay,
 				"payment_days": ss.payment_days,
 				"currency": currency or company_currency,
-				"bank_name":ss.bank_name,
-               	"bank_account_no":ss.bank_account_no,
-               	"ifsc_code":emp.ifsc_code,
+				"bank_name": ss.bank_name,
+				"bank_account_no": ss.bank_account_no,
+				"ifsc_code": emp.ifsc_code,
 				"total_loan_repayment": ss.total_loan_repayment,
 				"actual_gross_pay": actual_gross
 			}
@@ -107,8 +99,8 @@ def execute(filters=None):
 					0
 				)
 				row.update({
-					frappe.scrub(e): round(ss_earning_map.get(ss.name, {}).get(e) or 0),
-					f"actual_{frappe.scrub(e)}": round(actual_earning_value)
+					f"actual_{frappe.scrub(e)}": round(actual_earning_value),
+					frappe.scrub(e): round(ss_earning_map.get(ss.name, {}).get(e) or 0)
 				})
 
 			for d in ded_types:
@@ -130,9 +122,6 @@ def execute(filters=None):
 			data.append(row)
 
 	return columns, data
-
-# ... (rest of your code remains unchanged)
-
 
 
 def get_earning_and_deduction_types(salary_slips):
@@ -156,7 +145,6 @@ def update_column_width(ss, columns):
 		columns[5].update({"width": 120})
 	if ss.leave_without_pay is not None:
 		columns[9].update({"width": 120})
-
 
 def get_columns(earning_types, ded_types):
 	not_include_net = []
@@ -251,27 +239,17 @@ def get_columns(earning_types, ded_types):
 		},
 	]
 
-	for earning in earning_types:
+	# Add actual earnings columns
+	for e in earning_types:
 		columns.append(
 			{
-				"label": f"Actual {earning}",
-				"fieldname": f"actual_{frappe.scrub(earning)}",
+				"label": f"Actual {e}",
+				"fieldname": f"actual_{frappe.scrub(e)}",
 				"fieldtype": "Currency",
 				"options": "currency",
 				"width": 120,
 			}
 		)
-		columns.append(
-			{
-				"label": earning,
-				"fieldname": frappe.scrub(earning),
-				"fieldtype": "Currency",
-				"options": "currency",
-				"width": 120,
-			}
-		)
-		
-
 	columns.append(
 		{
 			"label": _("Actual Gross Pay"),
@@ -281,13 +259,26 @@ def get_columns(earning_types, ded_types):
 			"width": 140,
 		}
 	)
+	# Add earned earnings columns
+	for e in earning_types:
+		columns.append(
+			{
+				"label": e,
+				"fieldname": frappe.scrub(e),
+				"fieldtype": "Currency",
+				"options": "currency",
+				"width": 120,
+			}
+		)
+
+	
 	columns.append(
 		{
 			"label": _("Earned Gross Pay"),
 			"fieldname": "gross_pay",
 			"fieldtype": "Currency",
 			"options": "currency",
-			"width": 120,
+			"width": 150,
 		}
 	)
 
@@ -302,17 +293,6 @@ def get_columns(earning_types, ded_types):
 					"width": 120,
 				}
 			)
-			# columns.append(
-			#     {
-			#         "label": f"Actual {deduction}",
-			#         "fieldname": f"actual_{frappe.scrub(deduction)}",
-			#         "fieldtype": "Currency",
-			#         "options": "currency",
-			#         "width": 120,
-			#     }
-			# )
-		else:
-			not_include_net.append(deduction)
 
 	columns.extend(
 		[
@@ -374,6 +354,9 @@ def get_columns(earning_types, ded_types):
 		)
 
 	return columns
+
+
+
 
 
 def get_salary_components(salary_slips):
