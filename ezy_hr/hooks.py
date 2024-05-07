@@ -198,6 +198,7 @@ fixtures = [
                     "Employee-custom_job_applicant_email",
                     "Employee-custom_preoffer_document",
                     "Employee-custom_preoffer_document_",
+                    "Employee Transfer-custom_new_unit"
                     
                 },
                 
