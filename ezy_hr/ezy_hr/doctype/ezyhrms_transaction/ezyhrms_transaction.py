@@ -62,7 +62,6 @@ def sync_transaction_month_wise(list_of_ids):
 				exc_type, exc_obj, exc_tb = sys.exc_info()
 				frappe.log_error("Sync Error in EzyHrms", "line No:{}\n{}".format(
 					exc_tb.tb_lineno, traceback.format_exc()))
-				return {"success": False, "error": str(e)}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("Sync Error in EzyHrms", "line No:{}\n{}".format(
