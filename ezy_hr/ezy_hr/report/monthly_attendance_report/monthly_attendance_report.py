@@ -353,22 +353,27 @@ def execute(filters=None):
         current_date += timedelta(days=1)
 
     # Add columns for each date within the selected date range
+    # for date_str in all_dates:
+    #     # Format the date to display only the day of the month
+    #     formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%d")
+    #     columns.append({"label": formatted_date, "fieldname": date_str, "fieldtype": "Data", "width": 100})
+    # Add columns for each date within the selected date range
     for date_str in all_dates:
-        # Format the date to display only the day of the month
-        formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%d")
-        columns.append({"label": formatted_date, "fieldname": date_str, "fieldtype": "Data", "width": 100})
+        # Format the date to display the day along with the date
+        formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%a %d")
+        columns.append({"label": formatted_date, "fieldname": date_str, "fieldtype": "Data", "width": 90})
 
     # Add columns for total leave used for each leave type
     for leave_type, leave_count in leave_types.items():
-        columns.append({"label": f"{leave_type}", "fieldname": leave_type.lower().replace(" ", "_") + "_leave_used", "fieldtype": "Data", "width": 150})
+        columns.append({"label": f"{leave_type}", "fieldname": leave_type.lower().replace(" ", "_") + "_leave_used", "fieldtype": "Data", "width": 50})
 
     # Add MO and MI columns for total count
     columns.extend([
-        {"label": "MO", "fieldname": "morning_shift_total", "fieldtype": "Data", "width": 100},
-        {"label": "MI", "fieldname": "mid_shift_total", "fieldtype": "Data", "width": 100},
-        {"label": "A", "fieldname": "total_empty_columns", "fieldtype": "Data", "width": 150},
-        {"label": "Total Selected Dates", "fieldname": "total_selected_dates", "fieldtype": "Data", "width": 150},
-        {"label": "Total Payable Days", "fieldname": "total_payable_days", "fieldtype": "Data", "width": 150},
+        {"label": "MO", "fieldname": "morning_shift_total", "fieldtype": "Data", "width": 50},
+        {"label": "MI", "fieldname": "mid_shift_total", "fieldtype": "Data", "width": 50},
+        {"label": "A", "fieldname": "total_empty_columns", "fieldtype": "Data", "width": 50},
+        {"label": "Total", "fieldname": "total_selected_dates", "fieldtype": "Data", "width": 100},
+        {"label": "Total Payable Days", "fieldname": "total_payable_days", "fieldtype": "Data", "width": 100},
     ])
 
     data = []
