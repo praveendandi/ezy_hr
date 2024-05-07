@@ -9,8 +9,7 @@ import pandas as pd
 from hrms.hr.doctype.employee_checkin.employee_checkin import add_log_based_on_employee_field
 
 class EzyHrmsTransaction(Document):
-	def after_insert(self):    
-		pass
+	pass
 	
 
 
@@ -52,16 +51,19 @@ def sync_transaction_month_wise(list_of_ids):
 				add_log_based_on_employee_field(employee_field_value = data['emp_code'],timestamp=data['punch_time'],device_id=data["terminal_alias"],log_type=data['in_out'])
 			
 			except Exception as e:
-				doctype = {"doctype":"EzyHrms Failed Records"}
-				doctype.update(data)
-				error_message = {"error_message":f"{str(e)}"}
-				doctype.update(error_message)
-				inserting_failed_log = frappe.get_doc(doctype)
-				inserting_failed_log.insert(ignore_permissions=True)
-				frappe.db.commit()
-				exc_type, exc_obj, exc_tb = sys.exc_info()
-				frappe.log_error("Sync Error in EzyHrms", "line No:{}\n{}".format(
-					exc_tb.tb_lineno, traceback.format_exc()))
+				if not "This employee already has a log with the same timestamp" in str(e):
+					doctype = {"doctype":"EzyHrms Failed Records"}
+					doctype.update(data)
+					error_message = {"error_message":f"{str(e)}"}
+					doctype.update(error_message)
+					inserting_failed_log = frappe.get_doc(doctype)
+					inserting_failed_log.insert(ignore_permissions=True)
+					frappe.db.commit()
+					exc_type, exc_obj, exc_tb = sys.exc_info()
+					frappe.log_error("Sync Error in EzyHrms", "line No:{}\n{}".format(
+						exc_tb.tb_lineno, traceback.format_exc()))
+				else:
+					pass
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("Sync Error in EzyHrms", "line No:{}\n{}".format(
