@@ -20,7 +20,9 @@
   "note",
   "notice_period",
   "yes_1",
-  "no_1"
+  "no_1",
+  "resignation_date",
+  "last_working_date"
  ],
  "fields": [
   {
@@ -93,9 +95,10 @@
   },
   {
    "fieldname": "reason_for_resignation",
-   "fieldtype": "Small Text",
+   "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Reason For Resignation",
+   "options": "\nBetter Opportunity\nHigher Studies\nMarriage\nHealth Issues\nPersonal Reasons\nRelocating\nOthers",
    "reqd": 1
   },
   {
@@ -106,7 +109,7 @@
    "reqd": 1
   },
   {
-   "default": "As per the company policy, you are required to serve notice period of 2 Months",
+   "default": "As per the company policy, you are required to serve notice period",
    "fieldname": "note",
    "fieldtype": "Read Only",
    "label": "Note"
@@ -114,7 +117,7 @@
   {
    "fieldname": "notice_period",
    "fieldtype": "Heading",
-   "label": "Do you need a notice period?"
+   "label": "Will serve notice period?"
   },
   {
    "default": "0",
@@ -127,12 +130,23 @@
    "fieldname": "no_1",
    "fieldtype": "Check",
    "label": "No"
+  },
+  {
+   "default": "Today",
+   "fieldname": "resignation_date",
+   "fieldtype": "Date",
+   "label": "Resignation Date"
+  },
+  {
+   "fieldname": "last_working_date",
+   "fieldtype": "Date",
+   "label": "Last Working Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-05-07 08:06:23.721530",
+ "modified": "2024-05-07 12:22:37.934032",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Employee Resignation",
