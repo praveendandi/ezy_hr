@@ -39,13 +39,23 @@ def sync_transaction_month_wise(list_of_ids):
 		
 		for i in range(0,len(dict_of_trx_records)):
 			data = dict_of_trx_records[i]
+   
+			employee = frappe.db.get_values(
+				"Employee",
+				{"attendance_device_id": data['emp_code']},
+				["name", "employee_name", "attendance_device_id"],
+				as_dict=True,
+			)
+			if employee:
+				employee = employee[0]
 			
-			payload = {
-				'employee_field_value' : data['emp_code'],
-				'timestamp' : data['punch_time'].__str__(),
-				'device_id' : data['terminal_alias'],
-				'log_type' : data['in_out']
-			}
+				payload = {
+					'employee' :employee.name,
+					"employee_name":employee.employee_name,
+					'time' : data['punch_time'].__str__(),
+					'device_id' : data['terminal_alias'],
+					'log_type' : data['in_out']
+				}
 			
 			try:
 				if not frappe.db.exists("Employee Checkin", payload):
