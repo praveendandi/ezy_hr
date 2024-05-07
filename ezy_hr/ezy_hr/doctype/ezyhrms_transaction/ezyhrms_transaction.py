@@ -40,15 +40,16 @@ def sync_transaction_month_wise(list_of_ids):
 		for i in range(0,len(dict_of_trx_records)):
 			data = dict_of_trx_records[i]
 			
-			# payload = {
-			# 	'employee_field_value' : data['emp_code'],
-			# 	'timestamp' : data['punch_time'].__str__(),
-			# 	'device_id' : data['terminal_alias'],
-			# 	'log_type' : data['in_out']
-			# }
+			payload = {
+				'employee_field_value' : data['emp_code'],
+				'timestamp' : data['punch_time'].__str__(),
+				'device_id' : data['terminal_alias'],
+				'log_type' : data['in_out']
+			}
 			
 			try:
-				add_log_based_on_employee_field(employee_field_value = data['emp_code'],timestamp=data['punch_time'],device_id=data["terminal_alias"],log_type=data['in_out'])
+				if not frappe.db.exists("Employee Checkin", payload):
+					add_log_based_on_employee_field(employee_field_value = data['emp_code'],timestamp=data['punch_time'],device_id=data["terminal_alias"],log_type=data['in_out'])
 			
 			except Exception as e:
 				if not "This employee already has a log with the same timestamp" in str(e):
