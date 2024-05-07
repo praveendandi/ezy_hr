@@ -288,8 +288,6 @@ def execute(filters=None):
         frappe.msgprint("Failed to retrieve source data.")
         return [], []
 
-    leave_details = get_leave_dates(filters)
-
     employee_data = {}
     for entry in source_data:
         employee_id = entry.get("employee")
@@ -303,27 +301,50 @@ def execute(filters=None):
                 }
             date = entry.get("date")
             status = entry.get("status")
+            leave_details = get_leave_dates(filters)
             if isinstance(date, dt.date):
                 date_str = date.strftime("%Y-%m-%d")
             else:
                 date_str = date
             employee_data[employee_id]["status_by_date"][date_str] = status
 
+            for dates, leave in leave_details.items():
+                employee_data[employee_id]["status_by_date"][dates] = leave
 
-    leave_dates_with_types = get_leave_dates(filters)
+    # Get all leave types available in the system
+    all_leave_types = frappe.get_all("Leave Type", fields=["name"])
 
-    for leave_date, leave_type in leave_dates_with_types.items():
-        if leave_date in employee_data[filters.get("employee")]["status_by_date"]:
-            employee_data[filters.get("employee")]["status_by_date"][leave_date] = leave_type
-        else:
-            employee_data[filters.get("employee")]["status_by_date"][leave_date] = leave_type
+    # Define mapping for short leave type labels
+    leave_type_short_forms = {
+        "Weekly Off": "Wo",
+        "Casual Leave": "CL",
+        "Sick Leave": "SL",
+        "Privilege Leave": "PL",
+        "Maternity Leave": "ML",
+        "Compensatory Off (COL)": "COL",
+        "Compensatory Off": "COL",
+        "Accident Leave on shift": "ALS",
+        "Leave Without Pay": "LWP",
+        "ESI Leave": "ESIL",
+        "Holiday": "HD",
+        "Unpaid Leave": "UNL"
+    }
 
+    # Initialize leave type counts to zero
+    leave_types = {leave_type_short_forms.get(leave_type["name"], leave_type["name"]): 0 for leave_type in all_leave_types}
+
+    # Calculate total leave used for each leave type
+    for leave_date, leave_type in leave_details.items():
+        if "On Leave" in leave_type:
+            leave_type = leave_type.split(" - ")[1]
+            leave_types[leave_type_short_forms.get(leave_type, leave_type)] += 1
 
     columns = [
         {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "width": 100},
         {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150}
     ]
 
+    # Create a list of dates within the selected date range
     all_dates = []
     current_date = datetime.strptime(filters.get("from_date"), "%Y-%m-%d")
     end_date = datetime.strptime(filters.get("to_date"), "%Y-%m-%d")
@@ -331,34 +352,74 @@ def execute(filters=None):
         all_dates.append(current_date.strftime("%Y-%m-%d"))
         current_date += timedelta(days=1)
 
+    # Add columns for each date within the selected date range
     for date_str in all_dates:
         # Format the date to display only the day of the month
         formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%d")
         columns.append({"label": formatted_date, "fieldname": date_str, "fieldtype": "Data", "width": 100})
-        
+
+    # Add columns for total leave used for each leave type
+    for leave_type, leave_count in leave_types.items():
+        columns.append({"label": f"{leave_type}", "fieldname": leave_type.lower().replace(" ", "_") + "_leave_used", "fieldtype": "Data", "width": 150})
+
+    # Add MO and MI columns for total count
     columns.extend([
-        {"label": "Total Present", "fieldname": "total_present", "fieldtype": "Data", "width": 100},
-        {"label": "Total Leave", "fieldname": "total_leave", "fieldtype": "Data", "width": 100}
+        {"label": "MO", "fieldname": "morning_shift_total", "fieldtype": "Data", "width": 100},
+        {"label": "MI", "fieldname": "mid_shift_total", "fieldtype": "Data", "width": 100},
+        {"label": "A", "fieldname": "total_empty_columns", "fieldtype": "Data", "width": 150},
+        {"label": "Total Selected Dates", "fieldname": "total_selected_dates", "fieldtype": "Data", "width": 150},
+        {"label": "Total Payable Days", "fieldname": "total_payable_days", "fieldtype": "Data", "width": 150},
     ])
 
     data = []
     for employee_id, data_row in employee_data.items():
+
         row = {"employee": data_row["employee_id"], "employee_name": data_row["employee_name"]}
-        total_present = sum(1 for status in data_row["status_by_date"].values() if status == "P")
-        total_leave = sum(1 for status in data_row["status_by_date"].values() if "On Leave" in status)
-        # total_leave = sum(1 for status in data_row["status_by_date"].values() if "On Leave" in status)
+        total_present = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "P" and date_str in all_dates)
+        total_leave = sum(1 for date_str, status in data_row["status_by_date"].items() if "On Leave" in status and date_str in all_dates)
+        morning_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MO" and date_str in all_dates)
+        mid_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MI" and date_str in all_dates)
 
 
-        row["total_present"] = total_present 
-        row["total_leave"] = total_leave 
-        for date_str, status in data_row["status_by_date"].items():
-            row[date_str] = status
+        row["morning_shift_total"] = morning_shift_total
+        row["mid_shift_total"] = mid_shift_total
+        row["total_present"] = total_present
+        row["total_leave"] = total_leave
+
+        # Add total selected dates count
+        total_selected_dates_count = len(all_dates)
+        row["total_selected_dates"] = total_selected_dates_count
+
+        # Calculate total empty columns count
+        total_empty_columns_count = total_selected_dates_count - len(data_row["status_by_date"])
+        row["total_empty_columns"] = total_empty_columns_count
+
+        # Calculate total payable days
+        total_payable_days = total_selected_dates_count - total_empty_columns_count
+        row["total_payable_days"] = total_payable_days
+
+        # Add leave details for each date within the selected date range
         for date_str in all_dates:
-            if date_str not in row:
-                row[date_str] = ""  # Add empty value for dates without data
+            status = data_row["status_by_date"].get(date_str, "")
+            row[date_str] = status
+
+        # Add total leave used for each leave type
+        for leave_type, leave_count in leave_types.items():
+            row[leave_type.lower().replace(" ", "_") + "_leave_used"] = leave_count
+
         data.append(row)
 
     return columns, data
+
+
+def get_employee_holidays(employee_id, from_date, to_date):
+    # Fetch employee's holiday list
+    employee_holiday_list = frappe.get_value("Employee", employee_id, "holiday_list")
+
+    # Fetch holidays from the holiday list within the selected date range
+    holidays = frappe.get_all("Holiday", filters={"parent": employee_holiday_list, "holiday_date": [">=", from_date], "holiday_date": ["<=", to_date]}, fields=["holiday_date"])
+    holiday_dates = [holiday.get("holiday_date").strftime("%Y-%m-%d") for holiday in holidays]
+    return holiday_dates
 
 
 def get_source_data(filters):

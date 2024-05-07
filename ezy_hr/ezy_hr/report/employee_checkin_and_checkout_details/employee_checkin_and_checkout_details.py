@@ -72,8 +72,8 @@ def get_data(filters):
                REPLACE(e.department, ' - TPB', '') as department,
                CASE 
                    WHEN MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END) IS NULL AND MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END) IS NULL THEN 'Missing Punches'
-                   WHEN MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END) IS NULL THEN 'Check-In Is Missing'
-                   WHEN MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END) IS NULL THEN 'Check-Out Is Missing'
+                   WHEN MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END) IS NULL THEN 'MI'
+                   WHEN MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END) IS NULL THEN 'MO'
                    WHEN TIMESTAMPDIFF(MINUTE,
                                        MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END),
                                        MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END)
