@@ -292,11 +292,20 @@ def execute(filters=None):
     for entry in source_data:
         employee_id = entry.get("employee")
         employee_name = entry.get("employee_name")
+        # department = entry.get("department")
+        date_of_joining = entry.get("date_of_joining")
+        designation = entry.get("designation")
+        department_name = None
+        if entry.get("department"):
+            department_name = entry.get("department").split(" - ")[0] if " - " in entry.get("department") else entry.get("department")    
         if employee_id:
             if employee_id not in employee_data:
                 employee_data[employee_id] = {
                     "employee_id": employee_id,
                     "employee_name": employee_name,
+                    "department": department_name,
+                    "date_of_joining":date_of_joining,
+                    "designation":designation,
                     "status_by_date": {}
                 }
             date = entry.get("date")
@@ -341,7 +350,10 @@ def execute(filters=None):
 
     columns = [
         {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "width": 100},
-        {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150}
+        {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
+        {"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 150},
+        {"label": "Date Of Joining", "fieldname": "date_of_joining", "fieldtype": "Data", "width": 150},
+        {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 150}
     ]
 
     # Create a list of dates within the selected date range
@@ -379,7 +391,7 @@ def execute(filters=None):
     data = []
     for employee_id, data_row in employee_data.items():
 
-        row = {"employee": data_row["employee_id"], "employee_name": data_row["employee_name"]}
+        row = {"employee": data_row["employee_id"], "employee_name": data_row["employee_name"] , "department": data_row["department"],"date_of_joining":data_row["date_of_joining"],"designation":data_row["designation"]}
         total_present = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "P" and date_str in all_dates)
         total_leave = sum(1 for date_str, status in data_row["status_by_date"].items() if "On Leave" in status and date_str in all_dates)
         morning_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MO" and date_str in all_dates)

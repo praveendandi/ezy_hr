@@ -12,6 +12,7 @@ def execute(filters=None):
         {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
         {"label": "Unit", "fieldname": "company", "fieldtype": "Link", "options": "Company", "width": 150},
         {"label": "Department", "fieldname": "department", "fieldtype": "Link", "options": "Department", "text-align": "Center", "width": 180},
+        {"label": "Designation", "fieldname": "designation", "fieldtype": "Link", "options": "Designation", "text-align": "Center", "width": 180},
         {"label": "Date Of Joining", "fieldname": "date_of_joining", "fieldtype": "Date", "width": 150},
         {"label": "Date", "fieldname": "date", "fieldtype": "Date", "width": 150},
         {"label": "First Checkin", "fieldname": "in_time", "fieldtype": "Datetime", "width": 180},
@@ -42,7 +43,7 @@ def get_data(filters):
     condition_str = " AND ".join(conditions) if conditions else "1=1"
 
     sql_query = f"""
-        SELECT e.employee,e.employee_name,ec.time, e.company, e.date_of_joining, 
+        SELECT e.employee,e.employee_name,ec.time, e.company, e.date_of_joining, e.designation,
                COALESCE(date(ec.time), date(ec.time)) as date,
                MIN(CASE WHEN ec.log_type = 'IN' THEN ec.time END) as in_time,
                MAX(CASE WHEN ec.log_type = 'OUT' THEN ec.time END) as out_time,
