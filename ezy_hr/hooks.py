@@ -28,7 +28,9 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js"}
+doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
+              "Payroll Entry":"public/js/employee_separeted.js",
+              }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -198,10 +200,12 @@ fixtures = [
                     "Employee-custom_job_applicant_email",
                     "Employee-custom_preoffer_document",
                     "Employee-custom_preoffer_document_",
-                    "Employee Transfer-custom_new_unit"
-                    
-                },
-                
+                    "Employee Transfer-custom_new_unit",
+                    "Payroll Employee Detail-custom_separation_id",
+                    "Payroll Employee Detail-custom_status",
+                    "Payroll Entry-custom_validate_employee_seperation",
+                    "Payroll Entry-custom_uncompleted_seperations",
+                },    
             ]]
     }
 ]
