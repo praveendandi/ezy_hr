@@ -113,6 +113,9 @@ def get_columns(filters: Filters) -> List[Dict]:
                "width": 130,
            },
        ]
+       
+       
+       
    )
    columns.extend(get_columns_for_leave_types())
   
