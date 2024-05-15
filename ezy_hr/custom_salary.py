@@ -116,14 +116,13 @@ def salary_structure_assignment(doc,salary_structure):
     salary_structure_assig = frappe.get_doc(assignment_details)
     salary_structure_assig.insert()
     
-    
- 
+
 def update_salary_structure(doc,current_year,current_month):
     
     custom_earnings_updates(doc,current_year,current_month)
     custom_deductions_updates(doc,current_year,current_month)
     
-        
+            
 def custom_earnings_updates(doc,current_year,current_month):
    
     try:  
@@ -313,16 +312,3 @@ def custom_deductions_updates(doc,current_year,current_month):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "custom_deductions_updates")
 
-
-
-def update_gross_amount(doc,method=None):
-    try:
-        new_row_data = doc.as_dict()
-        if len(new_row_data.get("custom_earnings",[])) >0:
-            new_component_amount = sum(each.get("amount", 0) for each in new_row_data.get("custom_earnings", []))
-            frappe.client.set_value("Employee",{"name":new_row_data.get("name")},{"custom_gross_amount":new_component_amount})
-            frappe.db.committ()
-            
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "update_gross_amount")
