@@ -196,9 +196,7 @@ def custom_earnings_updates(doc,current_year,current_month):
                     document.append('earnings', child_doc)
                     
                 document.save()
-                
-                frappe.msgprint()
-                
+                                
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "custom_earnings_updates")
