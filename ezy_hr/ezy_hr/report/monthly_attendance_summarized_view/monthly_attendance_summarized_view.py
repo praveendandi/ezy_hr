@@ -23,6 +23,7 @@ status_map = {
    "On Leave": "L",
    "Holiday": "H",
    "Weekly Off": "WO",
+   "Week Off": "WO",
 }
 
 day_abbr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -105,7 +106,16 @@ def get_columns(filters: Filters) -> List[Dict]:
                "fieldtype": "Float",
                "width": 130,
            },
+           {
+               "label": _("Payable Days"),
+               "fieldname": "payable_days",
+               "fieldtype": "Float",
+               "width": 130,
+           },
        ]
+       
+       
+       
    )
    columns.extend(get_columns_for_leave_types())
   
@@ -377,6 +387,7 @@ def get_attendance_status_for_summarized_view(
        "total_absent": summary.total_absent,
        "total_holidays": total_holidays,
        "unmarked_days": total_unmarked_days,
+       "payable_days": summary.total_present + total_holidays + summary.total_leaves
    }
 
 
@@ -494,7 +505,8 @@ def get_leave_type_abbreviation(leave_type: str) -> str:
         "Casual Leave": "CL",
         "Privilege Leave":"PL",
         "Maternity Leave":"ML",
-        "Accident Leave on shift":"ALS"
+        "Accident Leave on shift":"ALS",
+        "Week Off": "WO",
         
         
         # Add more mappings as needed
@@ -596,6 +608,8 @@ def get_attendance_years() -> str:
        year_list = [frappe._dict({"year": getdate().year})]
 
    return "\n".join(cstr(entry.year) for entry in year_list)
+
+
 
 
 

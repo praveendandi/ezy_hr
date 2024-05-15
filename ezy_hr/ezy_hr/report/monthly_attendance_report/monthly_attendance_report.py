@@ -238,6 +238,7 @@
 
 import frappe
 from datetime import datetime
+from frappe.utils import flt, formatdate
 from ezy_hr.ezy_hr.report.employee_checkin_and_checkout_details.employee_checkin_and_checkout_details import get_data as source_get_data
 
 def get_leave_dates(filters):
@@ -293,7 +294,7 @@ def execute(filters=None):
         employee_id = entry.get("employee")
         employee_name = entry.get("employee_name")
         # department = entry.get("department")
-        date_of_joining = entry.get("date_of_joining")
+        date_of_joining = formatdate(entry.get("date_of_joining"),"dd-mm-yyyy")
         designation = entry.get("designation")
         department_name = None
         if entry.get("department"):
