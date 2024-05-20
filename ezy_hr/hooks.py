@@ -323,7 +323,7 @@ doc_events = {
 # ---------------
 
 # scheduler_events = {
-# 	"all": [
+# 	"daily": [
 # 		"ezy_hr.tasks.all"
 # 	],
 # 	"daily": [
@@ -339,6 +339,15 @@ doc_events = {
 # 		"ezy_hr.tasks.monthly"
 # 	],
 # }
+# hooks.py
+
+scheduler_events = {
+    "cron": {
+        "0 0 * * *": [
+            "ezy_hr.employee_checkins.get_employee_checkins"
+        ]
+    }
+}
 
 # Testing
 # -------
