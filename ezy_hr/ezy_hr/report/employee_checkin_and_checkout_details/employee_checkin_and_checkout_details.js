@@ -306,3 +306,7 @@ function openPopupforcheckout(employeeId, date) {
         dialog.show();
     });
 }
+
+
+
+
