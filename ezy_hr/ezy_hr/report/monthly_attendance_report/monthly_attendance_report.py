@@ -92,6 +92,28 @@ def execute(filters=None):
    # Get all leave types available in the system
    all_leave_types = frappe.get_all("Leave Type", fields=["name"])
 
+    employee_data = {}
+    for entry in source_data:
+        employee_id = entry.get("employee")
+        employee_name = entry.get("employee_name")
+        department = entry.get("department")
+        if employee_id:
+            if employee_id not in employee_data:
+                employee_data[employee_id] = {
+                    "employee_id": employee_id,
+                    "employee_name": employee_name,
+                    "department": department,
+                    "status_by_date": {}
+                }
+            date = entry.get("date")
+            status = entry.get("status")
+            leave_details = get_leave_dates(filters)
+            if isinstance(date, dt.date):
+                date_str = date.strftime("%Y-%m-%d")
+            else:
+                date_str = date
+            employee_data[employee_id]["status_by_date"][date_str] = status
+
    # Define mapping for short leave type labels
    leave_type_short_forms = {
        "Weekly Off": "Wo",
@@ -131,10 +153,19 @@ def execute(filters=None):
        all_dates.append(current_date.strftime("%Y-%m-%d"))
        current_date += timedelta(days=1)
 
+
    # Add columns for each date within the selected date range
    for date_str in all_dates:
        formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%a %d")
        columns.append({"label": formatted_date, "fieldname": date_str, "fieldtype": "Data", "width": 90})
+
+    columns = [
+        {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "width": 100},
+        {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
+        {"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 150}
+
+    ]
+
 
    # Add columns for total leave used for each leave type
    # for leave_type, leave_count in leave_types.items():
@@ -205,6 +236,13 @@ def execute(filters=None):
        data.append(row)
 
    return columns, data
+
+        row = {"employee": data_row["employee_id"], "employee_name": data_row["employee_name"],"department":data_row["department"]}
+        total_present = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "P" and date_str in all_dates)
+        total_leave = sum(1 for date_str, status in data_row["status_by_date"].items() if "On Leave" in status and date_str in all_dates)
+        morning_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MO" and date_str in all_dates)
+        mid_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MI" and date_str in all_dates)
+
 
 
 
