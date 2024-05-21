@@ -198,7 +198,15 @@ fixtures = [
                     "Employee-custom_job_applicant_email",
                     "Employee-custom_preoffer_document",
                     "Employee-custom_preoffer_document_",
-                    "Employee Transfer-custom_new_unit"
+                    "Employee Transfer-custom_new_unit",
+                    "Leave Type-custom_flexi_week_off",
+                    "Leave Type-custom_leaves",
+                    "Leave Type-custom_unit",
+                    "Leave Type-custom_holiday_list",
+                    "Leave Type-custom_unit_holiday_list",
+                    "Leave Type-custom_select_holiday_type",
+                    "Leave Allocation-custom_leave_allocation_date_and_description",
+                    "Leave Ledger Entry-custom_reason_date_",
                     
                 },
                 
@@ -318,7 +326,7 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"ezy_hr.tasks.all"
 # 	],
@@ -334,7 +342,10 @@ doc_events = {
 # 	"monthly": [
 # 		"ezy_hr.tasks.monthly"
 # 	],
-# }
+    "daily": [
+		"ezy_hr.ezy_hr.events.flexi_weekoff"
+	],
+}
 
 # Testing
 # -------
