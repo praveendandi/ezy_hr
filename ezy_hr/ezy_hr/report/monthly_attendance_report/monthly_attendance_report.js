@@ -26,7 +26,9 @@ filters: [
 		fieldname: "company",
 		label: __("Unit"),
 		fieldtype: "Link",
-		options: "Company"
+		options: "Company",
+		reqd: 1
 	},
 ],
 };
+
