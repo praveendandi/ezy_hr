@@ -206,7 +206,17 @@ fixtures = [
                     "Payroll Employee Detail-custom_status",
                     "Payroll Entry-custom_validate_employee_seperation",
                     "Payroll Entry-custom_uncompleted_seperations",
-                },    
+                    "Leave Type-custom_flexi_week_off",
+                    "Leave Type-custom_leaves",
+                    "Leave Type-custom_unit",
+                    "Leave Type-custom_holiday_list",
+                    "Leave Type-custom_unit_holiday_list",
+                    "Leave Type-custom_select_holiday_type",
+                    "Leave Allocation-custom_leave_allocation_date_and_description",
+                    "Leave Ledger Entry-custom_reason_date_",
+                    
+                },
+                
             ]]
     }
 ]
@@ -325,6 +335,9 @@ doc_events = {
 
 # scheduler_events = {
 # 	"daily": [
+scheduler_events = {
+}
+# 	"all": [
 # 		"ezy_hr.tasks.all"
 # 	],
 # 	"daily": [
@@ -347,7 +360,10 @@ scheduler_events = {
         "0 0 * * *": [
             "ezy_hr.employee_checkins.get_employee_checkins"
         ]
-    }
+    },
+    "daily": [
+		"ezy_hr.ezy_hr.events.flexi_weekoff"
+	],
 }
 
 # Testing
@@ -425,4 +441,5 @@ scheduler_events = {
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+
 
