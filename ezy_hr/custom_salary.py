@@ -25,6 +25,7 @@ def create_salary_structure_through_employee(doc, method=None):
             else:
                 update_salary_structure(doc, current_year, current_month)
                 update_gross_amount(doc)
+                update_salary_assigement_value_or_base(doc,structure_name)
                 
     except frappe.exceptions.DuplicateEntryError as e:
         frappe.log_error(f"Duplicate salary structure: {e}")
@@ -183,3 +184,43 @@ def update_gross_amount(doc):
         new_component_amount = sum(each.get("amount", 0) for each in new_row_data.get("custom_earnings", []))
         frappe.db.set_value("Employee",{"name":new_row_data.get("name")},{"custom_gross_amount":new_component_amount})
         frappe.db.commit()
+        
+def update_salary_assigement_value_or_base(doc,structure_name):
+    new_row_data = doc.as_dict()
+    if len(new_row_data.get("custom_earnings",[])) >0:
+        new_component_amount = sum(each.get("amount", 0) for each in new_row_data.get("custom_earnings", []))
+        frappe.db.set_value("Salary Structure Assignment",{"salary_structure":structure_name,"from_date":doc.custom_effective_date},{"base":new_component_amount})
+        frappe.db.commit()
+
+
+# This function work on employee promotion after submit doc
+def update_and_create_salary(self, method=None):
+    try:
+        if self.custom_effective_date:
+            employee_details = frappe.get_doc("Employee", self.employee)
+        
+            employee_details.set('custom_earnings', [])
+        
+            for each in self.custom_earnings_detail:
+                employee_details.append("custom_earnings", {
+                    "salary_component": each.get("salary_component"),
+                    "amount": each.get("new_amount"),
+                })
+                
+            employee_details.custom_effective_date = self.custom_effective_date
+            employee_details.custom_gross_amount = self.custom_new_gross_amount
+
+            employee_details.save(ignore_permissions=True)
+            frappe.db.commit()
+
+    except Exception as e:
+        frappe.log_error(f"Update And Create Salary: {str(e)}")
+
+def check_effective_date(doc, method=None):
+    
+    if doc.custom_effective_date:
+        effective_date = getdate(doc.custom_effective_date)
+        previous_effective_date = getdate(doc.custom_previous_effective_date)
+        
+        if effective_date <= previous_effective_date:
+            frappe.throw("Please check the Effective Date. It should not be earlier than the previous effective date.")

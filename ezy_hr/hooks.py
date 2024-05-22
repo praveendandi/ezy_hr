@@ -31,6 +31,7 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
               "Employee":"public/js/employee_field_update.js",
+              "Employee Promotion":"public/js/employee_promotion.js",
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -214,7 +215,12 @@ fixtures = [
                     "Leave Type-custom_select_holiday_type",
                     "Leave Allocation-custom_leave_allocation_date_and_description",
                     "Leave Ledger Entry-custom_reason_date_",
-                    
+                    "Employee Promotion-custom_effective_date",
+                    "Employee Promotion-custom_current_gross_amount",
+                    "Employee Promotion-custom_new_gross_amount",
+                    "Employee Promotion-custom_earnings_section",
+                    "Employee Promotion-custom_earnings_detail",
+                    "Employee Promotion-custom_previous_effective_date",
                 },
                 
             ]]
@@ -327,6 +333,10 @@ doc_events = {
     },
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
+    },
+    "Employee Promotion":{
+        "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
+        "validate": "ezy_hr.custom_salary.check_effective_date",
     }
 }
 

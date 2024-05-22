@@ -18,7 +18,7 @@ def update_earning_table(data):
     try:
         row_data = json.loads(data) 
         
-        employee_id = row_data.get("employee_id")
+        employee_id = row_data.get("employee_id") or row_data.get("employee")
 
         get_salary_detail = frappe.db.sql("""
             SELECT salary_component, amount, abbr
