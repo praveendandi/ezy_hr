@@ -7,53 +7,308 @@ frappe.query_reports["Employee Checkin And Checkout Details"] = {
             fieldname: "from_date",
             label: __("From Date"),
             fieldtype: "Date",
-            default: frappe.datetime.month_start(),
+            default: frappe.datetime.get_today(),
         },
         {
             fieldname: "to_date",
             label: __("To Date"),
             fieldtype: "Date",
-            default: frappe.datetime.month_end(),
+            default: frappe.datetime.get_today(),
         },
         {
             fieldname: "employee",
             label: __("Employee"),
             fieldtype: "Link",
-            options: "Employee"
+            options: "Employee",
+            get_query: function() {
+                return {
+                    filters: {
+                        "company": frappe.query_report.get_filter_value("company")
+                    }
+                };
+            },
+            change: function() {
+                var employee_id = frappe.query_report.get_filter_value("employee");
+                if (employee_id) {
+                    frappe.call({
+                        method: "frappe.client.get_value",
+                        args: {
+                            doctype: "Employee",
+                            filters: { name: employee_id },
+                            fieldname: ["employee_name"]
+                        },
+                        callback: function(r) {
+                            if (r.message) {
+                                frappe.query_report.set_filter_value("employee_name", r.message.employee_name);
+                            }
+                        }
+                    });
+                } else {
+                    frappe.query_report.set_filter_value("employee_name", "");
+                }
+            }
+        },
+        {
+            fieldname: "employee_name",
+            label: __("Employee Name"),
+            fieldtype: "Data",
+            read_only: 1
         },
         {
             fieldname: "company",
             label: __("Unit"),
             fieldtype: "Link",
-            options: "Company"
+            options: "Company",
+            reqd: 1
         },
-    ],
-    
+        {
+            fieldname: "include_all",
+            label: __("Include All Data Along With The Present Status records"),
+            fieldtype: "Check",
+            default: 0
+        },
+    ]
 };
-// frappe.ui.form.on('Employee Checkin', {
-//     onload: function(frm) {
-//         if (frm.doc.__islocal) { // Check if the form is new
-//             frm.set_value('log_type', frm.doc.log_type || 'IN'); // Set default value for log_type
-//             frm.set_value('device_id', frm.doc.device_id || ''); // Set default value for device_id
 
-//             frm.toggle_enable('log_type', 0); // Set log_type as read-only
-//             frm.toggle_enable('device_id', 0); // Set device_id as read-only
-//             frm.toggle_enable('employee', 0); // Set employee as read-only
-//         }
-//     }
-// });
-// frappe.ui.form.on('Employee Checkin', {
-//     onload: function(frm) {
-//         frm.toggle_display('device_id', true); // Set device_id as visible
-//         frm.toggle_enable('log_type', 0); // Set log_type as read-only
-//         frm.toggle_enable('device_id', 0); // Set device_id as read-only
-//         frm.toggle_enable('employee', 0); // Set employee as read-only
-//     }
-// });
-
-
-frappe.ui.form.on('Employee Checkin', {
-    refresh: function(frm) {
-        frm.toggle_display('device_id', true); // Set device_id as visible
+function fetch_employee_name(employee_id, callback) {
+    if (employee_id) {
+        frappe.call({
+            method: "frappe.client.get_value",
+            args: {
+                doctype: "Employee",
+                filters: { name: employee_id },
+                fieldname: ["employee_name"]
+            },
+            callback: function(r) {
+                if (r.message) {
+                    callback(r.message.employee_name);
+                } else {
+                    callback("");
+                }
+            }
+        });
+    } else {
+        callback("");
     }
-});
+}
+
+function openPopup(employeeId, date) {
+    fetch_employee_name(employeeId, function(employee_name) {
+        var dialog = new frappe.ui.Dialog({
+            title: 'Attendance',
+            fields: [
+                {
+                    fieldname: 'employee',
+                    label: 'Employee',
+                    fieldtype: 'Link',
+                    options: 'Employee',
+                    default: employeeId,
+                    change: function() {
+                        var employee_id = dialog.get_value("employee");
+                        fetch_employee_name(employee_id, function(employee_name) {
+                            dialog.set_value("employee_name", employee_name);
+                        });
+                    }
+                },
+                {
+                    fieldname: 'employee_name',
+                    label: 'Employee Name',
+                    fieldtype: 'Data',
+                    read_only: 1,
+                    default: employee_name
+                },
+                {
+                    fieldname: 'attendance_date',
+                    label: 'Attendance Date',
+                    fieldtype: 'Date',
+                    default: date
+                },
+                {
+                    fieldname: 'status',
+                    label: 'Status',
+                    fieldtype: 'Select',
+                    options: ["", "Present", "Absent", "On Leave", "Half Day", "Work From Home"],
+                    default: ""
+                },
+                {
+                    fieldname: 'leave_type',
+                    label: 'Leave Type',
+                    fieldtype: 'Link',
+                    options: 'Leave Type',
+                    depends_on: 'eval:in_list(["On Leave", "Half Day"], doc.status)'
+                },
+                {
+                    fieldname: 'leave_application',
+                    label: 'Leave Application',
+                    fieldtype: 'Link',
+                    options: 'Leave Application',
+                    depends_on: 'eval:in_list(["On Leave", "Half Day"], doc.status)',
+                    mandatory_depends_on: 'eval:in_list(["On Leave", "Half Day"], doc.status)'
+                }
+            ],
+            primary_action_label: 'Submit',
+            primary_action: function() {
+                var values = dialog.get_values();
+                if (values) {
+                    frappe.call({
+                        method: 'frappe.client.insert',
+                        args: {
+                            doc: {
+                                doctype: 'Attendance',
+                                employee: values.employee,
+                                employee_name: values.employee_name,
+                                attendance_date: values.attendance_date,
+                                status: values.status,
+                                leave_type: values.leave_type,
+                                leave_application: values.leave_application
+                            }
+                        },
+                        callback: function() {
+                            frappe.msgprint('Attendance updated successfully.');
+                            dialog.hide();
+                        }
+                    });
+                }
+            }
+        });
+        dialog.show();
+    });
+}
+
+function openPopupforcheckin(employeeId, date) {
+    fetch_employee_name(employeeId, function(employee_name) {
+        var dialog = new frappe.ui.Dialog({
+            title: 'Add Checkin',
+            fields: [
+                {
+                    fieldname: 'employee',
+                    label: 'Employee',
+                    fieldtype: 'Link',
+                    options: 'Employee',
+                    default: employeeId,
+                    change: function() {
+                        var employee_id = dialog.get_value("employee");
+                        fetch_employee_name(employee_id, function(employee_name) {
+                            dialog.set_value("employee_name", employee_name);
+                        });
+                    }
+                },
+                {
+                    fieldname: 'employee_name',
+                    label: 'Employee Name',
+                    fieldtype: 'Data',
+                    read_only: 1,
+                    default: employee_name
+                },
+                {
+                    fieldname: 'time',
+                    label: 'Time',
+                    fieldtype: 'Datetime',
+                    default: date + " 09:00:00"
+                },
+                {
+                    fieldname: 'log_type',
+                    label: 'Log Type',
+                    fieldtype: 'Select',
+                    options: ["IN", "OUT"],
+                    default: "IN"
+                }
+            ],
+            primary_action_label: 'Submit',
+            primary_action: function() {
+                var values = dialog.get_values();
+                if (values) {
+                    frappe.call({
+                        method: 'frappe.client.insert',
+                        args: {
+                            doc: {
+                                doctype: 'Employee Checkin',
+                                employee: values.employee,
+                                employee_name: values.employee_name,
+                                time: values.time,
+                                log_type: values.log_type
+                            }
+                        },
+                        callback: function() {
+                            frappe.msgprint('Checkin added successfully.');
+                            dialog.hide();
+                        }
+                    });
+                }
+            }
+        });
+        dialog.show();
+    });
+}
+
+function openPopupforcheckout(employeeId, date) {
+    fetch_employee_name(employeeId, function(employee_name) {
+        var dialog = new frappe.ui.Dialog({
+            title: 'Add Checkout',
+            fields: [
+                {
+                    fieldname: 'employee',
+                    label: 'Employee',
+                    fieldtype: 'Link',
+                    options: 'Employee',
+                    default: employeeId,
+                    change: function() {
+                        var employee_id = dialog.get_value("employee");
+                        fetch_employee_name(employee_id, function(employee_name) {
+                            dialog.set_value("employee_name", employee_name);
+                        });
+                    }
+                },
+                {
+                    fieldname: 'employee_name',
+                    label: 'Employee Name',
+                    fieldtype: 'Data',
+                    read_only: 1,
+                    default: employee_name
+                },
+                {
+                    fieldname: 'time',
+                    label: 'Time',
+                    fieldtype: 'Datetime',
+                    default: date + " 18:00:00"
+                },
+                {
+                    fieldname: 'log_type',
+                    label: 'Log Type',
+                    fieldtype: 'Select',
+                    options: ["IN", "OUT"],
+                    default: "OUT"
+                }
+            ],
+            primary_action_label: 'Submit',
+            primary_action: function() {
+                var values = dialog.get_values();
+                if (values) {
+                    frappe.call({
+                        method: 'frappe.client.insert',
+                        args: {
+                            doc: {
+                                doctype: 'Employee Checkin',
+                                employee: values.employee,
+                                employee_name: values.employee_name,
+                                time: values.time,
+                                log_type: values.log_type
+                            }
+                        },
+                        callback: function() {
+                            frappe.msgprint('Checkout added successfully.');
+                            dialog.hide();
+                        }
+                    });
+                }
+            }
+        });
+        dialog.show();
+    });
+}
+
+
+
+
+
+

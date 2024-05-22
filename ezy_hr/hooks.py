@@ -28,7 +28,11 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js"}
+doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
+              "Payroll Entry":"public/js/employee_separeted.js",
+              "Employee":"public/js/employee_field_update.js",
+              "Employee Promotion":"public/js/employee_promotion.js",
+              }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -199,6 +203,10 @@ fixtures = [
                     "Employee-custom_preoffer_document",
                     "Employee-custom_preoffer_document_",
                     "Employee Transfer-custom_new_unit",
+                    "Payroll Employee Detail-custom_separation_id",
+                    "Payroll Employee Detail-custom_status",
+                    "Payroll Entry-custom_validate_employee_seperation",
+                    "Payroll Entry-custom_uncompleted_seperations",
                     "Leave Type-custom_flexi_week_off",
                     "Leave Type-custom_leaves",
                     "Leave Type-custom_unit",
@@ -207,7 +215,12 @@ fixtures = [
                     "Leave Type-custom_select_holiday_type",
                     "Leave Allocation-custom_leave_allocation_date_and_description",
                     "Leave Ledger Entry-custom_reason_date_",
-                    
+                    "Employee Promotion-custom_effective_date",
+                    "Employee Promotion-custom_current_gross_amount",
+                    "Employee Promotion-custom_new_gross_amount",
+                    "Employee Promotion-custom_earnings_section",
+                    "Employee Promotion-custom_earnings_detail",
+                    "Employee Promotion-custom_previous_effective_date",
                 },
                 
             ]]
@@ -320,13 +333,20 @@ doc_events = {
     },
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
+    },
+    "Employee Promotion":{
+        "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
+        "validate": "ezy_hr.custom_salary.check_effective_date",
     }
 }
 
 # Scheduled Tasks
 # ---------------
 
+# scheduler_events = {
+# 	"daily": [
 scheduler_events = {
+}
 # 	"all": [
 # 		"ezy_hr.tasks.all"
 # 	],
@@ -342,6 +362,15 @@ scheduler_events = {
 # 	"monthly": [
 # 		"ezy_hr.tasks.monthly"
 # 	],
+# }
+# hooks.py
+
+scheduler_events = {
+    "cron": {
+        "0 0 * * *": [
+            "ezy_hr.employee_checkins.get_employee_checkins"
+        ]
+    },
     "daily": [
 		"ezy_hr.ezy_hr.events.flexi_weekoff"
 	],

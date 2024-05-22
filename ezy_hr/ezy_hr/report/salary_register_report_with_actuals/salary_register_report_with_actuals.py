@@ -292,7 +292,7 @@ def get_columns(earning_types, ded_types):
 	)
 
 	for deduction in ded_types:
-		if deduction not in ["PF-Employer", "ESIE"]:
+		if deduction not in ["PF-Employer", "ESIE","Actual PF Employer"]:
 			columns.append(
 				{
 					"label": deduction,
