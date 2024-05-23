@@ -317,6 +317,7 @@ doc_events = {
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
     }
+    
 }
 
 # Scheduled Tasks

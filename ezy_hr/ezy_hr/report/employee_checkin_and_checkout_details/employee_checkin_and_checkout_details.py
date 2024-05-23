@@ -4,6 +4,8 @@
 # import frappe
 
 
+
+
 import frappe
 from frappe.utils import getdate, time_diff, time_diff_in_hours
 from datetime import timedelta
@@ -43,10 +45,11 @@ def get_data(filters):
     # Generate date range
     date_range = get_date_range(filters['from_date'], filters['to_date'])
     
-    employees = frappe.get_all('Employee', filters={'status': 'Active', 'company': filters['company']}, fields=['name', 'employee_name', 'company', 'department', 'designation', 'date_of_joining'])
+    employees = frappe.get_all('Employee', filters={'status': 'Active', 'company': filters['company']}, fields=['name', 'employee_name', 'company', 'department', 'designation', 'date_of_joining', 'holiday_list'])
 
     data = []
     leave_details = get_leave_dates(filters)
+    holiday_details = get_holiday_dates(filters, employees)
 
     for emp in employees:
         for date in date_range:
@@ -58,7 +61,7 @@ def get_data(filters):
             in_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'IN'), None)
             out_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'OUT'), None)
             working_hours = calculate_working_hours(in_time, out_time)
-            status = determine_status(in_time, out_time, leave_details, emp['name'], date)
+            status = determine_status(in_time, out_time, leave_details, holiday_details, emp['name'], date)
 
             data.append({
                 'employee': emp['name'],
@@ -96,9 +99,13 @@ def calculate_working_hours(in_time, out_time):
         return f"{int(hours):02}:{int(duration.total_seconds() / 60 % 60):02}"
     return None
 
-def determine_status(in_time, out_time, leave_details, employee, date):
+def determine_status(in_time, out_time, leave_details, holiday_details, employee, date):
     if employee in leave_details and date in leave_details[employee]:
         return leave_details[employee][date]
+    if employee in holiday_details and date in holiday_details[employee]:
+        return holiday_details[employee][date]
+    if is_weekend(date):
+        return 'Week Off'
     if not in_time and not out_time:
         return 'Missing Punches'
     if not in_time:
@@ -116,7 +123,6 @@ def generate_actions(status, employee, date):
         return f'<a href="#" onclick="openPopupforcheckout(\'{employee}\', \'{date}\')">Add Checkout</a>'
     return ''
 
-
 def get_leave_dates(filters):
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
@@ -124,7 +130,7 @@ def get_leave_dates(filters):
         return {}
 
     leave_data = frappe.get_all("Attendance", filters={"attendance_date": ["between", [start_date, end_date]]}, fields=["employee", "attendance_date", "status", "leave_type"])
-    print(leave_data,"////////////////")
+    
     leave_details = {}
     for entry in leave_data:
         date = getdate(entry["attendance_date"]).strftime("%Y-%m-%d")
@@ -136,11 +142,27 @@ def get_leave_dates(filters):
     
     return leave_details
 
-       
+def get_holiday_dates(filters, employees):
+    start_date = filters.get("from_date")
+    end_date = filters.get("to_date")
+    if not start_date or not end_date:
+        return {}
 
+    holiday_details = {}
+    for emp in employees:
+        holiday_list_name = emp.get("holiday_list")
+        if not holiday_list_name:
+            continue
+        holidays = frappe.get_all("Holiday", filters={"holiday_date": ["between", [start_date, end_date]], "parent": holiday_list_name}, fields=["holiday_date", "description"])
+        for holiday in holidays:
+            date = getdate(holiday["holiday_date"]).strftime("%Y-%m-%d")
+            if emp["name"] not in holiday_details:
+                holiday_details[emp["name"]] = {}
+            holiday_details[emp["name"]][date] = holiday["description"] or "Holiday"
+    
+    return holiday_details
 
-
-
-
-
+def is_weekend(date_str):
+    date = getdate(date_str)
+    return date.weekday() == 6  
 
