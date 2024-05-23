@@ -1,36 +1,38 @@
 {
  "add_total_row": 0,
  "columns": [],
- "creation": "2024-04-25 16:42:17.737976",
+ "creation": "2024-05-23 13:26:01.970568",
  "disabled": 0,
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "json": "{}",
  "letterhead": null,
- "modified": "2024-04-25 16:42:36.857207",
+ "modified": "2024-05-23 13:26:01.970568",
  "modified_by": "Administrator",
  "module": "Ezy HR",
- "name": "PF-Employer Breakups Report",
+ "name": "Professional Tax Report",
  "owner": "Administrator",
  "prepared_report": 0,
  "ref_doctype": "Salary Slip",
- "report_name": "PF-Employer Breakups Report",
+ "report_name": "Professional Tax Report",
  "report_type": "Script Report",
  "roles": [
   {
    "role": "HR Manager"
   },
   {
-   "role": "Employee"
-  },
-  {
    "role": "HR User"
   },
   {
-   "role": "Employee Self Service"
+   "role": "Unit HR"
+  },
+  {
+   "role": "Unit Head"
+  },
+  {
+   "role": "GM-HR (General Manager- Human Resources)"
   }
  ]
 }

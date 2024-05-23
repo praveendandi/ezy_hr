@@ -9,7 +9,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2024-05-07 21:25:52.667452",
+ "modified": "2024-05-23 13:19:18.229860",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Provident Fund Breakdown Report",
@@ -23,13 +23,16 @@
    "role": "HR Manager"
   },
   {
-   "role": "Employee"
-  },
-  {
    "role": "HR User"
   },
   {
-   "role": "Employee Self Service"
+   "role": "Unit HR"
+  },
+  {
+   "role": "Unit Head"
+  },
+  {
+   "role": "GM-HR (General Manager- Human Resources)"
   }
  ]
 }

@@ -1,7 +1,7 @@
 // Copyright (c) 2024, Ganu Reddy and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["ESI Report"] = {
+frappe.query_reports["LWF Report"] = {
 	"filters": [
 		{
 			"fieldname":"from_date",
@@ -27,12 +27,5 @@ frappe.query_reports["ESI Report"] = {
 			"reqd": 1,
 			"width": "100px",
 		},
-		{
-			"fieldname":"employee",
-			"label": __("Employee"),
-			"fieldtype": "Link",
-			"options": "Employee",
-			"width": "100px"
-		},
-	]	
+	]
 };

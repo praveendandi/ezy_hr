@@ -6,9 +6,15 @@ from frappe import _
 from frappe.utils import getdate
 
 def execute(filters=None):
-    data = get_data(filters)
-    columns = get_columns(filters) if len(data) else []
-    return columns, data
+    try:
+        data = get_data(filters)
+        
+        columns = get_columns(filters) if len(data) else []
+        
+        return columns, data
+    
+    except Exception as e:
+        frappe.log_error("EPFO Report",str(e))
 
 def get_columns(filters):
     columns = [
@@ -123,11 +129,11 @@ def get_conditions(filters):
     if filters.get("company"):
         conditions.append("sal.company = '%s' " % (filters["company"]))
 
-    if filters.get("month"):
-        conditions.append("month(sal.start_date) = '%s' " % (filters["month"]))
+    if filters.get("from_date"):
+        conditions.append("sal.start_date = '%s' " % (filters["from_date"]))
 
-    if filters.get("year"):
-        conditions.append("year(sal.start_date) = '%s' " % (filters["year"]))
+    if filters.get("to_date"):
+        conditions.append("sal.end_date = '%s' " % (filters["to_date"]))
 
     if filters.get("employee"):
         conditions.append("sal.employee = '%s' " % (filters["employee"]))
@@ -238,17 +244,17 @@ def get_data(filters):
                 if i.abbr == "HRA":
                     hra = i.amount
 
-            epf_wages = basic + da
+            epf_wages = round(basic + da)
             gross_pay = employee["gross_amount"]
-            eps_wages = (epf_wages * 8.33) / 100
-            edli_wages = (epf_wages * 0.5) / 100
+            eps_wages = round((epf_wages * 8.33) / 100)
+            edli_wages = round((epf_wages * 0.5) / 100)
             
-            epf_contri_remitted = epf_wages * 0.12
-            eps_contri_remitted = eps_wages * 0.13
-            epf_eps_diff_remitted = epf_contri_remitted - eps_contri_remitted
-            admin = (epf_wages * 0.5) / 100
-            edli_admin = (edli_wages * 0.5) / 100
-            total_contribution = (epf_contri_remitted + eps_contri_remitted + epf_eps_diff_remitted + admin + edli_admin)
+            epf_contri_remitted = round(epf_wages * 0.12)
+            eps_contri_remitted = round(eps_wages * 0.13)
+            epf_eps_diff_remitted = round(epf_contri_remitted - eps_contri_remitted)
+            admin = round((epf_wages * 0.5) / 100)
+            edli_admin = round((edli_wages * 0.5) / 100)
+            total_contribution = round(epf_contri_remitted + eps_contri_remitted + epf_eps_diff_remitted + admin + edli_admin)
 
 
 
