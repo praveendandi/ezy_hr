@@ -338,6 +338,7 @@ doc_events = {
         "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
         "validate": "ezy_hr.custom_salary.check_effective_date",
     }
+    
 }
 
 # Scheduled Tasks

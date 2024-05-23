@@ -47,7 +47,7 @@ def get_employee_checkins():
                 in_time = checkin_data.get('IN')
                 out_time = checkin_data.get('OUT')
 
-                # Only process records with either in_time or out_time missing, but not both present or both missing
+                # Only process records with either in_time or out_time missing
                 if (in_time and not out_time) or (out_time and not in_time):
                     status = determine_status(in_time, out_time)
 
@@ -56,6 +56,10 @@ def get_employee_checkins():
                         'employee': emp_id,
                         'date': date
                     })
+
+                    if existing_entry:
+                        # Skip creating a new document if an entry already exists
+                        continue
 
                     # Create a new Employee Missing Checkins Request document
                     doc = frappe.get_doc({
@@ -79,7 +83,6 @@ def get_employee_checkins():
                         'out_time': out_time,
                         'status': status
                     })
-                        
 
             date = add_days(date, 1)
 
@@ -87,17 +90,17 @@ def get_employee_checkins():
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Employee Checkin Details")
+
 def determine_status(in_time, out_time):
     try:
         if not in_time:
-            return 'MI'  # Missing In
+            return 'MI'  
         if not out_time:
-            return 'MO'  # Missing Out
-        return 'P'  # Present
+            return 'MO'  
+        return 'P'  
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Employee Checkin Details")
-
 
 
 
