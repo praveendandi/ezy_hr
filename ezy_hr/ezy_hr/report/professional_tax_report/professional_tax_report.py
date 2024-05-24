@@ -35,27 +35,30 @@ def get_columns(filters):
     return columns
 
 def get_conditions(filters):
-	conditions = [""]
+    conditions = [""]
 
-	if filters.get("department"):
-		conditions.append("sal.department = '%s' " % (filters["department"]))
+    if filters.get("department"):
+        conditions.append("sal.department = '%s' " % (filters["department"]))
 
-	if filters.get("branch"):
-		conditions.append("sal.branch = '%s' " % (filters["branch"]))
+    if filters.get("branch"):
+        conditions.append("sal.branch = '%s' " % (filters["branch"]))
 
-	if filters.get("company"):
-		conditions.append("sal.company = '%s' " % (filters["company"]))
+    if filters.get("company"):
+        conditions.append("sal.company = '%s' " % (filters["company"]))
 
-	if filters.get("from_date"):
-		conditions.append("sal.start_date = '%s' " % (filters["from_date"]))
+    if filters.get("from_date"):
+        conditions.append("sal.start_date = '%s' " % (filters["from_date"]))
 
-	if filters.get("to_date"):
-		conditions.append("sal.end_date = '%s' " % (filters["to_date"]))
+    if filters.get("to_date"):
+        conditions.append("sal.end_date = '%s' " % (filters["to_date"]))
 
-	if filters.get("mode_of_payment"):
-		conditions.append("sal.mode_of_payment = '%s' " % (filters["mode_of_payment"]))
+    if filters.get("mode_of_payment"):
+        conditions.append("sal.mode_of_payment = '%s' " % (filters["mode_of_payment"]))
+  
+    if filters.get("employee"):
+        conditions.append("sal.mode_of_payment = '%s' " % (filters["mode_of_payment"]))
 
-	return " and ".join(conditions)
+    return " and ".join(conditions)
 
 def get_data(filters):
 

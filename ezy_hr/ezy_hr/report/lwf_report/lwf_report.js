@@ -27,5 +27,13 @@ frappe.query_reports["LWF Report"] = {
 			"reqd": 1,
 			"width": "100px",
 		},
+		// {
+		// 	"fieldname":"company",
+		// 	"label": __("Unit"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Company",
+		// 	"reqd": 1,
+		// 	"width": "100px",
+		// },
 	]
 };

@@ -5,7 +5,6 @@ import frappe
 from frappe import _
 from frappe.utils import getdate
 
-
 def execute(filters=None):
 	try:
 		data = get_data(filters)
@@ -66,6 +65,9 @@ def get_conditions(filters):
 	if filters.get("mode_of_payment"):
 		conditions.append("sal.mode_of_payment = '%s' " % (filters["mode_of_payment"]))
 
+	# if filters.get("mode_of_payment"):
+	# 	conditions.append("sal.mode_of_payment = '%s' " % (filters["mode_of_payment"]))
+  
 	return " and ".join(conditions)
 
 
@@ -94,7 +96,6 @@ def prepare_data(entry, component_type_dict):
 			)
 
 	return data_list
-
 
 def get_data(filters):
 	data = []
@@ -132,8 +133,7 @@ def get_data(filters):
 		tuple(component_type_dict.keys()),
 		as_dict=1,
 	)
-
-
+ 
 	data_list = prepare_data(entry, component_type_dict)
 
 	for d in salary_slips:
@@ -198,9 +198,7 @@ def get_data(filters):
 
 			data.append(employee)
 
-
 	return data
-
 
 @frappe.whitelist()
 def get_years():

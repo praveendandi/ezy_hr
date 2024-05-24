@@ -38,5 +38,11 @@ frappe.query_reports["Provident Fund Breakdown Report"] = {
 			fieldtype: "Link",
 			options: "Department",
 		},
+		// {
+		// 	fieldname: "department",
+		// 	label: "Department",
+		// 	fieldtype: "Link",
+		// 	options: "Department",
+		// },
 	]
 };

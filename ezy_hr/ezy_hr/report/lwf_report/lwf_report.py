@@ -27,6 +27,7 @@ def get_columns():
         {"fieldname": "labour_welfare_employee", "label": "Employee", "fieldtype": "Currency", "width": 150},
         {"fieldname": "labour_welfare_employer", "label": "Employer", "fieldtype": "Currency", "width": 150},
         {"fieldname": "total_lwf_payable", "label": "Total LWF Payable", "fieldtype": "Currency", "width": 150},
+        # {"fieldname": "total_lwf_payable", "label": "Total LWF Payable", "fieldtype": "Currency", "width": 150},
     ]
 
 def get_data(filters):

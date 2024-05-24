@@ -25,6 +25,12 @@ frappe.query_reports["Professional Tax Report"] = {
             "fieldtype": "Link",
             "reqd":1,
             "options": "Company",
-        }
+        },
+		// {
+        //     "fieldname": "employee",
+        //     "label": __("Employee"),
+        //     "fieldtype": "Link",
+        //     "options": "Employee",
+        // }
 	]	
 };
