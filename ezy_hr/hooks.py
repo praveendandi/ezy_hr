@@ -285,9 +285,10 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
+override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType"
+}
 
 # Document Events
 # ---------------
@@ -347,7 +348,10 @@ scheduler_events = {
         "0 0 * * *": [
             "ezy_hr.employee_checkins.get_employee_checkins"
         ]
-    }
+    },
+    "hourly": [
+		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
+	],
 }
 
 # Testing
