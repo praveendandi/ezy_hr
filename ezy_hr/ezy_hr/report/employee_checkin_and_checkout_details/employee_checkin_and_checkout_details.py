@@ -2,8 +2,10 @@
 # # Copyright (c) 2024, Ganu Reddy and contributors
 # # For license information, please see license.txt
 
+
+
 import frappe
-from frappe.utils import getdate, time_diff, time_diff_in_hours
+from frappe.utils import getdate, time_diff_in_seconds
 from datetime import timedelta
 
 def execute(filters=None):
@@ -38,7 +40,6 @@ def get_data(filters):
     if filters.get("company"):
         conditions.append(["Employee", "company", "=", filters['company']])
 
-    # Generate date range
     date_range = get_date_range(filters['from_date'], filters['to_date'])
     
     employees = frappe.get_all('Employee', filters={'status': 'Active', 'company': filters['company']}, fields=['name', 'employee_name', 'company', 'department', 'designation', 'date_of_joining', 'holiday_list'])
@@ -74,9 +75,8 @@ def get_data(filters):
             })
     
     if not filters.get("include_all"):
-        data = [row for row in data if row["status"] != ["P"]]
+        data = [row for row in data if row["status"] != "P"]
 
-    # Filter data based on the employee filter
     if filters.get("employee"):
         data = [row for row in data if row["employee"] == filters["employee"]]
 
@@ -90,15 +90,12 @@ def get_date_range(start_date, end_date):
 
 def calculate_working_hours(in_time, out_time):
     if in_time and out_time:
-        duration = time_diff(out_time, in_time)
-        hours = time_diff_in_hours(out_time, in_time)
-        
-        # Ensure the duration is positive
-        total_minutes = abs(duration.total_seconds() / 60)
-        corrected_hours = int(total_minutes // 60)
-        corrected_minutes = int(total_minutes % 60)
-        
-        return f"{corrected_hours:02}:{corrected_minutes:02}"
+        duration_in_seconds = time_diff_in_seconds(out_time, in_time)
+        if duration_in_seconds < 0:
+            duration_in_seconds += 24 * 3600  # Adjust for overnight shifts
+        hours, remainder = divmod(duration_in_seconds, 3600)
+        minutes = remainder // 60
+        return f"{int(hours):02}:{int(minutes):02}"
     return None
 
 def determine_status(in_time, out_time, leave_details, holiday_details, employee, date):
@@ -106,8 +103,6 @@ def determine_status(in_time, out_time, leave_details, holiday_details, employee
         return leave_details[employee][date]
     if employee in holiday_details and date in holiday_details[employee]:
         return holiday_details[employee][date]
-    if is_weekend(date):
-        return 'Week Off'
     if not in_time and not out_time:
         return 'Missing Punches'
     if not in_time:
@@ -163,7 +158,3 @@ def get_holiday_dates(filters, employees):
             holiday_details[emp["name"]][date] = holiday["description"] or "Holiday"
     
     return holiday_details
-
-def is_weekend(date_str):
-    date = getdate(date_str)
-    return date.weekday() == 6  
