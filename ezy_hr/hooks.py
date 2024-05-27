@@ -330,7 +330,8 @@ doc_events = {
         "on_update":"ezy_hr.personl_file.create_personal_file_through_employee"
     },
     "Employee":{
-        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee"
+        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee",
+        "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id"
     },
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
@@ -338,7 +339,8 @@ doc_events = {
     "Employee Promotion":{
         "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
         "validate": "ezy_hr.custom_salary.check_effective_date",
-    }
+    },
+  
     
 }
 
