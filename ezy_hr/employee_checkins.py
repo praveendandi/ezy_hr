@@ -103,4 +103,3 @@ def determine_status(in_time, out_time):
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Employee Checkin Details")
 
 
-
