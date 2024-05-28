@@ -62,11 +62,24 @@ frappe.query_reports["Employee Checkin And Checkout Details"] = {
             reqd: 1
         },
         {
+            fieldname: "department",
+            label: __("Department"),
+            fieldtype: "Link",
+            options: "Department",
+            get_query: function() {
+                return {
+                    filters: {
+                        "company": frappe.query_report.get_filter_value("company")
+                    }
+                };
+            },
+        },
+        {
             fieldname: "include_all",
             label: __("Include All Data Along With The Present Status records"),
             fieldtype: "Check",
             default: 0
-        },
+        }
     ]
 };
 
