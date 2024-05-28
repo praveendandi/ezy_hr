@@ -6,7 +6,8 @@ import traceback
 @frappe.whitelist()
 def update_employee_biometric_id(doc, method=None):
     try:
-
+       
+       
         # Check if the attendance_device_id is already set
         if not doc.attendance_device_id:
             # Remove hyphens from employee_id
@@ -19,3 +20,4 @@ def update_employee_biometric_id(doc, method=None):
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Employee Checkin Details")
+
