@@ -26,6 +26,7 @@ def get_columns():
 		{"label": "Department", "fieldname": "department", "fieldtype": "Link", "options": "Department", "width": 180},
 		{"label": "Designation", "fieldname": "designation", "fieldtype": "Link", "options": "Designation", "width": 180},
 		{"label": "Date Of Joining", "fieldname": "date_of_joining", "fieldtype": "Date", "width": 150},
+		{"label": "Employee ID", "fieldname": "employee", "fieldtype": "Link", "options": "Employee","hidden":1, "width": 150},
 	]
 
 def get_data(filters):
