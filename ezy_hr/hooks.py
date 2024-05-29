@@ -221,6 +221,7 @@ fixtures = [
                     "Employee Promotion-custom_earnings_section",
                     "Employee Promotion-custom_earnings_detail",
                     "Employee Promotion-custom_previous_effective_date",
+                    "Employee-custom_apply_for_nfh_wages",
                 },
                 
             ]]
@@ -337,7 +338,10 @@ doc_events = {
     "Employee Promotion":{
         "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
         "validate": "ezy_hr.custom_salary.check_effective_date",
-    }
+    },
+    "Salary Slip":{
+        "after_insert":"ezy_hr.addition_earning_public_ho.creating_additional_earn_and_com_off"
+    },
 }
 
 # Scheduled Tasks
