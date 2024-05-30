@@ -1,6 +1,8 @@
 // Copyright (c) 2024, Ganu Reddy and contributors
 // For license information, please see license.txt
 
+
+
 frappe.query_reports["Employee Checkin And Checkout Details"] = {
     filters: [
         {
@@ -55,17 +57,24 @@ frappe.query_reports["Employee Checkin And Checkout Details"] = {
             read_only: 1
         },
         {
-            fieldname: "company",
-            label: __("Unit"),
+            fieldname: "department",
+            label: __("Department"),
             fieldtype: "Link",
-            options: "Company",
-            reqd: 1
+            options: "Department",
+            get_query: function() {
+                return {
+                    filters: {
+                        "company": frappe.query_report.get_filter_value("company")
+                    }
+                };
+            }
         },
         {
-            fieldname: "include_all",
-            label: __("Include All Data Along With The Present Status records"),
-            fieldtype: "Check",
-            default: 0
+            fieldname: "company",
+            label: __("Company"),
+            fieldtype: "Link",
+            options: "Company",
+            default: frappe.defaults.get_default("company")
         },
     ]
 };
@@ -161,6 +170,7 @@ function openPopup(employeeId, date) {
                                 status: values.status,
                                 leave_type: values.leave_type,
                                 leave_application: values.leave_application
+                            
                             }
                         },
                         callback: function() {
@@ -212,7 +222,14 @@ function openPopupforcheckin(employeeId, date) {
                     fieldtype: 'Select',
                     options: ["IN", "OUT"],
                     default: "IN"
-                }
+                },
+                {
+                    fieldname: 'custom_correction',
+                    label: 'Correction',
+                    fieldtype: 'Data',
+                    read_only: 1,
+                    default: "Manual"
+                },
             ],
             primary_action_label: 'Submit',
             primary_action: function() {
@@ -226,12 +243,14 @@ function openPopupforcheckin(employeeId, date) {
                                 employee: values.employee,
                                 employee_name: values.employee_name,
                                 time: values.time,
-                                log_type: values.log_type
+                                log_type: values.log_type,
+                                custom_correction: values.custom_correction
                             }
                         },
                         callback: function() {
                             frappe.msgprint('Checkin added successfully.');
                             dialog.hide();
+                            frappe.query_report.refresh();
                         }
                     });
                 }
@@ -278,7 +297,14 @@ function openPopupforcheckout(employeeId, date) {
                     fieldtype: 'Select',
                     options: ["IN", "OUT"],
                     default: "OUT"
-                }
+                },
+                {
+                    fieldname: 'custom_correction',
+                    label: 'Correction',
+                    fieldtype: 'Data',
+                    read_only: 1,
+                    default: "Manual"
+                },
             ],
             primary_action_label: 'Submit',
             primary_action: function() {
@@ -292,12 +318,14 @@ function openPopupforcheckout(employeeId, date) {
                                 employee: values.employee,
                                 employee_name: values.employee_name,
                                 time: values.time,
-                                log_type: values.log_type
+                                log_type: values.log_type,
+                                custom_correction: values.custom_correction
                             }
                         },
                         callback: function() {
                             frappe.msgprint('Checkout added successfully.');
                             dialog.hide();
+                            frappe.query_report.refresh();
                         }
                     });
                 }
@@ -306,8 +334,6 @@ function openPopupforcheckout(employeeId, date) {
         dialog.show();
     });
 }
-
-
 
 
 

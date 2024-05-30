@@ -306,6 +306,10 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
+override_doctype_class = {
+# 	"ToDo": "custom_app.overrides.CustomToDo"
+    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType"
+}
 
 # Document Events
 # ---------------
@@ -330,7 +334,8 @@ doc_events = {
         "on_update":"ezy_hr.personl_file.create_personal_file_through_employee"
     },
     "Employee":{
-        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee"
+        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee",
+        "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id",
     },
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
@@ -342,6 +347,8 @@ doc_events = {
     "Salary Slip":{
         "after_insert":"ezy_hr.addition_earning_public_ho.creating_additional_earn_and_com_off"
     },
+  
+    
 }
 
 # Scheduled Tasks
@@ -351,6 +358,8 @@ doc_events = {
 # 	"daily": [
 scheduler_events = {
 }
+# scheduler_events = {
+# }
 # 	"all": [
 # 		"ezy_hr.tasks.all"
 # 	],
@@ -378,6 +387,12 @@ scheduler_events = {
     "daily": [
 		"ezy_hr.ezy_hr.events.flexi_weekoff"
 	],
+    "hourly": [
+		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
+	],
+    "daily": [
+        "ezy_hr.ezy_hr.events.flexi_weekoff"
+    ],
 }
 
 # Testing
