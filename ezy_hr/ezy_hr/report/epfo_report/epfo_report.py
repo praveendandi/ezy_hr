@@ -6,106 +6,105 @@ from frappe import _
 from frappe.utils import getdate
 
 def execute(filters=None):
-    data = get_data(filters)
-    columns = get_columns(filters) if len(data) else []
-    return columns, data
-
+    
+    try:
+        data = get_data(filters)
+        columns = get_columns(filters) if len(data) else []
+        return columns, data
+    except Exception as e:
+        frappe.log_error(f"Error execute EPFO Report: {e}") 
+        
+        
 def get_columns(filters):
     columns = [
         {
             "label": _("EMP Code"),
             "fieldname": "employee",
             "fieldtype": "Data",
-            "width": 200,
+            "width": 100,
         },
         {
             "label": _("UAN"),
             "fieldname": "pf_account",
             "fieldtype": "Data",
-            "width": 200
+            "width": 140
         },
         {
             "label": _("Member Name"),
             "fieldname": "employee_name",
-            "width": 200,
+            "width": 160,
         },
         {
             "label": _("Gross Wages"),
-            "fieldname": "gross_amount",
+            "fieldname": "gross_pay",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("EPF Wages"),
             "fieldname": "epf_wages",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("EPS Wages"),
             "fieldname": "eps_wages",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("EDLI Wages"),
             "fieldname": "edli_wages",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("EPF Contri Remitted"),
             "fieldname": "epf_contri_remitted",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("EPS Contri Remitted"),
             "fieldname": "eps_contri_remitted",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("EPF EPS Diff Remitted"),
             "fieldname": "epf_eps_diff_remitted",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("NCP Days"),
-            "fieldname": "ncp_days",
+            "fieldname": "absent_days",
             "fieldtype": "Data",
-            "width": 200
+            "width": 140
         },
         {
-            "label": _("Refund Of Advances"),
-            "fieldname": "refund_of_advances",
-            "fieldtype": "Currency",
-            "width": 200
-        },
-		{
             "label": _("Working Days"),
-            "fieldname": "total_working_days",
+            "fieldname": "payment_days",
             "fieldtype": "Data",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("Admin"),
             "fieldname": "admin",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("EDLI Admin"),
             "fieldname": "edli_admin",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
         {
             "label": _("Total Contribution"),
             "fieldname": "total_contribution",
             "fieldtype": "Currency",
-            "width": 200
+            "width": 120
         },
     ]
     
@@ -123,11 +122,11 @@ def get_conditions(filters):
     if filters.get("company"):
         conditions.append("sal.company = '%s' " % (filters["company"]))
 
-    if filters.get("month"):
-        conditions.append("month(sal.start_date) = '%s' " % (filters["month"]))
+    if filters.get("from_date"):
+        conditions.append("sal.start_date >= '%s' " % (filters["from_date"]))
 
-    if filters.get("year"):
-        conditions.append("year(sal.start_date) = '%s' " % (filters["year"]))
+    if filters.get("to_date"):
+        conditions.append("sal.end_date <= '%s' " % (filters["to_date"]))
 
     if filters.get("employee"):
         conditions.append("sal.employee = '%s' " % (filters["employee"]))
@@ -141,9 +140,9 @@ def prepare_data(entry, component_type_dict):
     data_list = {}
 
     employee_account_dict = frappe._dict(
-        (employee.name, {"provident_fund_account": employee.provident_fund_account, "custom_gross_amount": employee.custom_gross_amount})
+        (employee.name, {"provident_fund_account": employee.provident_fund_account})
         for employee in frappe.db.sql(
-            """SELECT name, provident_fund_account, custom_gross_amount FROM `tabEmployee`""",
+            """SELECT name, provident_fund_account FROM `tabEmployee`""",
             as_dict=True,
         )
     )
@@ -160,8 +159,9 @@ def prepare_data(entry, component_type_dict):
                     "employee_name": d.employee_name,
                     "pf_account": employee_account_dict.get(d.employee, {}).get("provident_fund_account"),
                     component_type: d.amount,
-                    "gross_amount": employee_account_dict.get(d.employee, {}).get("custom_gross_amount"),
-                    "total_working_days" : d.total_working_days,
+                    "gross_pay": round(d.gross_pay),
+                    "absent_days": d.absent_days, 
+                    "payment_days" : d.payment_days,
                 },
             )
     return data_list
@@ -188,7 +188,7 @@ def get_data(filters):
         return []
 
     entry = frappe.db.sql(
-        """SELECT sal.name, sal.employee, sal.employee_name, sal.total_working_days, ded.salary_component, ded.amount
+        """SELECT sal.name, sal.employee, sal.employee_name, sal.payment_days, sal.gross_pay, sal.absent_days, ded.salary_component, ded.amount
         FROM `tabSalary Slip` sal, `tabSalary Detail` ded
         WHERE sal.name = ded.parent
         AND ded.parentfield = 'deductions'
@@ -208,12 +208,13 @@ def get_data(filters):
             employee = {
                 "employee": data_list.get(d.name).get("employee"),
                 "employee_name": data_list.get(d.name).get("employee_name"),
-                "total_working_days" : data_list.get(d.name).get("total_working_days"),
                 "pf_account": data_list.get(d.name).get("pf_account"),
-                "gross_amount": data_list[d.name].get("gross_amount"),
+                "gross_pay": data_list[d.name].get("gross_pay"),
+                "absent_days": data_list[d.name].get("absent_days"),
+                "payment_days" : data_list[d.name].get("payment_days")
             }
 
-            # Fetch earnings data to calculate EPF, EPS, and EDLI wages
+
             earning_data = frappe.db.sql(
                 """SELECT sal.name, ear.salary_component, ear.amount, ear.abbr
                 FROM `tabSalary Slip` sal, `tabSalary Detail` ear
@@ -238,19 +239,17 @@ def get_data(filters):
                 if i.abbr == "HRA":
                     hra = i.amount
 
-            epf_wages = basic + da
-            gross_pay = employee["gross_amount"]
-            eps_wages = (epf_wages * 8.33) / 100
-            edli_wages = (epf_wages * 0.5) / 100
-            
-            epf_contri_remitted = epf_wages * 0.12
-            eps_contri_remitted = eps_wages * 0.13
-            epf_eps_diff_remitted = epf_contri_remitted - eps_contri_remitted
-            admin = (epf_wages * 0.5) / 100
-            edli_admin = (edli_wages * 0.5) / 100
-            total_contribution = (epf_contri_remitted + eps_contri_remitted + epf_eps_diff_remitted + admin + edli_admin)
+            gross_pay = round(employee["gross_pay"])
+            epf_wages = round(min(gross_pay, 15000))
+            eps_wages = round(min(gross_pay, 15000))
+            edli_wages = round(min(gross_pay, 15000))
 
-
+            epf_contri_remitted = round((epf_wages * 12.0) / 100)
+            eps_contri_remitted = round((eps_wages * 8.33) / 100)
+            epf_eps_diff_remitted = round(epf_contri_remitted - eps_contri_remitted)
+            admin = round((epf_wages * 0.5) / 100)
+            edli_admin = round((edli_wages * 0.5) / 100)
+            total_contribution = round(epf_contri_remitted + eps_contri_remitted + epf_eps_diff_remitted + admin + edli_admin)
 
             employee["epf_wages"] = epf_wages
             employee["eps_wages"] = eps_wages
@@ -275,4 +274,3 @@ def get_years():
         year_list = [getdate().year]
 
     return "\n".join(str(year) for year in year_list)
-

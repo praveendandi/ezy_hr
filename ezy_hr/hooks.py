@@ -221,6 +221,7 @@ fixtures = [
                     "Employee Promotion-custom_earnings_section",
                     "Employee Promotion-custom_earnings_detail",
                     "Employee Promotion-custom_previous_effective_date",
+                    "Employee-custom_apply_for_nfh_wages",
                 },
                 
             ]]
@@ -302,6 +303,9 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # ---------------
 # Override standard doctype classes
 
+# override_doctype_class = {
+# 	"ToDo": "custom_app.overrides.CustomToDo"
+# }
 override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
     "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType"
@@ -340,6 +344,9 @@ doc_events = {
         "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
         "validate": "ezy_hr.custom_salary.check_effective_date",
     },
+    "Salary Slip":{
+        "after_insert":"ezy_hr.addition_earning_public_ho.creating_additional_earn_and_com_off"
+    },
   
     
 }
@@ -349,6 +356,8 @@ doc_events = {
 
 # scheduler_events = {
 # 	"daily": [
+scheduler_events = {
+}
 # scheduler_events = {
 # }
 # 	"all": [
@@ -375,6 +384,9 @@ scheduler_events = {
             "ezy_hr.employee_checkins.get_employee_checkins"
         ]
     },
+    "daily": [
+		"ezy_hr.ezy_hr.events.flexi_weekoff"
+	],
     "hourly": [
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
 	],

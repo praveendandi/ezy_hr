@@ -103,7 +103,7 @@ def salary_structure_assignment(doc, salary_structure):
         "from_date": frappe.get_value("Employee", {"name": doc.name}, ['date_of_joining']) if not doc.custom_effective_date else doc.custom_effective_date,
         "income_tax_slab": doc.custom_income_tax_slab if doc.custom_income_tax_slab else get_income_tax_slab(),
         "docstatus": 1,
-        "base": doc.custom_gross_amount
+        "base": update_gross_amount(doc)
     }
     salary_structure_assig = frappe.get_doc(assignment_details)
     salary_structure_assig.insert()

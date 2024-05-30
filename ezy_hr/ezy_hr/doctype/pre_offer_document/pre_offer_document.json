@@ -20,7 +20,11 @@
   "first_slip",
   "second_slip",
   "column_break_fxsr",
-  "third_slip"
+  "third_slip",
+  "proof_details_section",
+  "aadhar_card",
+  "column_break_mrgp",
+  "pan_card"
  ],
  "fields": [
   {
@@ -101,11 +105,30 @@
    "fieldname": "mobile_no",
    "fieldtype": "Data",
    "label": "Mobile No"
+  },
+  {
+   "fieldname": "proof_details_section",
+   "fieldtype": "Section Break",
+   "label": "Proof Details"
+  },
+  {
+   "fieldname": "aadhar_card",
+   "fieldtype": "Attach",
+   "label": "Aadhar Card"
+  },
+  {
+   "fieldname": "column_break_mrgp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pan_card",
+   "fieldtype": "Attach",
+   "label": "Pan Card"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-27 17:08:28.546833",
+ "modified": "2024-05-28 11:33:49.307837",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Pre-Offer Document",
