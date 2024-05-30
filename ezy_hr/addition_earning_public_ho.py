@@ -18,6 +18,11 @@ def creating_additional_earn_and_com_off(doc,method=None):
             creating_addition(employee_list,data)
             
         salary_slip = frappe.db.get_doc("Salary Slip",doc.name)
+        for each in salary_slip.earnings:
+            salary_slip.append("earnings", {
+                "salary_component": each.get("salary_component"),
+                "amount": each.get("new_amount"),
+            })
         salary_slip.save()
         
     except Exception as e:
@@ -124,6 +129,8 @@ def creating_addition(empl_detail,data):
         additon_salary.insert()
         additon_salary.submit()
         frappe.db.commit()
+        
+    return additon_salary
         
         
         
