@@ -79,6 +79,7 @@ def get_data(filters):
     return data
 
 def get_date_range(start_date, end_date):
+    print('////////////////////////////////////')
     start = getdate(start_date)
     end = getdate(end_date)
     delta = end - start
@@ -155,3 +156,7 @@ def get_holiday_dates(filters, employees):
             holiday_details[emp["name"]][date] = holiday["description"] or "Holiday"
     
     return holiday_details
+
+
+
+
