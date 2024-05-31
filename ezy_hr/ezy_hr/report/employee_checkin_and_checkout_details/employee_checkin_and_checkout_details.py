@@ -512,6 +512,7 @@ def get_columns():
     ]
 
 def get_data(filters):
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@jjjjjjjjjjjjjjjjj8888888888888888888@@@@@@@@@@@@@@@@@@@")
     conditions = []
 
     if filters.get("from_date"):
@@ -581,6 +582,7 @@ def calculate_working_hours(in_time, out_time):
     return None
 
 def determine_status(in_time, out_time, leave_details, holiday_details, employee, date):
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     if employee in leave_details and date in leave_details[employee]:
         return leave_details[employee][date]
 
@@ -624,7 +626,7 @@ def get_leave_dates(filters):
     return leave_details
 
 def get_holiday_dates(filters, employees):
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
@@ -641,6 +643,8 @@ def get_holiday_dates(filters, employees):
             if emp["name"] not in holiday_details:
                 holiday_details[emp["name"]] = {}
             holiday_details[emp["name"]][date] = holiday["description"] or "Holiday"
+            
+            
     
     return holiday_details
 
