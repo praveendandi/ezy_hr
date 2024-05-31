@@ -191,6 +191,7 @@ function openPopup(employeeId, date) {
 
 function openPopupforcheckin(employeeId, date) {
     fetch_employee_name(employeeId, function(employee_name) {
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
         var dialog = new frappe.ui.Dialog({
             title: 'Add Checkin',
             fields: [
