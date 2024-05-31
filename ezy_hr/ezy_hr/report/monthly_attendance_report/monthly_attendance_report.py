@@ -159,16 +159,16 @@ def execute(filters=None):
 		formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%a %d")
 		columns.append({"label": formatted_date, "fieldname": date_str, "fieldtype": "Data", "width": 90})
 
-	columns = [
+
+	columns.extend([
 		{"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "width": 100},
 		{"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
 		{"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 150}
 
-	]
+	])
 
 
-	# Add columns for total leave used for each leave type
-	# for leave_type, leave_count in leave_types.items():
+	
 	#     columns.append({"label": f"{leave_type}", "fieldname": leave_type.lower().replace(" ", "_") + "_leave_used", "fieldtype": "Data", "width": 50})
 	for leave_type, leave_count in leave_types.items():
 		columns.append({"label": f"{leave_type}", "fieldname": leave_type.lower().replace(" ", "_") + "_leave_used", "fieldtype": "Data", "width": 50})
@@ -234,16 +234,8 @@ def execute(filters=None):
 			row[leave_type.lower().replace(" ", "_") + "_leave_used"] = leave_count
 
 		data.append(row)
-
+		
 	return columns, data
-
-	row = {"employee": data_row["employee_id"], "employee_name": data_row["employee_name"],"department":data_row["department"]}
-	total_present = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "P" and date_str in all_dates)
-	total_leave = sum(1 for date_str, status in data_row["status_by_date"].items() if "On Leave" in status and date_str in all_dates)
-	morning_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MO" and date_str in all_dates)
-	mid_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MI" and date_str in all_dates)
-
-
 
 
 def get_employee_holidays(employee_id, from_date, to_date):
@@ -257,5 +249,6 @@ def get_employee_holidays(employee_id, from_date, to_date):
 
 
 def get_source_data(filters):
+	print('/////////////////////////')
 	source_data = source_get_data(filters)
 	return source_data
