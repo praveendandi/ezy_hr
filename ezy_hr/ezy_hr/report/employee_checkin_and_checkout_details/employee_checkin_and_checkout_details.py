@@ -12,13 +12,13 @@ def execute(filters=None):
 
 def get_columns():
     return [
-        {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "options": "Employee", "width": 150},
-        {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
-        {"label": "Date", "fieldname": "date", "fieldtype": "Date", "width": 150},
-        {"label": "First Checkin", "fieldname": "in_time", "fieldtype": "Datetime", "width": 180},
-        {"label": "Last Checkout", "fieldname": "out_time", "fieldtype": "Datetime", "width": 180},
-        {"label": "Duration", "fieldname": "working_hours", "fieldtype": "Data", "width": 180},
-        {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 180},
+        {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "options": "Employee", "width": 100},
+        {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 110},
+        {"label": "Date", "fieldname": "date", "fieldtype": "Date", "width": 110},
+        {"label": "First Checkin", "fieldname": "in_time", "fieldtype": "Datetime", "width": 160},
+        {"label": "Last Checkout", "fieldname": "out_time", "fieldtype": "Datetime", "width": 160},
+        {"label": "Duration", "fieldname": "working_hours", "fieldtype": "Data", "width": 90},
+        {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 130},
         {"label": "Actions", "fieldname": "actions", "fieldtype": "Button", "width": 180},
         {"label": "Department", "fieldname": "department", "fieldtype": "Link", "options": "Department", "width": 180},
         {"label": "Designation", "fieldname": "designation", "fieldtype": "Link", "options": "Designation", "width": 180},
@@ -119,7 +119,7 @@ def generate_actions(status, employee, date):
     return ''
 
 def get_leave_dates(filters):
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
@@ -139,6 +139,7 @@ def get_leave_dates(filters):
     return leave_details
 
 def get_holiday_dates(filters, employees):
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
