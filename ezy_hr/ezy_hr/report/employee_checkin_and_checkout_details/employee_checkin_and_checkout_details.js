@@ -101,6 +101,90 @@ function fetch_employee_name(employee_id, callback) {
     }
 }
 
+// function openPopup(employeeId, date) {
+//     fetch_employee_name(employeeId, function(employee_name) {
+//         var dialog = new frappe.ui.Dialog({
+//             title: 'Attendance',
+//             fields: [
+//                 {
+//                     fieldname: 'employee',
+//                     label: 'Employee',
+//                     fieldtype: 'Link',
+//                     options: 'Employee',
+//                     default: employeeId,
+//                     change: function() {
+//                         var employee_id = dialog.get_value("employee");
+//                         fetch_employee_name(employee_id, function(employee_name) {
+//                             dialog.set_value("employee_name", employee_name);
+//                         });
+//                     }
+//                 },
+//                 {
+//                     fieldname: 'employee_name',
+//                     label: 'Employee Name',
+//                     fieldtype: 'Data',
+//                     read_only: 1,
+//                     default: employee_name
+//                 },
+//                 {
+//                     fieldname: 'attendance_date',
+//                     label: 'Attendance Date',
+//                     fieldtype: 'Date',
+//                     default: date
+//                 },
+//                 {
+//                     fieldname: 'status',
+//                     label: 'Status',
+//                     fieldtype: 'Select',
+//                     options: ["", "Present", "Absent", "On Leave", "Half Day", "Work From Home"],
+//                     default: ""
+//                 },
+//                 {
+//                     fieldname: 'leave_type',
+//                     label: 'Leave Type',
+//                     fieldtype: 'Link',
+//                     options: 'Leave Type',
+//                     depends_on: 'eval:in_list(["On Leave", "Half Day"], doc.status)'
+//                 },
+//                 {
+//                     fieldname: 'leave_application',
+//                     label: 'Leave Application',
+//                     fieldtype: 'Link',
+//                     options: 'Leave Application',
+//                     depends_on: 'eval:in_list(["On Leave", "Half Day"], doc.status)',
+//                     mandatory_depends_on: 'eval:in_list(["On Leave", "Half Day"], doc.status)'
+//                 }
+//             ],
+//             primary_action_label: 'Submit',
+//             primary_action: function() {
+//                 var values = dialog.get_values();
+//                 if (values) {
+//                     frappe.call({
+//                         method: 'frappe.client.insert',
+//                         args: {
+//                             doc: {
+//                                 doctype: 'Attendance',
+//                                 employee: values.employee,
+//                                 employee_name: values.employee_name,
+//                                 attendance_date: values.attendance_date,
+//                                 status: values.status,
+//                                 leave_type: values.leave_type,
+//                                 leave_application: values.leave_application
+                            
+//                             }
+//                         },
+//                         callback: function() {
+//                             frappe.msgprint('Attendance updated successfully.');
+//                             dialog.hide();
+//                         }
+//                     });
+//                 }
+//             }
+//         });
+//         dialog.show();
+//     });
+// }
+
 function openPopup(employeeId, date) {
     fetch_employee_name(employeeId, function(employee_name) {
         var dialog = new frappe.ui.Dialog({
@@ -169,8 +253,8 @@ function openPopup(employeeId, date) {
                                 attendance_date: values.attendance_date,
                                 status: values.status,
                                 leave_type: values.leave_type,
-                                leave_application: values.leave_application
-                            
+                                leave_application: values.leave_application,
+                                docstatus: 1  // Set docstatus to 1
                             }
                         },
                         callback: function() {
@@ -184,6 +268,7 @@ function openPopup(employeeId, date) {
         dialog.show();
     });
 }
+
 
 function openPopupforcheckin(employeeId, date) {
     fetch_employee_name(employeeId, function(employee_name) {
