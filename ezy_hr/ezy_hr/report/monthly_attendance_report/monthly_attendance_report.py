@@ -168,8 +168,7 @@ def execute(filters=None):
 	])
 
 
-	# Add columns for total leave used for each leave type
-	# for leave_type, leave_count in leave_types.items():
+	
 	#     columns.append({"label": f"{leave_type}", "fieldname": leave_type.lower().replace(" ", "_") + "_leave_used", "fieldtype": "Data", "width": 50})
 	for leave_type, leave_count in leave_types.items():
 		columns.append({"label": f"{leave_type}", "fieldname": leave_type.lower().replace(" ", "_") + "_leave_used", "fieldtype": "Data", "width": 50})
@@ -250,5 +249,6 @@ def get_employee_holidays(employee_id, from_date, to_date):
 
 
 def get_source_data(filters):
+	print('/////////////////////////')
 	source_data = source_get_data(filters)
 	return source_data
