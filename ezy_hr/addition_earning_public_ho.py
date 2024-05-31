@@ -15,15 +15,11 @@ def creating_additional_earn_and_com_off(doc,method=None):
         employee_list = get_employees(data,doc)
         
         if employee_list:
-            creating_addition(employee_list,data)
+            resutl = creating_addition(employee_list,data)
             
-        salary_slip = frappe.db.get_doc("Salary Slip",doc.name)
-        for each in salary_slip.earnings:
-            salary_slip.append("earnings", {
-                "salary_component": each.get("salary_component"),
-                "amount": each.get("new_amount"),
-            })
-        salary_slip.save()
+            if resutl:
+                frappe.db.commit()
+                doc.save()
         
     except Exception as e:
         frappe.log_error(f"Error addition salary structure: {e}")   
@@ -33,7 +29,8 @@ def get_employees(data, doc):
     holiday_filters = [
         ["holiday_date", ">=", data["from_date"]],
         ["holiday_date", "<=", data["to_date"]],
-        ["parent", "=", data["name"]]
+        ["parent", "=", data["name"]],
+        ["weekly_off","=",0]
     ]
 
     # Fetch holidays based on the filters
