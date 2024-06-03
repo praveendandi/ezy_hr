@@ -1,5 +1,7 @@
-# Copyright (c) 2024, Ganu Reddy and contributors
-# For license information, please see license.txt
+# # Copyright (c) 2024, Ganu Reddy and contributors
+# # For license information, please see license.txt
+
+
 
 import frappe
 from frappe.utils import getdate, time_diff_in_seconds
@@ -79,7 +81,6 @@ def get_data(filters):
     return data
 
 def get_date_range(start_date, end_date):
-    print('////////////////////////////////////')
     start = getdate(start_date)
     end = getdate(end_date)
     delta = end - start
@@ -95,9 +96,31 @@ def calculate_working_hours(in_time, out_time):
         return f"{int(hours):02}:{int(minutes):02}"
     return None
 
+# def determine_status(in_time, out_time, leave_details, holiday_details, employee, date):
+#     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+#     if employee in leave_details and date in leave_details[employee]:
+#         return leave_details[employee][date]
+
+#     if employee in holiday_details and date in holiday_details[employee]:
+#         return holiday_details[employee][date]
+#     if not in_time and not out_time:
+#         return 'Missing Punches'
+#     if not in_time:
+#         return 'MI'
+#     if not out_time:
+#         return 'MO'
+    
+#     # Modify this part to show 'P' instead of 'Present'
+#     if in_time and out_time:
+#         return 'P'
+    
+#     return 'Present'
 def determine_status(in_time, out_time, leave_details, holiday_details, employee, date):
     if employee in leave_details and date in leave_details[employee]:
-        return leave_details[employee][date]
+        status = leave_details[employee][date]
+        if status == 'Present':
+            return 'P'
+        return status
 
     if employee in holiday_details and date in holiday_details[employee]:
         return holiday_details[employee][date]
@@ -107,11 +130,17 @@ def determine_status(in_time, out_time, leave_details, holiday_details, employee
         return 'MI'
     if not out_time:
         return 'MO'
-    return 'P'
+    
+    # Modify this part to show 'P' instead of 'Present'
+    if in_time and out_time:
+        return 'P'
+    
+    return 'Present'
+
 
 def generate_actions(status, employee, date):
     if status == "Missing Punches":
-        return f'<a href="#" onclick="openPopup(\'{employee}\', \'{date}\')">Click to Add Attendance</a>'
+        return f'<a href="#" onclick="openPopup(\'{employee}\', \'{date}\')">Add Checkin Checkouts</a>'
     elif status == "MI":
         return f'<a href="#" onclick="openPopupforcheckin(\'{employee}\', \'{date}\')">Add Checkin</a>'
     elif status == "MO":
@@ -119,7 +148,6 @@ def generate_actions(status, employee, date):
     return ''
 
 def get_leave_dates(filters):
-    
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
@@ -139,7 +167,6 @@ def get_leave_dates(filters):
     return leave_details
 
 def get_holiday_dates(filters, employees):
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
@@ -158,7 +185,3 @@ def get_holiday_dates(filters, employees):
             holiday_details[emp["name"]][date] = holiday["description"] or "Holiday"
     
     return holiday_details
-
-
-
-

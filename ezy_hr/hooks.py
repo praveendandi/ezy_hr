@@ -223,6 +223,9 @@ fixtures = [
                     "Employee Promotion-custom_previous_effective_date",
                     "Employee-custom_apply_for_nfh_wages",
                     "Salary Slip-custom_payroll_cost_center_",
+                    "Job Offer-custom_level",
+                    "Job Offer-custom_department",
+                    
                 },
                 
             ]]
