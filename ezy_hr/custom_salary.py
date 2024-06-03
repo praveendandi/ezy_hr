@@ -184,6 +184,7 @@ def update_gross_amount(doc):
         new_component_amount = sum(each.get("amount", 0) for each in new_row_data.get("custom_earnings", []))
         frappe.db.set_value("Employee",{"name":new_row_data.get("name")},{"custom_gross_amount":new_component_amount})
         frappe.db.commit()
+        return new_component_amount
         
 def update_salary_assigement_value_or_base(doc,structure_name):
     new_row_data = doc.as_dict()
