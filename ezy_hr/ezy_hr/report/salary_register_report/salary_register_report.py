@@ -283,7 +283,7 @@ def get_columns(earning_types, ded_types):
 	)
 
 	for deduction in ded_types:
-		if deduction not in ["PF-Employer", "ESIE","Actual PF Employer"]:
+		if deduction not in ["PF-Employer", "ESIE","Labour Welfare Employer"]:
 			columns.append(
 				{
 					"label": deduction,
@@ -293,6 +293,8 @@ def get_columns(earning_types, ded_types):
 					"width": 120,
 				}
 			)
+		else:
+			not_include_net.insert(0,deduction)
 
 	columns.extend(
 		[
@@ -324,12 +326,6 @@ def get_columns(earning_types, ded_types):
 				"options": "Currency",
 				"hidden": 1,
 			},
-			{
-				"label": _("Attendance Device Id"),
-				"fieldname": "attendance_device_id",
-				"fieldtype": "Data",
-				"width": 100,
-			},
 		]
 	)
 
@@ -343,20 +339,16 @@ def get_columns(earning_types, ded_types):
 				"width": 100,
 			}
 		)
-		columns.append(
-			{
-				"label": f"Actual {not_in}",
-				"fieldname": f"actual_{frappe.scrub(not_in)}",
-				"fieldtype": "Currency",
-				"options": "currency",
+  
+	columns.extend([{
+				"label": _("Attendance Device Id"),
+				"fieldname": "attendance_device_id",
+				"fieldtype": "Data",
 				"width": 100,
-			}
-		)
+			},]
+	)
 
 	return columns
-
-
-
 
 
 def get_salary_components(salary_slips):

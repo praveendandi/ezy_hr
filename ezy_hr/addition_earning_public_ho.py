@@ -18,8 +18,8 @@ def creating_additional_earn_and_com_off(doc,method=None):
             resutl = creating_addition(employee_list,data)
             
             if resutl:
-                frappe.db.commit()
                 doc.save()
+                frappe.db.commit()
         
     except Exception as e:
         frappe.log_error(f"Error addition salary structure: {e}")   
@@ -76,27 +76,25 @@ def get_employees(data, doc):
 
         for employee_data in employee_list:
             # Check if the employee exists and custom_apply_for_nfh_wages is 1
-            if frappe.db.exists("Employee", {"name": employee_data.get("employee"), "custom_apply_for_nfh_wages": 1}):
-                if holiday_names.get(employee_data["attendance_date"]) != "Sunday":
-                    employee_id = employee_data.get("employee")
-                    if employee_id:
-                        if employee_id not in employee_detail:
-                            employee_detail[employee_id] = {
-                                "employee": employee_id,
-                                "employee_name": employee_data.get("employee_name"),
-                                "attendance_date": [employee_data.get("attendance_date")],
-                                "holiday_description": [holiday_names.get(employee_data["attendance_date"])],
-                                "no_of_day": 1,
-                                "company":doc.company
-                            }
-                        else:
-                            employee_detail[employee_id]['attendance_date'].append(employee_data.get("attendance_date"))
-                            employee_detail[employee_id]['holiday_description'].append(holiday_names.get(employee_data["attendance_date"]))
-                            employee_detail[employee_id]['no_of_day'] += 1
+            if frappe.db.exists("Employee", {"name": employee_data.get("employee"), "custom_apply_for_nfh_wages": 1}) and holiday_names.get(employee_data["attendance_date"]) != "Sunday":
+               
+                employee_id = employee_data.get("employee")
+                if employee_id:
+                    if employee_id not in employee_detail:
+                        employee_detail[employee_id] = {
+                            "employee": employee_id,
+                            "employee_name": employee_data.get("employee_name"),
+                            "attendance_date": [employee_data.get("attendance_date")],
+                            "holiday_description": [holiday_names.get(employee_data["attendance_date"])],
+                            "no_of_day": 1,
+                            "company":doc.company
+                        }
+                    else:
+                        employee_detail[employee_id]['attendance_date'].append(employee_data.get("attendance_date"))
+                        employee_detail[employee_id]['holiday_description'].append(holiday_names.get(employee_data["attendance_date"]))
+                        employee_detail[employee_id]['no_of_day'] += 1
 
         if employee_detail:
-            print(employee_detail, 'Employee details')
-
             for each_day in employee_detail.values():
                 earning_on_hod_employee.append(each_day)
 
@@ -128,6 +126,19 @@ def creating_addition(empl_detail,data):
         frappe.db.commit()
         
     return additon_salary
+
+
+def cancel_addition_salary(doc,mothod=None):
+    try:
+        addition_cencel = frappe.db.delete("Additional Salary", {
+            "employee": doc.get("employee"),
+            "salary_component":"NFH Wages",
+            "payroll_date": doc.get("start_date"),
+            "docstatus": 1,
+        })
+        frappe.db.commit()
+    except Exception as e:
+        frappe.log_error(f"cancel_addition_salary: {e}") 
         
         
         
