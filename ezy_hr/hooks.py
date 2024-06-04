@@ -349,6 +349,7 @@ doc_events = {
         "validate": "ezy_hr.custom_salary.check_effective_date",
     },
     "Salary Slip":{
+        "before_insert":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
         "after_insert":"ezy_hr.addition_earning_public_ho.creating_additional_earn_and_com_off"
     },
   
