@@ -205,7 +205,7 @@ def get_gl_code(final_data,filters):
 	# filters_data.append(new_dict)
 	# print(staff_dill_debit,"/////////////////////////////////////",staff_dill_credit,"....",staff_dill_debit-staff_dill_credit)
 	final_value = []
-	excluded_narrations = ['E S I PAYABLE', 'E P F PAYABLE', 'PROFESSIONAL TAX PAYABLE','STAFF BILL RECOVERY','TDS ON SALARY']
+	excluded_narrations = ['E S I PAYABLE', 'E P F PAYABLE', 'PROFESSIONAL TAX PAYABLE','STAFF BILL RECOVERY','TDS ON SALARY','SALARY ADVANCE']
 	for item in filters_data:
 		if item.get("narration") not in excluded_narrations:
 			if item.get("credit") != 0 and  item.get("debit") != 0:
@@ -223,7 +223,7 @@ def get_gl_code(final_data,filters):
 			"company":company,
 			'gl_code': None,
 			'acc_code': None,
-			"deptcode":"0.0",
+			"deptcode":0,
 			"deptname":"Balance Sheet",
 			'transaction_types': 'liability',
 			'narration': 'E S I PAYABLE',
@@ -304,7 +304,26 @@ def get_gl_code(final_data,filters):
 			'gl_description': 'TDS ON SALARY',
 			'account_code': '23515',
 			'credit': incometax_credit
-		}				
+		}
+
+	adavan_details = [item for item in filters_data if item.get("narration") == 'SALARY ADVANCE']
+
+	advance_credit = 0.0
+
+	for item in incometax_details:
+		advance_credit += item.get("credit", 0.0)
+		advance_dict = {
+			"company":company,
+			'gl_code': None,
+			'acc_code': None,
+			"deptcode":0,
+			"deptname":"Balance Sheet",
+			'transaction_types': 'liability',
+			'narration': 'SALARY ADVANCE',
+			'gl_description': 'SALARY ADVANCE',
+			'account_code': '47420',
+			'credit': advance_credit
+		}					
 
 	sorted_final_data = sorted(final_value, key=lambda x: x["component"],reverse=False)
 	for entry in sorted_final_data:
@@ -318,6 +337,7 @@ def get_gl_code(final_data,filters):
 		if entry['component'] == 'Sheet':
 			entry.update({'deptname': 'Balance Sheet', 'deptcode': 0})
 
+	sorted_final_data.append(advance_dict)
 	sorted_final_data.append(inconetax_dict)
 	sorted_final_data.append(staff_dict)
 	sorted_final_data.append(pt_dict)
