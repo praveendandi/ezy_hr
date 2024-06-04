@@ -310,7 +310,7 @@ def get_gl_code(final_data,filters):
 
 	advance_credit = 0.0
 
-	for item in incometax_details:
+	for item in adavan_details:
 		advance_credit += item.get("credit", 0.0)
 		advance_dict = {
 			"company":company,
