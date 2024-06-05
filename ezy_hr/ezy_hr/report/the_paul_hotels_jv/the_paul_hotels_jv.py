@@ -129,235 +129,244 @@ def execute(filters=None):
 		return columns, data
 
 def get_gl_code(final_data,filters):
-	all_results = []
-	filters_data = final_data.copy()
-	gl_code_data = frappe.db.get_list("GL Code Maping", fields=['name'])
-	for gl_code in gl_code_data:
-		holiday_query = """ 
-			SELECT component, gl_code, acc_code, transaction_types, narration, gl_description,account_code
-			FROM `tabGL Codes`
-			WHERE parent = %s AND parentfield = 'gl_code_table'
-		"""
-		results = frappe.db.sql(holiday_query, gl_code['name'], as_dict=True)
-		all_results.extend(results)
+	try:
+		all_results = []
+		filters_data = final_data.copy()
+		gl_code_data = frappe.db.get_list("GL Code Maping", fields=['name'])
+		for gl_code in gl_code_data:
+			holiday_query = """ 
+				SELECT component, gl_code, acc_code, transaction_types, narration, gl_description,account_code
+				FROM `tabGL Codes`
+				WHERE parent = %s AND parentfield = 'gl_code_table'
+			"""
+			results = frappe.db.sql(holiday_query, gl_code['name'], as_dict=True)
+			all_results.extend(results)
 
-	for each in filters_data:
-		map_gl = each.get('component').title().replace("_", " ").strip()
-		company = frappe.db.get_value("Company",{"name":filters.get("company")},['abbr'])
-		each.update({"company":company})
-		# if 'Pf Employee' == map_gl:
-		# 	each.update({'component': "PF-Employee"})
-		if 'Pf Employer' == map_gl:
-			each.update({'component': "PF-Employer"})
-		# elif 'Esi' == map_gl:
-		# 	each.update({'component': "ESI"})
-		elif map_gl == 'Esie':
-			each.update({'component': "ESIE"})        
-		else:
-			each.update({'component': map_gl})
-	
+		for each in filters_data:
+			map_gl = each.get('component').title().replace("_", " ").strip()
+			company = frappe.db.get_value("Company",{"name":filters.get("company")},['abbr'])
+			each.update({"company":company})
+			# if 'Pf Employee' == map_gl:
+			# 	each.update({'component': "PF-Employee"})
+			if 'Pf Employer' == map_gl:
+				each.update({'component': "PF-Employer"})
+			# elif 'Esi' == map_gl:
+			# 	each.update({'component': "ESI"})
+			elif map_gl == 'Esie':
+				each.update({'component': "ESIE"})        
+			else:
+				each.update({'component': map_gl})
+		
 
-		for gl in all_results:
-			if gl["component"] == each['component']:
-				narration = None
-				month = filters.get("from_date")
-				date_obj = datetime.strptime(month, "%Y-%m-%d")
-				formatted_date = date_obj.strftime("%B-%Y")
-	
-				if "Salary for the month of" in str(gl.narration):
-					# print(";;;;;;;;;;;;;;;;;;;;;;")
-					# narration = f'{gl.narration} April-2024'
-					narration = f'{gl.narration} {formatted_date}'
-					# print(";;;;;;;;;;;;;;;;;;;;;;",narration)
-				else:
-					narration = gl.narration
+			for gl in all_results:
+				if gl["component"] == each['component']:
+					narration = None
+					month = filters.get("from_date")
+					date_obj = datetime.strptime(month, "%Y-%m-%d")
+					formatted_date = date_obj.strftime("%B-%Y")
+		
+					if "Salary for the month of" in str(gl.narration):
+						# print(";;;;;;;;;;;;;;;;;;;;;;")
+						# narration = f'{gl.narration} April-2024'
+						narration = f'{gl.narration} {formatted_date}'
+						# print(";;;;;;;;;;;;;;;;;;;;;;",narration)
+					else:
+						narration = gl.narration
+						
 					
-				
-				# print(narration,"ppppppppppppppppp")
-				each.update({
-					'gl_code': gl.gl_code,
-					'acc_code': gl.acc_code,
-					'transaction_types': gl.transaction_types,
-					'narration': narration,
-					'gl_description': gl.gl_description,
-					"account_code":gl.account_code,
-				})
-				map_gl = None
-				break
-	staff_dill_debit = 0.0
-	staff_dill_credit = 0.0
+					# print(narration,"ppppppppppppppppp")
+					each.update({
+						'gl_code': gl.gl_code,
+						'acc_code': gl.acc_code,
+						'transaction_types': gl.transaction_types,
+						'narration': narration,
+						'gl_description': gl.gl_description,
+						"account_code":gl.account_code,
+					})
+					map_gl = None
+					break
+		staff_dill_debit = 0.0
+		staff_dill_credit = 0.0
+		for each in filters_data:
+			transaction_type = each.get("transaction_types")
+			if transaction_type == "Expense":
+				each['debit'] = each['amount']
+				staff_dill_debit += each['debit']
+			elif transaction_type in ["Asses", "liability"]:
+				each['credit'] = each['amount']
+				staff_dill_credit += each['credit']
+			else:
+				each['credit'] = 0.0
+				each['debit'] = 0.0
 
-	for each in filters_data:
-		transaction_type = each.get("transaction_types")
-		if transaction_type == "Expense":
-			each['debit'] = each['amount']
-			staff_dill_debit += each['debit']
-		elif transaction_type in ["Asses", "liability"]:
-			each['credit'] = each['amount']
-			staff_dill_credit += each['credit']
-		else:
-			each['credit'] = 0.0
-			each['debit'] = 0.0
+		# new_dict = {"component":"",'credit': round(staff_dill_debit-staff_dill_credit)}
+		new_dict = {"company":company,"deptcode":00,"deptname":"Balance Sheet","account_code":"26310","narration":"SALARY PAYABLE",'credit': staff_dill_debit-staff_dill_credit}
 
-	# new_dict = {"component":"",'credit': round(staff_dill_debit-staff_dill_credit)}
-	new_dict = {"company":company,"deptcode":00,"deptname":"Balance Sheet","account_code":"26310","narration":"SALARY PAYABLE",'credit': staff_dill_debit-staff_dill_credit}
-
-	# filters_data.append(new_dict)
-	# print(staff_dill_debit,"/////////////////////////////////////",staff_dill_credit,"....",staff_dill_debit-staff_dill_credit)
-	final_value = []
-	excluded_narrations = ['E S I PAYABLE', 'E P F PAYABLE', 'PROFESSIONAL TAX PAYABLE','STAFF BILL RECOVERY','TDS ON SALARY','SALARY ADVANCE']
-	for item in filters_data:
-		if item.get("narration") not in excluded_narrations:
-			if item.get("credit") != 0 and  item.get("debit") != 0:
-				final_value.append(item)
+		# filters_data.append(new_dict)
+		# print(staff_dill_debit,"/////////////////////////////////////",staff_dill_credit,"....",staff_dill_debit-staff_dill_credit)
+		final_value = []
+		excluded_narrations = ['E S I PAYABLE', 'E P F PAYABLE', 'PROFESSIONAL TAX PAYABLE','STAFF BILL RECOVERY','TDS ON SALARY','SALARY ADVANCE']
+		for item in filters_data:
+			if item.get("narration") not in excluded_narrations:
+				if item.get("credit") != 0 and  item.get("debit") != 0:
+					final_value.append(item)
+			
 		
-	
 
-	esi_details = [item for item in filters_data if item.get("narration") == 'E S I PAYABLE']
+		esi_details = [item for item in filters_data if item.get("narration") == 'E S I PAYABLE']
 
-	esi_credit = 0.0
+		esi_credit = 0.0
 
-	for item in esi_details:
-		esi_credit  += item.get("credit", 0.0)
-		esi_dict = {
-			"company":company,
-			'gl_code': None,
-			'acc_code': None,
-			"deptcode":0,
-			"deptname":"Balance Sheet",
-			'transaction_types': 'liability',
-			'narration': 'E S I PAYABLE',
-			'gl_description': 'E S I PAYABLE',
-			'account_code': '23600',
-			'credit': esi_credit
-		}
-	epf_details = [item for item in filters_data if item.get("narration") == 'E P F PAYABLE']
+		for item in esi_details:
+			esi_credit  += item.get("credit", 0.0)
+			esi_dict = {
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				"deptname":"Balance Sheet",
+				'transaction_types': 'liability',
+				'narration': 'E S I PAYABLE',
+				'gl_description': 'E S I PAYABLE',
+				'account_code': '23600',
+				'credit': esi_credit
+			}
+		epf_details = [item for item in filters_data if item.get("narration") == 'E P F PAYABLE']
 
-	epf_credit = 0.0
+		epf_credit = 0.0
 
-	for item in epf_details:
-		epf_credit += item.get("credit", 0.0)
-		epf_dict = {
-			"company":company,
-			'gl_code': None,
-			'acc_code': None,
-			"deptcode":0,
-			"deptname":"Balance Sheet",
-			'transaction_types': 'liability',
-			'narration': 'E P F PAYABLE',
-			'gl_description': 'E P F PAYABLE',
-			'account_code': '23603',
-			'credit': epf_credit
-		}
+		for item in epf_details:
+			epf_credit += item.get("credit", 0.0)
+			epf_dict = {
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				"deptname":"Balance Sheet",
+				'transaction_types': 'liability',
+				'narration': 'E P F PAYABLE',
+				'gl_description': 'E P F PAYABLE',
+				'account_code': '23603',
+				'credit': epf_credit
+			}
 
-	pt_details = [item for item in filters_data if item.get("narration") == 'PROFESSIONAL TAX PAYABLE']
+		pt_details = [item for item in filters_data if item.get("narration") == 'PROFESSIONAL TAX PAYABLE']
 
-	pt_credit = 0.0
+		pt_credit = 0.0
 
-	for item in pt_details:
-		pt_credit += item.get("credit", 0.0)
-		pt_dict = {
-			"company":company,
-			'gl_code': None,
-			'acc_code': None,
-			"deptcode":0,
-			"deptname":"Balance Sheet",
-			'transaction_types': 'liability',
-			'narration': 'PROFESSIONAL TAX PAYABLE',
-			'gl_description': 'PROFESSIONAL TAX PAYABLE',
-			'account_code': '23611',
-			'credit': pt_credit
-		}
+		for item in pt_details:
+			pt_credit += item.get("credit", 0.0)
+			pt_dict = {
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				"deptname":"Balance Sheet",
+				'transaction_types': 'liability',
+				'narration': 'PROFESSIONAL TAX PAYABLE',
+				'gl_description': 'PROFESSIONAL TAX PAYABLE',
+				'account_code': '23611',
+				'credit': pt_credit
+			}
 
-	stafbill_details = [item for item in filters_data if item.get("narration") == 'STAFF BILL RECOVERY']
+		stafbill_details = [item for item in filters_data if item.get("narration") == 'STAFF BILL RECOVERY']
 
-	stafbill_credit = 0.0
+		stafbill_credit = 0.0
 
-	for item in stafbill_details:
-		stafbill_credit += item.get("credit", 0.0)
-		staff_dict = {
-			"company":company,
-			'gl_code': None,
-			'acc_code': None,
-			"deptcode":0,
-			"deptname":"Balance Sheet",
-			'transaction_types': 'liability',
-			'narration': 'STAFF BILL RECOVERY',
-			'gl_description': 'STAFF BILL RECOVERY',
-			'account_code': '47421',
-			'credit': stafbill_credit
-		}
-	incometax_details = [item for item in filters_data if item.get("narration") == 'TDS ON SALARY']
+		for item in stafbill_details:
+			stafbill_credit += item.get("credit", 0.0)
+			staff_dict = {
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				"deptname":"Balance Sheet",
+				'transaction_types': 'liability',
+				'narration': 'STAFF BILL RECOVERY',
+				'gl_description': 'STAFF BILL RECOVERY',
+				'account_code': '47421',
+				'credit': stafbill_credit
+			}
+		incometax_details = [item for item in filters_data if item.get("narration") == 'TDS ON SALARY']
 
-	incometax_credit = 0.0
+		incometax_credit = 0.0
 
-	for item in incometax_details:
-		incometax_credit += item.get("credit", 0.0)
-		inconetax_dict = {
-			"company":company,
-			'gl_code': None,
-			'acc_code': None,
-			"deptcode":0,
-			"deptname":"Balance Sheet",
-			'transaction_types': 'liability',
-			'narration': 'TDS ON SALARY',
-			'gl_description': 'TDS ON SALARY',
-			'account_code': '23515',
-			'credit': incometax_credit
-		}
+		for item in incometax_details:
+			incometax_credit += item.get("credit", 0.0)
+			inconetax_dict = {
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				"deptname":"Balance Sheet",
+				'transaction_types': 'liability',
+				'narration': 'TDS ON SALARY',
+				'gl_description': 'TDS ON SALARY',
+				'account_code': '23515',
+				'credit': incometax_credit
+			}
 
-	adavan_details = [item for item in filters_data if item.get("narration") == 'SALARY ADVANCE']
+		adavan_details = [item for item in filters_data if item.get("narration") == 'SALARY ADVANCE']
 
-	advance_credit = 0.0
-
-	for item in adavan_details:
-		advance_credit += item.get("credit", 0.0)
+		advance_credit = 0.0
 		advance_dict = {
-			"company":company,
-			'gl_code': None,
-			'acc_code': None,
-			"deptcode":0,
-			"deptname":"Balance Sheet",
-			'transaction_types': 'liability',
-			'narration': 'SALARY ADVANCE',
-			'gl_description': 'SALARY ADVANCE',
-			'account_code': '47420',
-			'credit': advance_credit
-		}					
-
-	sorted_final_data = sorted(final_value, key=lambda x: x["component"],reverse=False)
-	for entry in sorted_final_data:
-		deptcode = entry['custom_payroll_cost_center_'].split('-')[0]
-			# Add the deptcode to the dictionary
-		entry['deptcode'] = deptcode
-		deptname = entry['custom_payroll_cost_center_'].split('-')[1]
-		entry['deptname'] = deptname
-		if entry['component'] == 'Balance Sheet':
-			entry.update({'deptname': 'Balance Sheet', 'deptcode': 0})
-		if entry['component'] == 'Sheet':
-			entry.update({'deptname': 'Balance Sheet', 'deptcode': 0})
-
-	sorted_final_data.append(advance_dict)
-	sorted_final_data.append(inconetax_dict)
-	sorted_final_data.append(staff_dict)
-	sorted_final_data.append(pt_dict)
-	sorted_final_data.append(esi_dict)
-	sorted_final_data.append(epf_dict)
-	sorted_final_data.append(new_dict)
-	
-	for i in sorted_final_data:
-		if 'debit' in i and i['debit'] is not None and i['debit'] >= 0:
-			if 'credit' not in i or i['credit'] is None:
-				i['credit'] = 0.0
-        
-        # Ensure 'debit' is set to 0.0 if 'credit' is non-negative or zero
-		if 'credit' in i and i['credit'] is not None and i['credit'] >= 0:
-			if 'debit' not in i or i['debit'] is None:
-				i['debit'] = 0.0
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				"deptname":"Balance Sheet",
+				'transaction_types': 'liability',
+				'narration': 'SALARY ADVANCE',
+				'gl_description': 'SALARY ADVANCE',
+				'account_code': '47420',
+				'credit': 0.0
+				}
 		
-	
-	return sorted_final_data
+		for item in adavan_details:
+			advance_credit += item.get("credit", 0.0)
+			advance_dict.update({
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				'credit': advance_credit
+			})				
 
+		sorted_final_data = sorted(final_value, key=lambda x: x["component"],reverse=False)
+		for entry in sorted_final_data:
+			deptcode = entry['custom_payroll_cost_center_'].split('-')[0]
+				# Add the deptcode to the dictionary
+			entry['deptcode'] = deptcode
+			deptname = entry['custom_payroll_cost_center_'].split('-')[1]
+			entry['deptname'] = deptname
+			if entry['component'] == 'Balance Sheet':
+				entry.update({'deptname': 'Balance Sheet', 'deptcode': 0})
+			if entry['component'] == 'Sheet':
+				entry.update({'deptname': 'Balance Sheet', 'deptcode': 0})
+
+		sorted_final_data.append(advance_dict)
+		sorted_final_data.append(inconetax_dict)
+		sorted_final_data.append(staff_dict)
+		sorted_final_data.append(pt_dict)
+		sorted_final_data.append(esi_dict)
+		sorted_final_data.append(epf_dict)
+		sorted_final_data.append(new_dict)
+
+		for i in sorted_final_data:
+			if 'debit' in i and i['debit'] is not None and i['debit'] >= 0:
+				if 'credit' not in i or i['credit'] is None:
+					i['credit'] = 0.0
+			
+			# Ensure 'debit' is set to 0.0 if 'credit' is non-negative or zero
+			if 'credit' in i and i['credit'] is not None and i['credit'] >= 0:
+				if 'debit' not in i or i['debit'] is None:
+					i['debit'] = 0.0
+			
+		
+		return sorted_final_data
+	
+	except Exception as e:
+		frappe.log_error(str(e) + " Attendance Regularized")
 
 
 def get_earning_and_deduction_types(salary_slips):
