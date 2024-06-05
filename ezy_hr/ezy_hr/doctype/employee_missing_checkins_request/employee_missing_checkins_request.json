@@ -11,6 +11,9 @@
   "employee",
   "employee_name",
   "user_id",
+  "reporting_manger",
+  "reporting_manager_email",
+  "hr_manager_email",
   "column_break_mapl",
   "unit",
   "status",
@@ -118,12 +121,36 @@
    "label": "User ID",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fetch_from": "employee.reports_to",
+   "fieldname": "reporting_manger",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Reporting Manger",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "reporting_manger.user_id",
+   "fieldname": "reporting_manager_email",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Reporting Manager Email",
+   "options": "User"
+  },
+  {
+   "fetch_from": "employee.leave_approver",
+   "fieldname": "hr_manager_email",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Hr Manager Email",
+   "options": "User"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-05-27 10:25:24.242901",
+ "modified": "2024-06-05 12:33:41.082865",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Employee Missing Checkins Request",
