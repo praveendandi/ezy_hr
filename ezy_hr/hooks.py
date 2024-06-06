@@ -351,8 +351,8 @@ doc_events = {
     "Salary Slip":{
         "before_insert":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
         "after_insert":"ezy_hr.addition_earning_public_ho.creating_additional_earn_and_com_off",
-        "on_cancel":"jaypeehotels.arrear_adj.cancel_addition_salary",
-        "on_trash":"jaypeehotels.arrear_adj.cancel_addition_salary",
+        "on_cancel":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
+        "on_trash":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
     },
   
     
