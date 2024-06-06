@@ -1,12 +1,12 @@
 variables:
-  REPO_PATH: "/home/caratred/ezy_hr"
+  REPO_PATH: "/home/caratred/frappe-15/apps/ezy_hr"
   #CURRENT_BRANCH: "$(git rev-parse --abbrev-ref HEAD)"
   COMMIT_ID: $(git rev-parse --short "$CURRENT_BRANCH")
 
 # Trigger the pipeline on a new commit to a main branch.
-# workflow:
-#   rules:
-#     - if: $CI_COMMIT_BRANCH == "main" #$CI_DEFAULT_BRANCH
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" #$CI_DEFAULT_BRANCH
 
 # Stages to define a workflow step by step.
 stages:
@@ -21,7 +21,7 @@ check_repo_job:
     
       if [ -d "$REPO_PATH" ]; then
             echo "The ezy_hr repo exists."
-              git config --global --add safe.directory /home/caratred/ezy_hr
+              git config --global --add safe.directory /home/caratred/frappe-15/apps/ezy_hr
         else
             echo "The ezy_hr repo not exists."
               exit 1
