@@ -6,8 +6,8 @@ variables:
 # Trigger the pipeline on a new commit to a main branch.
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "main" #$CI_DEFAULT_BRANCH
-  when: manual
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#      when: manual
 
 # Stages to define a workflow step by step.
 stages:
