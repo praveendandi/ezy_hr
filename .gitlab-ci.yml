@@ -41,7 +41,7 @@ update_repo-job:
                     echo "The repository is currently on branch: $CURRENT_BRANCH"
             if [ "$CURRENT_BRANCH" == "main" ]; then
                     echo "Checking for any local changes in the repo and backup last git commit ID"
-                      git log -1 >>/home/caratred/frappe-15/git-commit.log
+                      date && git log -1 >>/home/caratred/frappe-15/git-commit.log
               if [[ -n $(git status -s) ]]; then
                     echo "Error: There are local changes. Please commit or stash them before pulling."
                       exit 1
