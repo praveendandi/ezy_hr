@@ -1,0 +1,171 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-05-15 12:28:16.765821",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_qcaq",
+  "employee_id",
+  "employee_name",
+  "column_break_8mu3",
+  "unit",
+  "creation_date",
+  "earning_details_section",
+  "previous_review_date",
+  "column_break_cs2f",
+  "new_effective_date",
+  "section_break_w0au",
+  "component_detail",
+  "amended_from",
+  "naming_serise"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_qcaq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Employee Salary Update",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "employee_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee Id",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee_id.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_8mu3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "earning_details_section",
+   "fieldtype": "Section Break",
+   "label": "Earning Details"
+  },
+  {
+   "fetch_from": "employee_id.custom_effective_date",
+   "fieldname": "previous_review_date",
+   "fieldtype": "Date",
+   "label": "Previous Review Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_cs2f",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_effective_date",
+   "fieldtype": "Date",
+   "label": "New Effective Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_w0au",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "creation_date",
+   "fieldtype": "Date",
+   "label": "Creation Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "component_detail",
+   "fieldtype": "Table",
+   "label": "Component Detail",
+   "options": "Earning Child",
+   "reqd": 1
+  },
+  {
+   "default": "ESU-.#",
+   "fieldname": "naming_serise",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Serise",
+   "options": "ESU-.#"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-05-15 17:48:46.287894",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Employee Salary Update",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit HR",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Unit Head",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "GM-HR (General Manager- Human Resources)",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

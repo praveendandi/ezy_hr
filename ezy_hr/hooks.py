@@ -30,6 +30,8 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 # include js in doctype views
 doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
+              "Employee":"public/js/employee_field_update.js",
+              "Employee Promotion":"public/js/employee_promotion.js",
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -205,7 +207,27 @@ fixtures = [
                     "Payroll Employee Detail-custom_status",
                     "Payroll Entry-custom_validate_employee_seperation",
                     "Payroll Entry-custom_uncompleted_seperations",
-                },    
+                    "Leave Type-custom_flexi_week_off",
+                    "Leave Type-custom_leaves",
+                    "Leave Type-custom_unit",
+                    "Leave Type-custom_holiday_list",
+                    "Leave Type-custom_unit_holiday_list",
+                    "Leave Type-custom_select_holiday_type",
+                    "Leave Allocation-custom_leave_allocation_date_and_description",
+                    "Leave Ledger Entry-custom_reason_date_",
+                    "Employee Promotion-custom_effective_date",
+                    "Employee Promotion-custom_current_gross_amount",
+                    "Employee Promotion-custom_new_gross_amount",
+                    "Employee Promotion-custom_earnings_section",
+                    "Employee Promotion-custom_earnings_detail",
+                    "Employee Promotion-custom_previous_effective_date",
+                    "Employee-custom_apply_for_nfh_wages",
+                    "Salary Slip-custom_payroll_cost_center_",
+                    "Job Offer-custom_level",
+                    "Job Offer-custom_department",
+                    "Salary Slip-custom_ifsc",
+                },
+                
             ]]
     }
 ]
@@ -288,6 +310,10 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
+override_doctype_class = {
+# 	"ToDo": "custom_app.overrides.CustomToDo"
+    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType"
+}
 
 # Document Events
 # ---------------
@@ -312,11 +338,22 @@ doc_events = {
         "on_update":"ezy_hr.personl_file.create_personal_file_through_employee"
     },
     "Employee":{
-        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee"
+        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee",
+        "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id",
     },
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
-    }
+    },
+    "Employee Promotion":{
+        "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
+        "validate": "ezy_hr.custom_salary.check_effective_date",
+    },
+    "Salary Slip":{
+        "before_insert":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
+        "after_insert":"ezy_hr.addition_earning_public_ho.creating_additional_earn_and_com_off"
+    },
+  
+    
 }
 
 # Scheduled Tasks
@@ -324,6 +361,11 @@ doc_events = {
 
 # scheduler_events = {
 # 	"daily": [
+scheduler_events = {
+}
+# scheduler_events = {
+# }
+# 	"all": [
 # 		"ezy_hr.tasks.all"
 # 	],
 # 	"daily": [
@@ -346,7 +388,16 @@ scheduler_events = {
         "0 0 * * *": [
             "ezy_hr.employee_checkins.get_employee_checkins"
         ]
-    }
+    },
+    "daily": [
+		"ezy_hr.ezy_hr.events.flexi_weekoff"
+	],
+    "hourly": [
+		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
+	],
+    "daily": [
+        "ezy_hr.ezy_hr.events.flexi_weekoff"
+    ],
 }
 
 # Testing
