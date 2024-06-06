@@ -148,6 +148,7 @@ def generate_actions(status, employee, date):
     return ''
 
 def get_leave_dates(filters):
+    print('Holidays details')
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
