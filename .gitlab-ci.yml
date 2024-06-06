@@ -46,6 +46,7 @@ update_repo-job:
                       exit 1
                 else  
                     echo "No local changes found, pulling code from $CURRENT_BRANCH"
+                      pwd
                       git pull origin "$CURRENT_BRANCH"
               fi
                 else
