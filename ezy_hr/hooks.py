@@ -226,6 +226,9 @@ fixtures = [
                     "Job Offer-custom_level",
                     "Job Offer-custom_department",
                     "Salary Slip-custom_ifsc",
+                    "Salary Slip-custom_esi_reason",
+                    "Salary Slip-custom_reason_for_esi",
+                    
                 },
                 
             ]]
