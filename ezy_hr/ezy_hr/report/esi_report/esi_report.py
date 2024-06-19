@@ -238,3 +238,11 @@ def get_salary_slip_details(salary_slips, currency, company_currency, component_
             ss_map[d.parent][d.salary_component] += flt(d.amount)
  
     return ss_map
+
+def get_stipend_employees():
+    stipend_employees = frappe.qb.from_(salary_detail) \
+        .join(salary_slip).on(salary_slip.name == salary_detail.parent) \
+        .where(salary_detail.salary_component == "Stipend") \
+        .select(salary_slip.employee) \
+        .distinct().run(pluck=True)
+    return stipend_employees
