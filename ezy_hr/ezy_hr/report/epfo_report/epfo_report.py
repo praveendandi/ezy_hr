@@ -6,15 +6,10 @@ from frappe import _
 from frappe.utils import getdate
 
 def execute(filters=None):
-    
-    try:
-        data = get_data(filters)
-        columns = get_columns(filters) if len(data) else []
-        return columns, data
-    except Exception as e:
-        frappe.log_error(f"Error execute EPFO Report: {e}") 
-        
-        
+    data = get_data(filters)
+    columns = get_columns(filters) if data else []
+    return columns, data
+
 def get_columns(filters):
     columns = [
         {
@@ -114,27 +109,27 @@ def get_conditions(filters):
     conditions = ["1=1"]
 
     if filters.get("department"):
-        conditions.append("sal.department = '%s' " % (filters["department"]))
+        conditions.append("sal.department = '%s'" % filters["department"])
 
     if filters.get("branch"):
-        conditions.append("sal.branch = '%s' " % (filters["branch"]))
+        conditions.append("sal.branch = '%s'" % filters["branch"])
 
     if filters.get("company"):
-        conditions.append("sal.company = '%s' " % (filters["company"]))
+        conditions.append("sal.company = '%s'" % filters["company"])
 
     if filters.get("from_date"):
-        conditions.append("sal.start_date >= '%s' " % (filters["from_date"]))
+        conditions.append("sal.start_date >= '%s'" % filters["from_date"])
 
     if filters.get("to_date"):
-        conditions.append("sal.end_date <= '%s' " % (filters["to_date"]))
+        conditions.append("sal.end_date <= '%s'" % filters["to_date"])
 
     if filters.get("employee"):
-        conditions.append("sal.employee = '%s' " % (filters["employee"]))
+        conditions.append("sal.employee = '%s'" % filters["employee"])
 
     if filters.get("mode_of_payment"):
-        conditions.append("sal.mode_of_payment = '%s' " % (filters["mode_of_payment"]))
+        conditions.append("sal.mode_of_payment = '%s'" % filters["mode_of_payment"])
 
-    return " and ".join(conditions)
+    return " AND ".join(conditions)
 
 def prepare_data(entry, component_type_dict):
     data_list = {}
@@ -152,18 +147,15 @@ def prepare_data(entry, component_type_dict):
         if data_list.get(d.name):
             data_list[d.name][component_type] = d.amount
         else:
-            data_list.setdefault(
-                d.name,
-                {
-                    "employee": d.employee,
-                    "employee_name": d.employee_name,
-                    "pf_account": employee_account_dict.get(d.employee, {}).get("provident_fund_account"),
-                    component_type: d.amount,
-                    "gross_pay": round(d.gross_pay),
-                    "absent_days": d.absent_days, 
-                    "payment_days" : d.payment_days,
-                },
-            )
+            data_list[d.name] = {
+                "employee": d.employee,
+                "employee_name": d.employee_name,
+                "pf_account": employee_account_dict.get(d.employee, {}).get("provident_fund_account"),
+                component_type: d.amount,
+                "gross_pay": round(d.gross_pay),
+                "absent_days": d.absent_days, 
+                "payment_days" : d.payment_days,
+            }
     return data_list
 
 def get_data(filters):
@@ -171,9 +163,8 @@ def get_data(filters):
     conditions = get_conditions(filters)
 
     salary_slips = frappe.db.sql(
-        """SELECT sal.name FROM `tabSalary Slip` sal
-        WHERE docstatus = 1 AND {conditions}
-        """.format(conditions=conditions),
+        f"""SELECT sal.name FROM `tabSalary Slip` sal
+        WHERE docstatus = 1 AND {conditions}""",
         as_dict=1,
     )
 
@@ -184,19 +175,18 @@ def get_data(filters):
         )
     )
 
-    if not len(component_type_dict):
+    if not component_type_dict:
         return []
 
     entry = frappe.db.sql(
-        """SELECT sal.name, sal.employee, sal.employee_name, sal.payment_days, sal.gross_pay, sal.absent_days, ded.salary_component, ded.amount
+        f"""SELECT sal.name, sal.employee, sal.employee_name, sal.payment_days, sal.gross_pay, sal.absent_days, ded.salary_component, ded.amount
         FROM `tabSalary Slip` sal, `tabSalary Detail` ded
         WHERE sal.name = ded.parent
         AND ded.parentfield = 'deductions'
         AND ded.parenttype = 'Salary Slip'
         AND sal.docstatus = 1
         AND {conditions}
-        AND ded.salary_component IN (%s)
-        """.format(conditions=conditions) % (", ".join(["%s"] * len(component_type_dict))),
+        AND ded.salary_component IN ({", ".join(["%s"] * len(component_type_dict))})""",
         tuple(component_type_dict.keys()),
         as_dict=1,
     )
@@ -204,16 +194,8 @@ def get_data(filters):
     data_list = prepare_data(entry, component_type_dict)
 
     for d in salary_slips:
-        if data_list.get(d.name):
-            employee = {
-                "employee": data_list.get(d.name).get("employee"),
-                "employee_name": data_list.get(d.name).get("employee_name"),
-                "pf_account": data_list.get(d.name).get("pf_account"),
-                "gross_pay": data_list[d.name].get("gross_pay"),
-                "absent_days": data_list[d.name].get("absent_days"),
-                "payment_days" : data_list[d.name].get("payment_days")
-            }
-
+        if d.name in data_list:
+            employee = data_list[d.name]
 
             earning_data = frappe.db.sql(
                 """SELECT sal.name, ear.salary_component, ear.amount, ear.abbr
@@ -222,8 +204,7 @@ def get_data(filters):
                 AND ear.parentfield = 'earnings'
                 AND ear.parenttype = 'Salary Slip'
                 AND sal.docstatus = 1
-                AND ear.parent=%s
-                """, (d.name,),
+                AND ear.parent=%s""", (d.name,),
                 as_dict=1,
             )
 
@@ -234,15 +215,34 @@ def get_data(filters):
             for i in earning_data:
                 if i.abbr == "B":
                     basic = i.amount
-                if i.abbr == "DA":
+                elif i.abbr == "DA":
                     da = i.amount
-                if i.abbr == "HRA":
+                elif i.abbr == "HRA":
                     hra = i.amount
 
-            gross_pay = round(employee["gross_pay"])
-            epf_wages = round(min(gross_pay, 15000))
-            eps_wages = round(min(gross_pay, 15000))
-            edli_wages = round(min(gross_pay, 15000))
+            gross_pay = employee["gross_pay"]
+            
+            if gross_pay >= 15000:
+                epf_wages = 15000
+            else:
+                epf_wages = round(basic + da)
+            
+
+
+            if gross_pay >= 15000:
+                eps_wages = 15000
+            else:
+                eps_wages = round(basic + da)
+            
+
+
+            if gross_pay >= 15000:
+                edli_wages = 15000
+            else:
+                edli_wages = round(basic + da)
+            
+            # eps_wages = epf_wages
+            # edli_wages = epf_wages
 
             epf_contri_remitted = round((epf_wages * 12.0) / 100)
             eps_contri_remitted = round((eps_wages * 8.33) / 100)
@@ -274,3 +274,4 @@ def get_years():
         year_list = [getdate().year]
 
     return "\n".join(str(year) for year in year_list)
+

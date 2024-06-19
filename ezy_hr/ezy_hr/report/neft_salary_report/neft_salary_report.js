@@ -28,6 +28,13 @@ frappe.query_reports["NEFT Salary Report"] = {
 			options: "Company",
 			reqd: 1
 		},
+		{
+			fieldname: "select_bank",
+			label: __("Select Bank"),
+			fieldtype: "Link",
+			options:"Bank"
+			
+		},
 
 	]
 };
