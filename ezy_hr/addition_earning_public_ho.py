@@ -1,6 +1,7 @@
 import frappe
 import erpnext
 from frappe.model.meta import Meta
+from datetime import datetime
 
 def creating_additional_earn_and_com_off(doc,method=None):
     try:
@@ -15,7 +16,7 @@ def creating_additional_earn_and_com_off(doc,method=None):
         employee_list = get_employees(data,doc)
         
         if employee_list:
-            resutl = creating_addition(employee_list,data)
+            resutl = creating_addition(employee_list,doc)
             
             if resutl:
                 doc.save()
@@ -39,16 +40,14 @@ def get_employees(data, doc):
         fields=["holiday_date", "description"],
         filters=holiday_filters
     )
-    print(holidays, "Holidays fetched")
-
+    
     unit = doc.company
     employee_id = doc.employee
     holiday_names = {holiday["holiday_date"]: holiday["description"] for holiday in holidays}
     holidays_list = [holiday["holiday_date"] for holiday in holidays]
 
     if holidays_list:
-        print("Holidays list is not empty")
-
+        
         conditions = """
             attendance_date IN %(holidays_list)s 
             AND status NOT IN ('On Leave', 'Absent') 
@@ -69,8 +68,7 @@ def get_employees(data, doc):
             {"holidays_list": holidays_list, "unit": unit, "employee_id": employee_id},
             as_dict=True
         )
-        print(employee_list, "Employee attendance fetched")
-
+        
         earning_on_hod_employee = []
         employee_detail = {}
 
@@ -107,15 +105,24 @@ def creating_addition(empl_detail,data):
     
     for each_item in empl_detail:
         
-        gross_amount = frappe.db.get_value("Employee",{"name":each_item.get("employee")},['custom_gross_amount'])
+        is_new_joining = False
         
+        gross_amount,date_of_joining = frappe.db.get_value("Employee",{"name":each_item.get("employee")},['custom_gross_amount',"date_of_joining"])
+        
+        start_date = datetime.strptime(data.start_date,"%Y-%m-%d").date()
+        
+        end_date = datetime.strptime(data.end_date,"%Y-%m-%d").date()
+        
+        if start_date <= date_of_joining <= end_date:
+            is_new_joining = True
+               
         nfh_Wages_per_day = round(gross_amount/30)*each_item.get("no_of_day")
         
         details = {
             "doctype": "Additional Salary",
             "employee":each_item.get("employee"),
             "amount":nfh_Wages_per_day,
-            "payroll_date":data.get("from_date"),
+            "payroll_date":date_of_joining if is_new_joining else data.start_date ,
             "salary_component":"NFH Wages",
             "currency":"INR",
             "company":each_item.get("company")
@@ -133,7 +140,7 @@ def cancel_addition_salary(doc,mothod=None):
         addition_cencel = frappe.db.delete("Additional Salary", {
             "employee": doc.get("employee"),
             "salary_component":"NFH Wages",
-            "payroll_date": doc.get("start_date"),
+            "payroll_date": ["Between",[doc.start_date,doc.end_date]],
             "docstatus": 1,
         })
         frappe.db.commit()

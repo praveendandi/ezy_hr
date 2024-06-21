@@ -272,10 +272,7 @@ def get_gl_code(final_data,filters):
 		stafbill_details = [item for item in filters_data if item.get("narration") == 'STAFF BILL RECOVERY']
 
 		stafbill_credit = 0.0
-
-		for item in stafbill_details:
-			stafbill_credit += item.get("credit", 0.0)
-			staff_dict = {
+		staff_dict = {
 				"company":company,
 				'gl_code': None,
 				'acc_code': None,
@@ -285,15 +282,24 @@ def get_gl_code(final_data,filters):
 				'narration': 'STAFF BILL RECOVERY',
 				'gl_description': 'STAFF BILL RECOVERY',
 				'account_code': '47421',
+				'credit': 0.0
+				}
+
+
+		for item in stafbill_details:
+			stafbill_credit += item.get("credit", 0.0)
+			staff_dict.update({
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
 				'credit': stafbill_credit
-			}
+			})
+			
 		incometax_details = [item for item in filters_data if item.get("narration") == 'TDS ON SALARY']
 
 		incometax_credit = 0.0
-
-		for item in incometax_details:
-			incometax_credit += item.get("credit", 0.0)
-			inconetax_dict = {
+		inconetax_dict = {
 				"company":company,
 				'gl_code': None,
 				'acc_code': None,
@@ -303,8 +309,18 @@ def get_gl_code(final_data,filters):
 				'narration': 'TDS ON SALARY',
 				'gl_description': 'TDS ON SALARY',
 				'account_code': '23515',
+				'credit': 0.0
+				}
+
+		for item in incometax_details:
+			incometax_credit += item.get("credit", 0.0)
+			inconetax_dict.update({
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
 				'credit': incometax_credit
-			}
+			})
 
 		adavan_details = [item for item in filters_data if item.get("narration") == 'SALARY ADVANCE']
 
