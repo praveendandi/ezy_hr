@@ -228,6 +228,7 @@ fixtures = [
                     "Salary Slip-custom_ifsc",
                     "Salary Slip-custom_esi_reason",
                     "Salary Slip-custom_reason_for_esi",
+                    "Employee-custom_applicable_for_actual_pf",
                     
                 },
                 
@@ -357,8 +358,6 @@ doc_events = {
         "on_cancel":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
         "on_trash":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
     },
-  
-    
 }
 
 # Scheduled Tasks
