@@ -135,12 +135,13 @@ def prepare_data(entry, component_type_dict):
     data_list = {}
 
     employee_account_dict = frappe._dict(
-        (employee.name, {"provident_fund_account": employee.provident_fund_account})
+        (employee.name, {"provident_fund_account": employee.provident_fund_account,"custom_applicable_for_actual_pf":employee.custom_applicable_for_actual_pf})
         for employee in frappe.db.sql(
-            """SELECT name, provident_fund_account FROM `tabEmployee`""",
+            """SELECT name, provident_fund_account, custom_applicable_for_actual_pf FROM `tabEmployee`""",
             as_dict=True,
         )
     )
+    # print(employee_account_dict,";/////////////////////////////////")
 
     for d in entry:
         component_type = component_type_dict.get(d.salary_component)
@@ -151,6 +152,7 @@ def prepare_data(entry, component_type_dict):
                 "employee": d.employee,
                 "employee_name": d.employee_name,
                 "pf_account": employee_account_dict.get(d.employee, {}).get("provident_fund_account"),
+                "custom_applicable_for_actual_pf":employee_account_dict.get(d.employee, 0).get("custom_applicable_for_actual_pf"),
                 component_type: d.amount,
                 "gross_pay": round(d.gross_pay),
                 "absent_days": d.absent_days, 
@@ -196,6 +198,7 @@ def get_data(filters):
     for d in salary_slips:
         if d.name in data_list:
             employee = data_list[d.name]
+            # print(employee,"777777777777")
 
             earning_data = frappe.db.sql(
                 """SELECT sal.name, ear.salary_component, ear.amount, ear.abbr
@@ -207,6 +210,12 @@ def get_data(filters):
                 AND ear.parent=%s""", (d.name,),
                 as_dict=1,
             )
+            is_applicable = False
+
+            if employee.get("custom_applicable_for_actual_pf"):
+                print(employee,"ppppppppppppppppppppppp")
+                is_applicable = True
+
 
             basic = 0
             da = 0
@@ -221,20 +230,19 @@ def get_data(filters):
                     hra = i.amount
 
             gross_pay = employee["gross_pay"]
-            
-            if gross_pay >= 15000:
+
+            if is_applicable:
+                epf_wages = round(basic+da)
+            elif gross_pay >= 15000:
                 epf_wages = 15000
             else:
                 epf_wages = round(basic + da)
             
-
-
             if gross_pay >= 15000:
                 eps_wages = 15000
             else:
                 eps_wages = round(basic + da)
-            
-
+        
 
             if gross_pay >= 15000:
                 edli_wages = 15000
@@ -274,4 +282,3 @@ def get_years():
         year_list = [getdate().year]
 
     return "\n".join(str(year) for year in year_list)
-
