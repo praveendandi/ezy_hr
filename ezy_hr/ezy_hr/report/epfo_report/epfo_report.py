@@ -141,7 +141,6 @@ def prepare_data(entry, component_type_dict):
             as_dict=True,
         )
     )
-    # print(employee_account_dict,";/////////////////////////////////")
 
     for d in entry:
         component_type = component_type_dict.get(d.salary_component)
@@ -198,7 +197,6 @@ def get_data(filters):
     for d in salary_slips:
         if d.name in data_list:
             employee = data_list[d.name]
-            # print(employee,"777777777777")
 
             earning_data = frappe.db.sql(
                 """SELECT sal.name, ear.salary_component, ear.amount, ear.abbr
@@ -213,13 +211,13 @@ def get_data(filters):
             is_applicable = False
 
             if employee.get("custom_applicable_for_actual_pf"):
-                print(employee,"ppppppppppppppppppppppp")
                 is_applicable = True
 
 
             basic = 0
             da = 0
             hra = 0
+            
 
             for i in earning_data:
                 if i.abbr == "B":
@@ -236,18 +234,18 @@ def get_data(filters):
             elif gross_pay >= 15000:
                 epf_wages = 15000
             else:
-                epf_wages = round(basic + da)
+                epf_wages = round(gross_pay - hra)
             
             if gross_pay >= 15000:
                 eps_wages = 15000
             else:
-                eps_wages = round(basic + da)
+                eps_wages = round(gross_pay - hra)
         
 
             if gross_pay >= 15000:
                 edli_wages = 15000
             else:
-                edli_wages = round(basic + da)
+                edli_wages = round(gross_pay - hra)
             
             # eps_wages = epf_wages
             # edli_wages = epf_wages
