@@ -228,7 +228,7 @@ fixtures = [
                     "Salary Slip-custom_ifsc",
                     "Salary Slip-custom_esi_reason",
                     "Salary Slip-custom_reason_for_esi",
-                    "Employee-custom_applicable_for_actual_pf",
+                    "Employee-custom_applicable_for_actual_pf"
                     
                 },
                 
