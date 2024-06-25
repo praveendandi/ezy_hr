@@ -39,7 +39,7 @@ update_repo-job:
           if [ -d .git ]; then
                     CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
                     echo "The repository is currently on branch: $CURRENT_BRANCH"
-            if [ "$CURRENT_BRANCH" == "main" ]; then
+            if [ "$CURRENT_BRANCH" == "stablev1" ]; then
                     echo "Checking for any local changes in the repo and backup last git commit ID"
                       git log -1 >>/home/caratred/frappe-15/git-commit.log
               if [[ -n $(git status -s) ]]; then
