@@ -32,6 +32,7 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
               "Employee":"public/js/employee_field_update.js",
               "Employee Promotion":"public/js/employee_promotion.js",
+              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -228,7 +229,10 @@ fixtures = [
                     "Salary Slip-custom_ifsc",
                     "Salary Slip-custom_esi_reason",
                     "Salary Slip-custom_reason_for_esi",
-                    "Employee-custom_applicable_for_actual_pf"
+                    "Employee-custom_applicable_for_actual_pf",
+                    "Job Offer-custom_salary_breakup",
+                    "Job Offer-custom_earning",
+                    "Job Offer-custom_deducations",
                     
                 },
                 
@@ -342,6 +346,8 @@ doc_events = {
         "on_update":"ezy_hr.personl_file.create_personal_file_through_employee"
     },
     "Employee":{
+        # /home/caratred/Desktop/frappe15/apps/ezy_hr/ezy_hr/ezy_hr/custom_script/employee/employee.py
+        # "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.after_update",
         "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee",
         "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id",
     },
