@@ -129,6 +129,7 @@ def execute(filters=None):
 		return columns, data
 
 def get_gl_code(final_data,filters):
+
 	try:
 		all_results = []
 		filters_data = final_data.copy()
@@ -146,14 +147,13 @@ def get_gl_code(final_data,filters):
 			map_gl = each.get('component').title().replace("_", " ").strip()
 			company = frappe.db.get_value("Company",{"name":filters.get("company")},['abbr'])
 			each.update({"company":company})
-			# if 'Pf Employee' == map_gl:
-			# 	each.update({'component': "PF-Employee"})
+			
 			if 'Pf Employer' == map_gl:
 				each.update({'component': "PF-Employer"})
-			# elif 'Esi' == map_gl:
-			# 	each.update({'component': "ESI"})
 			elif map_gl == 'Esie':
-				each.update({'component': "ESIE"})        
+				each.update({'component': "ESIE"})
+			elif map_gl == "Nfh Wages":
+				each.update({"component":"NFH Wages"})    
 			else:
 				each.update({'component': map_gl})
 		
@@ -166,15 +166,10 @@ def get_gl_code(final_data,filters):
 					formatted_date = date_obj.strftime("%B-%Y")
 		
 					if "Salary for the month of" in str(gl.narration):
-						# print(";;;;;;;;;;;;;;;;;;;;;;")
-						# narration = f'{gl.narration} April-2024'
 						narration = f'{gl.narration} {formatted_date}'
-						# print(";;;;;;;;;;;;;;;;;;;;;;",narration)
 					else:
 						narration = gl.narration
 						
-					
-					# print(narration,"ppppppppppppppppp")
 					each.update({
 						'gl_code': gl.gl_code,
 						'acc_code': gl.acc_code,
@@ -185,6 +180,7 @@ def get_gl_code(final_data,filters):
 					})
 					map_gl = None
 					break
+
 		staff_dill_debit = 0.0
 		staff_dill_credit = 0.0
 		for each in filters_data:
