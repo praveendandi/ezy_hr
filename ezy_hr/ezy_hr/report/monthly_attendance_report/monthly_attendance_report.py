@@ -89,7 +89,7 @@ def execute(filters=None):
 		employee_name = entry.get("employee_name")
 		department = entry.get("department")
 		designation = entry.get("designation")
-		date_of_joining = entry.get("date_of_joining").formatdate()
+		date_of_joining = formatdate(entry.get("date_of_joining"),"dd-mm-yyyy")
 
 		if employee_id:
 			if employee_id not in employee_data:
