@@ -79,11 +79,13 @@ def execute(filters=None):
 	}
 
 	leave_types = {leave_type_short_forms.get(leave_type["name"]): 0 for leave_type in all_leave_types}
-
+	
+	# frappe.log_error("leave_types",leave_types)
 	employee_data = {}
 	leave_details = None
 	is_not_repeat = False
 	# Process each entry in the source data
+
 	for entry in source_data:
 		employee_id = entry.get("employee")
 		employee_name = entry.get("employee_name")
@@ -115,19 +117,22 @@ def execute(filters=None):
 			
 
 			employee_data[employee_id]["status_by_date"][date_str] = status
-			if is_not_repeat:
-				total_leaves = 0
-				for dates, leave in leave_details.items():
+
+			for dates, leave in leave_details.items():
+				if "On Leave" in leave:
 					leave_date_val = datetime.strptime(dates,"%Y-%m-%d").date()
 					str_leave_val = leave_date_val.strftime("%Y-%m-%d")
-					employee_data[employee_id]["status_by_date"][str_leave_val] = leave
+					employee_data[employee_id]["status_by_date"][str_leave_val] = leave_type_short_forms.get(leave.split(" - ")[1].strip())
+
+			if is_not_repeat:
+				for dates, leave in leave_details.items():
 					if "On Leave" in leave:
-						frappe.log_error("On Leave",leave)
+						employee_data[employee_id]["status_by_date"][str_leave_val] = leave.split(" - ")[1].strip()
 						leave_type_value = leave.split(" - ")[1].strip()
 						employee_data[employee_id]["leaves_details"][leave_type_value] += 1
 						
 
-	# frappe.log_error("final data",employee_data)
+	# frappe.log_error("final data employ",employee_data)
 
 	# Define columns for the report
 	columns = [
@@ -208,7 +213,8 @@ def execute(filters=None):
 		morning_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MO" and date_str in all_dates)
 		mid_shift_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status == "MI" and date_str in all_dates)
 		missing_punches_and_absent_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status in ["Missing Punches", "Absent"] and date_str in all_dates)
-
+		lop_sum = sum(1 for date_str, status in data_row["status_by_date"].items() if status in ["LWP"] and date_str in all_dates)
+		unp_sum = sum(1 for date_str, status in data_row["status_by_date"].items() if status in ["UNL"] and date_str in all_dates)
 		row["morning_shift_total"] = morning_shift_total
 		row["mid_shift_total"] = mid_shift_total
 		row["missing_punches_and_absent_total"] = missing_punches_and_absent_total
@@ -224,7 +230,7 @@ def execute(filters=None):
 		row["total_empty_columns"] = total_empty_columns_count
 
 		# Calculate total payable days
-		total_payable_days = total_selected_dates_count - missing_punches_and_absent_total
+		total_payable_days = total_selected_dates_count - missing_punches_and_absent_total - lop_sum - unp_sum
 		row["total_payable_days"] = total_payable_days
 
 		# Add leave details for each date within the selected date range
