@@ -57,12 +57,14 @@ def get_data(filters):
             checkins = frappe.get_all('Employee Checkin', filters=[
                 ['employee', '=', emp['name']],
                 ['time', 'between', [date + ' 00:00:00', date + ' 23:59:59']]
-            ], fields=['time', 'log_type'])
+            ], fields=['time', 'log_type', 'shift'])
 
             in_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'IN'), None)
             out_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'OUT'), None)
+            shift = checkins[0]['shift'] if checkins and 'shift' in checkins[0] else None
             working_hours = calculate_working_hours(in_time, out_time)
-            status = determine_status(in_time, out_time, leave_details, holiday_details, emp['name'], date)
+            working_hours_threshold = get_working_hours_threshold(shift)
+            status = determine_status(in_time, out_time, working_hours, working_hours_threshold, leave_details, holiday_details, emp['name'], date)
 
             data.append({
                 'employee': emp['name'],
@@ -96,31 +98,9 @@ def calculate_working_hours(in_time, out_time):
         return f"{int(hours):02}:{int(minutes):02}"
     return None
 
-# def determine_status(in_time, out_time, leave_details, holiday_details, employee, date):
-#     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-#     if employee in leave_details and date in leave_details[employee]:
-#         return leave_details[employee][date]
-
-#     if employee in holiday_details and date in holiday_details[employee]:
-#         return holiday_details[employee][date]
-#     if not in_time and not out_time:
-#         return 'Missing Punches'
-#     if not in_time:
-#         return 'MI'
-#     if not out_time:
-#         return 'MO'
-    
-#     # Modify this part to show 'P' instead of 'Present'
-#     if in_time and out_time:
-#         return 'P'
-    
-#     return 'Present'
-def determine_status(in_time, out_time, leave_details, holiday_details, employee, date):
+def determine_status(in_time, out_time, working_hours, working_hours_threshold, leave_details, holiday_details, employee, date):
     if employee in leave_details and date in leave_details[employee]:
-        status = leave_details[employee][date]
-        if status == 'Present':
-            return 'P'
-        return status
+        return leave_details[employee][date]
 
     if employee in holiday_details and date in holiday_details[employee]:
         return holiday_details[employee][date]
@@ -131,12 +111,17 @@ def determine_status(in_time, out_time, leave_details, holiday_details, employee
     if not out_time:
         return 'MO'
     
-    # Modify this part to show 'P' instead of 'Present'
-    if in_time and out_time:
-        return 'P'
-    
-    return 'Present'
+    if working_hours:
+        hours, minutes = map(int, working_hours.split(':'))
+        if hours + minutes / 60 >= working_hours_threshold:
+            return 'P'
+    return 'A'
 
+def get_working_hours_threshold(shift):
+    if not shift:
+        return 6  # Default threshold if no shift is provided
+    shift_doc = frappe.get_doc('Shift Type', shift)
+    return shift_doc.working_hours_threshold_for_absent or 6  # Default to 6 if not specified in the shift
 
 def generate_actions(status, employee, date):
     if status == "Missing Punches":
@@ -154,7 +139,7 @@ def get_leave_dates(filters):
     if not start_date or not end_date:
         return {}
 
-    leave_data = frappe.get_all("Attendance", filters={"attendance_date": ["between", [start_date, end_date]]}, fields=["employee", "attendance_date", "status", "leave_type"])
+    leave_data = frappe.get_all("Attendance", filters={"attendance_date": ["between", [start_date, end_date]],"docstatus":1}, fields=["employee", "attendance_date", "status", "leave_type"])
     
     leave_details = {}
     for entry in leave_data:
