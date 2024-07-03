@@ -1,8 +1,6 @@
 # # Copyright (c) 2024, Ganu Reddy and contributors
 # # For license information, please see license.txt
 
-
-
 import frappe
 from frappe.utils import getdate, time_diff_in_seconds
 from datetime import timedelta
