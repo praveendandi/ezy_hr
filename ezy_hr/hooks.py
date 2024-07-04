@@ -402,6 +402,11 @@ scheduler_events = {
             "ezy_hr.employee_checkins.get_employee_checkins"
         ]
     },
+    "cron": {
+        "0 0 * * *": [
+            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
+        ]
+    },
     "daily": [
 		"ezy_hr.ezy_hr.events.flexi_weekoff"
 	],
@@ -409,6 +414,7 @@ scheduler_events = {
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
 	],
 }
+
 
 # Testing
 # -------
