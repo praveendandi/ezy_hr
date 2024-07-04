@@ -30,7 +30,7 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 # include js in doctype views
 doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
-              "Employee":"public/js/employee_field_update.js",
+              "Employee":"ezy_hr/custom_script/employee/employee.js",
               "Employee Promotion":"public/js/employee_promotion.js",
               "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
               }
@@ -233,6 +233,7 @@ fixtures = [
                     "Job Offer-custom_salary_breakup",
                     "Job Offer-custom_earning",
                     "Job Offer-custom_deducations",
+                    "Job Offer-custom_gross_amount",
                     
                 },
                 
@@ -350,6 +351,8 @@ doc_events = {
         # "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.after_update",
         "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee",
         "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id",
+        
+        
     },
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
@@ -405,9 +408,6 @@ scheduler_events = {
     "hourly": [
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
 	],
-    "daily": [
-        "ezy_hr.ezy_hr.events.flexi_weekoff"
-    ],
 }
 
 # Testing
@@ -417,10 +417,10 @@ scheduler_events = {
 
 # Overriding Methods
 # ------------------------------
-#
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "ezy_hr.event.get_events"
-# }
+
+override_whitelisted_methods = {
+	"hrms.hr.doctype.job_offer.job_offer.make_employee": "ezy_hr.ezy_hr.custom_script.employee.employee.custom_api_for_make_employee_through_job_off"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

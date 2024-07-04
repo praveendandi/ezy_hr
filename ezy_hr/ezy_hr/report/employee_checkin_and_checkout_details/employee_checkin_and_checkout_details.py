@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.utils import getdate, time_diff_in_seconds
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 def execute(filters=None):
     columns = get_columns()
@@ -38,13 +38,13 @@ def get_data(filters):
 
     date_range = get_date_range(filters['from_date'], filters['to_date'])
 
-    employee_filters = {'status': 'Active', 'company': filters['company']}
+    employee_filters = {'status': ['IN',['Left','Active']], 'company': filters['company']}
     if filters.get("employee"):
         employee_filters['name'] = filters['employee']
     if filters.get("department"):
         employee_filters['department'] = filters['department']
 
-    employees = frappe.get_all('Employee', filters=employee_filters, fields=['name', 'employee_name', 'company', 'department', 'designation', 'date_of_joining', 'holiday_list'])
+    employees = frappe.get_all('Employee', filters=employee_filters, fields=['name', 'employee_name', 'company', 'department', 'designation', 'date_of_joining','relieving_date','holiday_list'])
 
     data = []
     leave_details = get_leave_dates(filters)
@@ -52,31 +52,40 @@ def get_data(filters):
 
     for emp in employees:
         for date in date_range:
-            checkins = frappe.get_all('Employee Checkin', filters=[
-                ['employee', '=', emp['name']],
-                ['time', 'between', [date + ' 00:00:00', date + ' 23:59:59']]
-            ], fields=['time', 'log_type', 'shift'])
+            relieving_date_change = None
+            if emp.get('relieving_date'):
+                change_date_rel = datetime.strptime(date,"%Y-%m-%d").date()
+                relieving_date_change = emp.get('relieving_date') >= change_date_rel
+            else:
+                relieving_date_change = True
 
-            in_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'IN'), None)
-            out_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'OUT'), None)
-            shift = checkins[0]['shift'] if checkins and 'shift' in checkins[0] else None
-            working_hours = calculate_working_hours(in_time, out_time)
-            working_hours_threshold = get_working_hours_threshold(shift)
-            status = determine_status(in_time, out_time, working_hours, working_hours_threshold, leave_details, holiday_details, emp['name'], date)
+            change_date = datetime.strptime(date,"%Y-%m-%d").date()
+            if emp.get("date_of_joining") <= change_date and relieving_date_change:
+                
+                checkins = frappe.get_all('Employee Checkin', filters=[
+                    ['employee', '=', emp['name']],
+                    ['time', 'between', [date + ' 00:00:00', date + ' 23:59:59']]
+                ], fields=['time', 'log_type'])
+                in_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'IN'), None)
+                out_time = next((chk['time'] for chk in checkins if chk['log_type'] == 'OUT'), None)
+                shift = checkins[0]['shift'] if checkins and 'shift' in checkins[0] else None
+                working_hours = calculate_working_hours(in_time, out_time)
+                working_hours_threshold = get_working_hours_threshold(shift)
+                status = determine_status(in_time, out_time,working_hours,working_hours_threshold, leave_details,holiday_details, emp['name'], date)
 
-            data.append({
-                'employee': emp['name'],
-                'employee_name': emp['employee_name'],
-                'department': emp['department'],
-                'designation': emp['designation'],
-                'date_of_joining': emp['date_of_joining'],
-                'date': date,
-                'in_time': in_time,
-                'out_time': out_time,
-                'working_hours': working_hours,
-                'status': status,
-                'actions': generate_actions(status, emp['name'], date)
-            })
+                data.append({
+                    'employee': emp['name'],
+                    'employee_name': emp['employee_name'],
+                    'department': emp['department'],
+                    'designation': emp['designation'],
+                    'date_of_joining': emp['date_of_joining'],
+                    'date': date,
+                    'in_time': in_time,
+                    'out_time': out_time,
+                    'working_hours': working_hours,
+                    'status': status,
+                    'actions': generate_actions(status, emp['name'], date)
+                })
 
     return data
 

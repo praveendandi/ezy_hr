@@ -24,7 +24,10 @@
   "proof_details_section",
   "id_proof_and_address",
   "pan_card",
-  "aadhar_card"
+  "aadhar_card",
+  "column_break_1qnd",
+  "medical_practitioner",
+  "police_verification"
  ],
  "fields": [
   {
@@ -126,11 +129,25 @@
    "fieldname": "mobile_no",
    "fieldtype": "Data",
    "label": "Mobile No"
+  },
+  {
+   "fieldname": "medical_practitioner",
+   "fieldtype": "Attach",
+   "label": "Fitness Certificate From Medical Practitioner"
+  },
+  {
+   "fieldname": "police_verification",
+   "fieldtype": "Attach",
+   "label": "Police Verification Certificate"
+  },
+  {
+   "fieldname": "column_break_1qnd",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-27 17:08:00.047867",
+ "modified": "2024-07-04 13:08:46.944214",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Pre-joining document",
