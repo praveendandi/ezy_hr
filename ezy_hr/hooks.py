@@ -234,7 +234,7 @@ fixtures = [
                     "Job Offer-custom_earning",
                     "Job Offer-custom_deducations",
                     "Job Offer-custom_gross_amount",
-                    
+                    "Employee-custom_leave_policy",    
                 },
                 
             ]]
