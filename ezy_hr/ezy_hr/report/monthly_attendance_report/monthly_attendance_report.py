@@ -61,7 +61,7 @@ def execute(filters=None):
 	
 	all_leave_types = frappe.get_all("Leave Type", fields=["name"])
 	leave_type_short_forms = {
-		"Week Off": "Wo",
+		"Week Off": "WO",
 		"Casual Leave": "CL",
 		"Sick Leave": "SL",
 		"Privilege Leave": "PL",
@@ -230,7 +230,7 @@ def execute(filters=None):
 		row["total_empty_columns"] = total_empty_columns_count
 
 		# Calculate total payable days
-		total_payable_days = total_selected_dates_count - missing_punches_and_absent_total - lop_sum - unp_sum
+		total_payable_days = total_selected_dates_count - missing_punches_and_absent_total - lop_sum - unp_sum - total_empty_columns_count
 		row["total_payable_days"] = total_payable_days
 
 		# Add leave details for each date within the selected date range
