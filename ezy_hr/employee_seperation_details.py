@@ -7,14 +7,11 @@ import datetime
 from datetime import datetime, timedelta
 
 
-
 @frappe.whitelist()
 def separation_details(data):
     try:
         row_data = json.loads(data) 
-        employee_details = row_data.get("employees",None)
-        
-        final_result = []
+        employee_details = row_data.get("employees",None)      
         start_date = row_data.get("start_date")
         end_date = row_data.get("end_date")
         
@@ -29,12 +26,12 @@ def separation_details(data):
                                         },
                                     ["name","employee","employee_name","department","designation","employee_separation_template","boarding_status"]
                                     )
-                    for each in doc:
-                        final_result.append(
-                            each
-                        )
+                    each.update({
+                        "custom_separation_id":doc[0]['name'],
+                        "custom_status":doc[0]['boarding_status']
+                    })
                     
-            return final_result
+            return employee_details
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "separation_details")
