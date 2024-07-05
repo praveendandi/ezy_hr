@@ -174,10 +174,11 @@ def execute(filters=None):
 	# Add MO and MI columns for total count
 	columns.extend([
 		{"label": "MO", "fieldname": "morning_shift_total", "fieldtype": "Data", "width": 50},
-		{"label": "MI", "fieldname": "mid_shift_total", "fieldtype": "Data", "width": 50},
+		{"label": "MI", "fieldname": "mid_shift_total", "fieldtype": "Data", "width": 50},																																																																																																																																																
 		{"label": "MP", "fieldname": "missing_punches_and_absent_total", "fieldtype": "Data", "width": 50},
-		{"label": "A", "fieldname": "total_empty_columns", "fieldtype": "Data", "width": 50},
 		{"label": "Total Leaves", "fieldname": "total_leave", "fieldtype": "Data", "width": 50},
+		{"label": "A", "fieldname": "total_empty_columns", "fieldtype": "Data", "width": 50},
+		{"label": "Total Present", "fieldname": "total_present", "fieldtype": "Data", "width": 100},
 		{"label": "Total", "fieldname": "total_selected_dates", "fieldtype": "Data", "width": 100},
 		{"label": "Total Payable Days", "fieldname": "total_payable_days", "fieldtype": "Data", "width": 100},
 	])
@@ -215,11 +216,13 @@ def execute(filters=None):
 		missing_punches_and_absent_total = sum(1 for date_str, status in data_row["status_by_date"].items() if status in ["Missing Punches", "Absent"] and date_str in all_dates)
 		lop_sum = sum(1 for date_str, status in data_row["status_by_date"].items() if status in ["LWP"] and date_str in all_dates)
 		unp_sum = sum(1 for date_str, status in data_row["status_by_date"].items() if status in ["UNL"] and date_str in all_dates)
+		# total_p = sum(1 for date_str, status in data_row["status_by_date"].items() if "On Leave" in status and date_str in all_dates)
 		row["morning_shift_total"] = morning_shift_total
 		row["mid_shift_total"] = mid_shift_total
 		row["missing_punches_and_absent_total"] = missing_punches_and_absent_total
 		row["total_present"] = total_present
 		row["total_leave"] = total_leave
+
 
 		# Add total selected dates count
 		total_selected_dates_count = len(all_dates)

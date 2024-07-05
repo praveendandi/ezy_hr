@@ -59,12 +59,17 @@ def execute(filters=None):
 
 	data = []
 	for ss in salary_slips:
-		employee_data = frappe.db.get_list("Employee", {"name": ss.employee}, ["name", "bank_name", "bank_ac_no", "ifsc_code", "custom_gross_amount", "attendance_device_id"])
+		employee_data = frappe.db.get_list("Employee", {"name": ss.employee}, ["name", "bank_name", "bank_ac_no", "ifsc_code", "custom_gross_amount", "attendance_device_id","payroll_cost_center"])
 
 		for emp in employee_data:
 			department_name = None
+			payroll_center = None
+			payroll_center_code = None
 			if ss.department:
 				department_name = ss.department.split(" - ")[0] if " - " in ss.department else ss.department
+			if emp.payroll_cost_center:
+				payroll_center = emp.payroll_cost_center.split(" - ")[1] if " - " in emp.payroll_cost_center else emp.payroll_cost_center
+				payroll_center_code = emp.payroll_cost_center.split(" - ")[0] if " - " in emp.payroll_cost_center else emp.payroll_cost_center
 
 			actual_gross = emp.custom_gross_amount
 			row = {
@@ -86,7 +91,9 @@ def execute(filters=None):
 				"bank_account_no": ss.bank_account_no,
 				"ifsc_code": emp.ifsc_code,
 				"total_loan_repayment": ss.total_loan_repayment,
-				"actual_gross_pay": actual_gross
+				"actual_gross_pay": actual_gross,
+				"payroll_cost_center":payroll_center,
+				"payroll_center_code":payroll_center_code
 			}
 
 			update_column_width(ss, columns)
@@ -345,7 +352,20 @@ def get_columns(earning_types, ded_types):
 				"fieldname": "attendance_device_id",
 				"fieldtype": "Data",
 				"width": 100,
-			},]
+			},
+			{
+				"label": _("Payroll Cost Center"),
+				"fieldname": "payroll_cost_center",
+				"fieldtype": "Data",
+				"width": 100,
+			},
+			{
+				"label": _("Payroll Center Code"),
+				"fieldname": "payroll_center_code",
+				"fieldtype": "Data",
+				"width": 100,
+			},
+			]
 	)
 
 	return columns
