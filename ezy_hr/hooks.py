@@ -234,7 +234,9 @@ fixtures = [
                     "Job Offer-custom_earning",
                     "Job Offer-custom_deducations",
                     "Job Offer-custom_gross_amount",
-                    "Employee-custom_leave_policy",    
+                    "Employee-custom_leave_policy",
+                    "Payroll Employee Detail-custom_manual_hold",
+                    "Payroll Employee Detail-custom_reason_for_hold",
                 },
                 
             ]]
@@ -321,7 +323,9 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # }
 override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
-    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType"
+    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
+    "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry"
+
 }
 
 # Document Events
@@ -402,6 +406,11 @@ scheduler_events = {
             "ezy_hr.employee_checkins.get_employee_checkins"
         ]
     },
+    "cron": {
+        "0 0 * * *": [
+            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
+        ]
+    },
     "daily": [
 		"ezy_hr.ezy_hr.events.flexi_weekoff"
 	],
@@ -409,6 +418,7 @@ scheduler_events = {
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
 	],
 }
+
 
 # Testing
 # -------
@@ -418,9 +428,9 @@ scheduler_events = {
 # Overriding Methods
 # ------------------------------
 
-override_whitelisted_methods = {
-	"hrms.hr.doctype.job_offer.job_offer.make_employee": "ezy_hr.ezy_hr.custom_script.employee.employee.custom_api_for_make_employee_through_job_off"
-}
+# override_whitelisted_methods = {
+# 	"hrms.hr.doctype.job_offer.job_offer.make_employee": "ezy_hr.ezy_hr.custom_script.employee.employee.custom_api_for_make_employee_through_job_off"
+# }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
