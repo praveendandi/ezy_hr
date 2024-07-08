@@ -403,11 +403,7 @@ scheduler_events = {
 scheduler_events = {
     "cron": {
         "0 0 * * *": [
-            "ezy_hr.employee_checkins.get_employee_checkins"
-        ]
-    },
-    "cron": {
-        "0 0 * * *": [
+            "ezy_hr.employee_checkins.get_employee_checkins",
             "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
         ]
     },
