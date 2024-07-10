@@ -10,6 +10,10 @@
   "amended_from",
   "employee",
   "employee_name",
+  "user_id",
+  "reporting_manger",
+  "reporting_manager_email",
+  "hr_manager_email",
   "column_break_mapl",
   "unit",
   "status",
@@ -18,8 +22,7 @@
   "column_break_jqzc",
   "in_time",
   "column_break_nu0j",
-  "out_time",
-  "column_break_frca"
+  "out_time"
  ],
  "fields": [
   {
@@ -86,10 +89,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_frca",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "column_break_jqzc",
    "fieldtype": "Column Break"
   },
@@ -113,12 +112,45 @@
   {
    "fieldname": "column_break_mapl",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.user_id",
+   "fieldname": "user_id",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "User ID",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.reports_to",
+   "fieldname": "reporting_manger",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Reporting Manger",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "reporting_manger.user_id",
+   "fieldname": "reporting_manager_email",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Reporting Manager Email",
+   "options": "User"
+  },
+  {
+   "fetch_from": "employee.leave_approver",
+   "fieldname": "hr_manager_email",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Hr Manager Email",
+   "options": "User"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-05-23 22:04:41.828622",
+ "modified": "2024-06-05 12:33:41.082865",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Employee Missing Checkins Request",

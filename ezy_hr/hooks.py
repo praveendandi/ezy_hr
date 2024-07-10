@@ -30,6 +30,9 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 # include js in doctype views
 doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
+              "Employee":"ezy_hr/custom_script/employee/employee.js",
+              "Employee Promotion":"public/js/employee_promotion.js",
+              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -205,7 +208,37 @@ fixtures = [
                     "Payroll Employee Detail-custom_status",
                     "Payroll Entry-custom_validate_employee_seperation",
                     "Payroll Entry-custom_uncompleted_seperations",
-                },    
+                    "Leave Type-custom_flexi_week_off",
+                    "Leave Type-custom_leaves",
+                    "Leave Type-custom_unit",
+                    "Leave Type-custom_holiday_list",
+                    "Leave Type-custom_unit_holiday_list",
+                    "Leave Type-custom_select_holiday_type",
+                    "Leave Allocation-custom_leave_allocation_date_and_description",
+                    "Leave Ledger Entry-custom_reason_date_",
+                    "Employee Promotion-custom_effective_date",
+                    "Employee Promotion-custom_current_gross_amount",
+                    "Employee Promotion-custom_new_gross_amount",
+                    "Employee Promotion-custom_earnings_section",
+                    "Employee Promotion-custom_earnings_detail",
+                    "Employee Promotion-custom_previous_effective_date",
+                    "Employee-custom_apply_for_nfh_wages",
+                    "Salary Slip-custom_payroll_cost_center_",
+                    "Job Offer-custom_level",
+                    "Job Offer-custom_department",
+                    "Salary Slip-custom_ifsc",
+                    "Salary Slip-custom_esi_reason",
+                    "Salary Slip-custom_reason_for_esi",
+                    "Employee-custom_applicable_for_actual_pf",
+                    "Job Offer-custom_salary_breakup",
+                    "Job Offer-custom_earning",
+                    "Job Offer-custom_deducations",
+                    "Job Offer-custom_gross_amount",
+                    "Employee-custom_leave_policy",
+                    "Payroll Employee Detail-custom_manual_hold",
+                    "Payroll Employee Detail-custom_reason_for_salary_hold",
+                },
+                
             ]]
     }
 ]
@@ -287,7 +320,8 @@ after_install = "ezy_hr.setup.setup_fixtures"
 
 override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
-    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType"
+    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
+    "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry"
 }
 
 # Document Events
@@ -313,46 +347,44 @@ doc_events = {
         "on_update":"ezy_hr.personl_file.create_personal_file_through_employee"
     },
     "Employee":{
-        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee"
+        # /home/caratred/Desktop/frappe15/apps/ezy_hr/ezy_hr/ezy_hr/custom_script/employee/employee.py
+        # "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.after_update",
+        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee",
+        "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id",
+        
+        
     },
     "Leave Application":{
         "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
-    }
-    
+    },
+    "Employee Promotion":{
+        "on_submit":"ezy_hr.custom_salary.update_and_create_salary",
+        "validate": "ezy_hr.custom_salary.check_effective_date",
+    },
+    "Salary Slip":{
+        "before_insert":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
+        "after_insert":"ezy_hr.addition_earning_public_ho.creating_additional_earn_and_com_off",
+        "on_cancel":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
+        "on_trash":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
+    },
 }
-
-# Scheduled Tasks
-# ---------------
-
-# scheduler_events = {
-# 	"daily": [
-# 		"ezy_hr.tasks.all"
-# 	],
-# 	"daily": [
-# 		"ezy_hr.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"ezy_hr.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"ezy_hr.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"ezy_hr.tasks.monthly"
-# 	],
-# }
-# hooks.py
 
 scheduler_events = {
     "cron": {
         "0 0 * * *": [
-            "ezy_hr.employee_checkins.get_employee_checkins"
+            "ezy_hr.employee_checkins.get_employee_checkins",
+            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
         ]
     },
+    "daily": [
+		"ezy_hr.ezy_hr.events.flexi_weekoff"
+	],
+
     "hourly": [
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
 	],
 }
+
 
 # Testing
 # -------
@@ -361,9 +393,9 @@ scheduler_events = {
 
 # Overriding Methods
 # ------------------------------
-#
+
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "ezy_hr.event.get_events"
+# 	"hrms.hr.doctype.job_offer.job_offer.make_employee": "ezy_hr.ezy_hr.custom_script.employee.employee.custom_api_for_make_employee_through_job_off"
 # }
 #
 # each overriding function accepts a `data` argument;
