@@ -226,6 +226,8 @@ def get_data(filters):
                     da = i.amount
                 elif i.abbr == "HRA":
                     hra = i.amount
+                elif i.abbr == "INC":
+                    inc = i.amount
 
             gross_pay = employee["gross_pay"]
 
@@ -234,18 +236,18 @@ def get_data(filters):
             elif gross_pay >= 15000:
                 epf_wages = 15000
             else:
-                epf_wages = round(gross_pay - hra)
+                epf_wages = round(gross_pay - hra - inc)
             
             if gross_pay >= 15000:
-                eps_wages = 15000
+                eps_wages = 15000 
             else:
-                eps_wages = round(gross_pay - hra)
+                eps_wages = round(gross_pay - hra - inc)
         
 
             if gross_pay >= 15000:
                 edli_wages = 15000
             else:
-                edli_wages = round(gross_pay - hra)
+                edli_wages = round(gross_pay - hra - inc)
             
             # eps_wages = epf_wages
             # edli_wages = epf_wages

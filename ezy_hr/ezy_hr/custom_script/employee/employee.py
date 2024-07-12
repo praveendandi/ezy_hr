@@ -54,40 +54,52 @@ from datetime   import datetime
 #     return doc
 
 @frappe.whitelist()
-def assign_leave_policy(doc):
+def assign_leave_policy(doc,method=None):
     try:
-        row_data = json.loads(doc)
+        today = datetime.now().year
+        current_year = today
+        start_date = datetime(current_year, 1, 1)
+        end_date = datetime(current_year, 12, 31)
+
+        row_data = None
+        if isinstance(doc,str):
+           
+            row_data = json.loads(doc)
+        else:
+            row_data = doc.as_dict()
+
+        if not frappe.db.exists("Leave Period",{"company":row_data.get("company"),"from_date":start_date,"to_date":end_date}):
+                return {"success":False,"reason":"Leave Period Is not Create Of {today}".format(today=today)}
+    
+        
         if row_data.get("custom_leave_policy"):
+
             # Check if a Leave Policy Assignment already exists for this employee
             existing_assignment = frappe.get_all('Leave Policy Assignment', 
                                                 filters={'employee': row_data.get("name")},
                                                 fields=['name'])
             if existing_assignment:
                 # Update the existing assignment
-                leave_policy_assignment = frappe.get_doc('Leave Policy Assignment', existing_assignment[0]['name'])
+                return {"success":False,"reason":"Leave Policy Assignment Already Assigned."}
             else:
                 # Create a new assignment
                 leave_policy_assignment = frappe.new_doc('Leave Policy Assignment')
 
-            # Set the fields
-            leave_policy_assignment.employee = row_data.get("name")
-            leave_policy_assignment.leave_policy = row_data.get("custom_leave_policy")
-            today = datetime.now().year
-            current_year = today
-            start_date = datetime(current_year, 1, 1)
-            end_date = datetime(current_year, 12, 31)
-            type_perid = "Leave Period"
-            leave_policy_assignment.assignment_based_on = type_perid
-            leave_period = frappe.db.get_list("Leave Period",filters={"company":row_data.get("company"),"from_date":start_date,"to_date":end_date},fields=["name"])
+                # Set the fields
+                leave_policy_assignment.employee = row_data.get("name")
+                leave_policy_assignment.leave_policy = row_data.get("custom_leave_policy")
+                type_perid = "Leave Period"
+                leave_policy_assignment.assignment_based_on = type_perid
+                leave_period = frappe.db.get_list("Leave Period",filters={"company":row_data.get("company"),"from_date":start_date,"to_date":end_date},fields=["name"])
+                
+                leave_policy_assignment.leave_period = leave_period[0]['name']
             
-            leave_policy_assignment.leave_period = leave_period[0]['name']
-        
-            leave_policy_assignment.docstatus = 1
+                leave_policy_assignment.docstatus = 1
 
-            leave_policy_assignment.save(ignore_permissions=True)
+                leave_policy_assignment.save(ignore_permissions=True)
 
-            return {"success":True}
-        return {"success":False}
+                return {"success":True,"reason":f"{'Leave policy assigned successfully'}"}
+        return {"success":False,"reason":f"{'Failed to assign leave policy.'}"}
     
     except Exception as e:
         frappe.log_error(str(e))
