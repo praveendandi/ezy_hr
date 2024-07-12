@@ -49,6 +49,24 @@ def get_data(filters):
     data = []
     leave_details = get_leave_dates(filters)
     holiday_details = get_holiday_dates(filters, employees)
+    leave_type_short_forms = {
+		"Week Off": "WO",
+		"Casual Leave": "CL",
+		"Sick Leave": "SL",
+		"Privilege Leave": "PL",
+		"Maternity Leave": "ML",
+		"Compensatory Off (COL)": "COL",
+		"Compensatory Off": "CO",
+		"Accident Leave on shift": "ALS",
+		"Leave Without Pay": "LWP",
+		"ESI Leave": "ESIL",
+		"Holiday": "HO",
+		"Unpaid Leave": "UNL",
+		"Flexi Week Off":"FWO",
+		"Flexi Public Holiday":"FPH",
+		"PH Holiday":"PH Holiday",
+	}
+
 
     for emp in employees:
         for date in date_range:
@@ -71,7 +89,7 @@ def get_data(filters):
                 shift = checkins[0]['shift'] if checkins and 'shift' in checkins[0] else None
                 working_hours = calculate_working_hours(in_time, out_time)
                 working_hours_threshold = get_working_hours_threshold(shift)
-                status = determine_status(in_time, out_time,working_hours,working_hours_threshold, leave_details,holiday_details, emp['name'], date)
+                status = determine_status(in_time, out_time,working_hours,working_hours_threshold, leave_details,holiday_details, emp['name'], date,leave_type_short_forms)
 
                 data.append({
                     'employee': emp['name'],
@@ -105,9 +123,11 @@ def calculate_working_hours(in_time, out_time):
         return f"{int(hours):02}:{int(minutes):02}"
     return None
 
-def determine_status(in_time, out_time, working_hours, working_hours_threshold, leave_details, holiday_details, employee, date):
+def determine_status(in_time, out_time, working_hours, working_hours_threshold, leave_details, holiday_details, employee, date,leave_type_short_forms):
     if employee in leave_details and date in leave_details[employee]:
-        return leave_details[employee][date]
+        leave_type = leave_details[employee][date]
+        
+        return leave_type_short_forms[leave_type]
 
     if employee in holiday_details and date in holiday_details[employee]:
         return holiday_details[employee][date]
@@ -150,12 +170,14 @@ def get_leave_dates(filters):
     
     leave_details = {}
     for entry in leave_data:
-        date = getdate(entry["attendance_date"]).strftime("%Y-%m-%d")
-        leave_type = entry.get("status")
-        employee = entry["employee"]
-        if employee not in leave_details:
-            leave_details[employee] = {}
-        leave_details[employee][date] = f"{leave_type}" if leave_type else "On Leave"
+        if entry.get("status") == "On Leave":
+            date = getdate(entry["attendance_date"]).strftime("%Y-%m-%d")
+            leave_type = entry.get("leave_type")
+            employee = entry["employee"]
+            if employee not in leave_details:
+                leave_details[employee] = {}
+            leave_details[employee][date] = f"{leave_type}" if leave_type else "On Leave"
+    
     
     return leave_details
 

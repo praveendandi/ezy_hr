@@ -191,7 +191,7 @@ def execute(filters=None):
 		"MI": "MI",
 		"Absent": "A",
 		"Missing Punches": "MP",
-		"Sunday":"Week Off"
+		"Sunday":"WO"
 	}
 
 	total_present = 0
