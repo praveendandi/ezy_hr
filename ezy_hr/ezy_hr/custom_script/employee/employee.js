@@ -15,10 +15,10 @@ frappe.ui.form.on('Employee', {
             args: { doc: cur_frm.doc },
             callback: function(r) {
                 console.log(r,"//////////////")
-                if (r.message) {
-                    frappe.msgprint("Leave policy assigned successfully.");
+                if (r.message.success) {
+                    frappe.msgprint(r.message.reason);
                 } else {
-                    frappe.msgprint("Failed to assign leave policy.");
+                    frappe.msgprint(r.message.reason);
                 }
             }
         });
