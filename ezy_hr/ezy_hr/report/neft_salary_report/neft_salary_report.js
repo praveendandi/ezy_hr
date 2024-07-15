@@ -1,6 +1,7 @@
 // Copyright (c) 2024, Ganu Reddy and contributors
 // For license information, please see license.txt
 
+
 frappe.query_reports["NEFT Salary Report"] = {
 	"filters": [
 		{
@@ -35,6 +36,25 @@ frappe.query_reports["NEFT Salary Report"] = {
 			options:"Bank"
 			
 		},
+		{
+			fieldname: "employment_type",
+			label: __("Employment Type"),
+			fieldtype: "Select",
+			options:[
+				'',
+				'Employee',
+                'Intern',
+            ],
+			
+		},
+		{
+			fieldname: "summarized_view",
+			label: __("Summarized View"),
+			fieldtype: "Check",
+			// options:""
+			
+		},
+
 
 	]
 };

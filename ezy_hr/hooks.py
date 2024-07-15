@@ -373,6 +373,9 @@ doc_events = {
     # }
 }
 
+# Scheduled Tasks
+# ---------------
+
 scheduler_events = {
     "cron": {
         "0 0 * * *": [
@@ -385,7 +388,8 @@ scheduler_events = {
 	],
 
     "hourly": [
-		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
+		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts",
+        "ezy_hr.ezy_hr.doctype.ezyhrms_transaction.ezyhrms_transaction.get_checkin_alert"
 	],
 }
 

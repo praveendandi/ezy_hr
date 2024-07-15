@@ -7,6 +7,7 @@ import sys
 import traceback
 import pandas as pd
 from hrms.hr.doctype.employee_checkin.employee_checkin import add_log_based_on_employee_field
+from datetime import datetime
 
 class EzyHrmsTransaction(Document):
     def after_insert(self):
@@ -114,3 +115,60 @@ def sync_transaction_month_wise(list_of_ids):
         frappe.log_error("Sync Error in EzyHrms", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
         return {"success": False, "error": str(e)}
+
+
+@frappe.whitelist()
+def get_checkin_alert():
+    
+    try:
+    
+        # it give me last doc id 
+        get_latest = frappe.get_last_doc('EzyHrms Transaction')
+        
+        get_doc_detail = frappe.get_doc("EzyHrms Transaction",{"name":get_latest.name})
+        
+        # calcuate Duration through current date and last doc creation date
+        current_time  = datetime.now()
+        doc_creation =  get_doc_detail.creation
+
+        duration = current_time - doc_creation
+        seconds = duration.seconds
+        hours = seconds // 3600
+        
+        # Getting Recipients Mail,Subject,Message
+        
+        get_recipient_details = frappe.get_last_doc('EzyHrms Maintenance')
+        
+        recipients_details = frappe.get_doc("EzyHrms Maintenance",{"name":get_recipient_details.name})
+        
+        recipients = recipients_details.receipts.split(",") if recipients_details.receipts else None
+        subject = recipients_details.subject
+        message = recipients_details.message
+        
+        # compare hour (condition)
+        if hours >= 6:
+            
+            email_args = {
+                "recipients":recipients,
+                "subject":subject,
+                "message":message,
+                "now":True
+            }
+            
+            eamil = frappe.sendmail(**email_args)
+            eamil.reload()
+            
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("EzyHrms Transaction Fail", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
