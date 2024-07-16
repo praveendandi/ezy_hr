@@ -91,7 +91,6 @@ def sync_transaction_month_wise(list_of_ids):
             # 		'device_id' : data['terminal_alias'],
             # 		'log_type' : data['in_out']
             # 	}
-            
             try:
                 # if not frappe.db.exists("Employee Checkin", payload):
                 add_log_based_on_employee_field(employee_field_value = data['emp_code'],timestamp=data['punch_time'],device_id=data["terminal_alias"],log_type=data['in_out'])
@@ -121,7 +120,6 @@ def sync_transaction_month_wise(list_of_ids):
 def get_checkin_alert():
     
     try:
-    
         # it give me last doc id 
         get_latest = frappe.get_last_doc('EzyHrms Transaction')
         
@@ -162,13 +160,3 @@ def get_checkin_alert():
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("EzyHrms Transaction Fail", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        
-        
-    
-    
-    
-    
-    
-    
-    
-    
