@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-09 18:22:46.218456",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_zcxv",
+  "subject",
+  "receipts",
+  "message"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_zcxv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "Set Receipt Email Using Comma Separator",
+   "fieldname": "receipts",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Receipts",
+   "reqd": 1
+  },
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Subject",
+   "reqd": 1
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "HTML Editor",
+   "in_list_view": 1,
+   "label": "Message",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-07-16 12:23:57.822761",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "EzyHrms Maintenance",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

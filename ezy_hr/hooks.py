@@ -237,6 +237,8 @@ fixtures = [
                     "Employee-custom_leave_policy",
                     "Payroll Employee Detail-custom_manual_hold",
                     "Payroll Employee Detail-custom_reason_for_salary_hold",
+                    "Leave Type-custom_abbreviation",
+                    "Leave Type-custom_enable",
                 },
                 
             ]]
@@ -349,7 +351,8 @@ doc_events = {
     "Employee":{
         # /home/caratred/Desktop/frappe15/apps/ezy_hr/ezy_hr/ezy_hr/custom_script/employee/employee.py
         # "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.after_update",
-        "on_update":"ezy_hr.custom_salary.create_salary_structure_through_employee",
+        "on_update":["ezy_hr.custom_salary.create_salary_structure_through_employee",
+                     "ezy_hr.ezy_hr.custom_script.employee.employee.assign_leave_policy"],
         "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id",
         
         
@@ -367,7 +370,13 @@ doc_events = {
         "on_cancel":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
         "on_trash":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
     },
+    #  "Employee Checkin":{
+    #     "on_update":"ezy_hr.ezy_hr.custom_script.attendance.attendance.get_attendance"
+    # }
 }
+
+# Scheduled Tasks
+# ---------------
 
 scheduler_events = {
     "cron": {
@@ -381,7 +390,8 @@ scheduler_events = {
 	],
 
     "hourly": [
-		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
+		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts",
+        "ezy_hr.ezy_hr.doctype.ezyhrms_transaction.ezyhrms_transaction.get_checkin_alert"
 	],
 }
 
