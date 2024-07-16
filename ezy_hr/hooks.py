@@ -235,6 +235,8 @@ fixtures = [
                     "Employee-custom_leave_policy",
                     "Payroll Employee Detail-custom_manual_hold",
                     "Payroll Employee Detail-custom_reason_for_salary_hold",
+                    "Leave Type-custom_abbreviation",
+                    "Leave Type-custom_enable",
                 },
                 
             ]]

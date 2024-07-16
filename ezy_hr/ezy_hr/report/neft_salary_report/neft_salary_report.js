@@ -55,6 +55,7 @@ frappe.query_reports["NEFT Salary Report"] = {
 			
 		},
 
+		
 
 	]
 };
