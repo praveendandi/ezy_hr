@@ -234,7 +234,7 @@ fixtures = [
                     "Job Offer-custom_gross_amount",
                     "Employee-custom_leave_policy",
                     "Payroll Employee Detail-custom_manual_hold",
-                    "Payroll Employee Detail-custom_reason_for_hold",
+                    "Payroll Employee Detail-custom_reason_for_salary_hold",
                 },
                 
             ]]
@@ -316,15 +316,11 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
 override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
     "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
     "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry",
     "Employee Transfer":"ezy_hr.ezy_hr.custom_script.employee_transfer.employee_transfer.EmployeeTransfer"
-
 }
 
 # Document Events
@@ -376,47 +372,17 @@ doc_events = {
     # }
 }
 
-# Scheduled Tasks
-# ---------------
-
-# scheduler_events = {
-# 	"daily": [
-scheduler_events = {
-}
-# scheduler_events = {
-# }
-# 	"all": [
-# 		"ezy_hr.tasks.all"
-# 	],
-# 	"daily": [
-# 		"ezy_hr.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"ezy_hr.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"ezy_hr.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"ezy_hr.tasks.monthly"
-# 	],
-# }
-# hooks.py
-
 scheduler_events = {
     "cron": {
         "0 0 * * *": [
-            "ezy_hr.employee_checkins.get_employee_checkins"
-        ]
-    },
-    "cron": {
-        "0 0 * * *": [
+            "ezy_hr.employee_checkins.get_employee_checkins",
             "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
         ]
     },
     "daily": [
 		"ezy_hr.ezy_hr.events.flexi_weekoff"
 	],
+
     "hourly": [
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
 	],

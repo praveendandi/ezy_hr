@@ -289,4 +289,3 @@ def process_auto_attendance_for_all_shifts():
 		doc = frappe.get_cached_doc("Shift Type", shift)
 		doc.process_auto_attendance()
 
-
