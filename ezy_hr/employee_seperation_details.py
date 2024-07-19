@@ -67,9 +67,9 @@ def fetch_employees_with_upcoming_relieving():
     try:
         exit_days = frappe.get_all(
             "EzyHr Settings",
-            order_by="modified desc",
+            # order_by="modified desc",
             fields=["exit_begins_on"],
-            limit=1
+            # limit=1
         )
         
         if exit_days:

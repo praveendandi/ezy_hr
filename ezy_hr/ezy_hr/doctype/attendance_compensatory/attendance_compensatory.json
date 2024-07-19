@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-19 16:42:09.489884",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "attendance_date",
+  "in_time",
+  "out_time",
+  "working_hours"
+ ],
+ "fields": [
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Attendance Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "in_time",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "In Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "out_time",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Out Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "working_hours",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Working Hours",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-07-19 16:45:59.801141",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Attendance Compensatory",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

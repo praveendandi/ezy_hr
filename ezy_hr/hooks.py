@@ -32,7 +32,8 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
               "Employee":"ezy_hr/custom_script/employee/employee.js",
               "Employee Promotion":"public/js/employee_promotion.js",
-              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
+              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js",
+              "Compensatory Leave Request":"public/js/compensatory.js"
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -237,6 +238,16 @@ fixtures = [
                     "Payroll Employee Detail-custom_reason_for_salary_hold",
                     "Leave Type-custom_abbreviation",
                     "Leave Type-custom_enable",
+                    "Employee Resignation-custom_column_break_vfqz8",
+                    "Employee Resignation-custom_section_break_ccpoy",
+                    "Employee Resignation-custom_section_break_ztbok",
+                    "Employee Resignation-custom_employee_type",
+                    "Employee Resignation-custom_column_break_qanur",
+                    "Employee Resignation-custom_notice_period_days",
+                    "Employee Resignation-custom_section_break_ncsv5",
+                    "Employee Resignation-custom_column_break_k17ki",
+                    "Compensatory Leave Request-custom_attendance",
+                    "Compensatory Leave Request-custom_compensatory",                    
                 },
                 
             ]]
