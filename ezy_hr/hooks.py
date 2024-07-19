@@ -235,6 +235,8 @@ fixtures = [
                     "Employee-custom_leave_policy",
                     "Payroll Employee Detail-custom_manual_hold",
                     "Payroll Employee Detail-custom_reason_for_salary_hold",
+                    "Leave Type-custom_abbreviation",
+                    "Leave Type-custom_enable",
                 },
                 
             ]]
@@ -385,7 +387,8 @@ scheduler_events = {
 	],
 
     "hourly": [
-		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
+		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts",
+        "ezy_hr.ezy_hr.doctype.ezyhrms_transaction.ezyhrms_transaction.get_checkin_alert"
 	],
 }
 
