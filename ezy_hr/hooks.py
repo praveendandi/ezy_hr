@@ -55,8 +55,6 @@ fixtures = [
                 "name",
                 "in",
                 {
-                    "Employee-custom_work_location_type",
-                    "Employee-custom_current_work_address",
                     "Employee-custom_height",
                     "Employee-custom_weight",
                     "Employee-custom_aadhaar_card_detail",
@@ -323,7 +321,9 @@ after_install = "ezy_hr.setup.setup_fixtures"
 override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
     "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
-    "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry"
+    "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry",
+    "Employee Transfer":"ezy_hr.ezy_hr.custom_script.employee_transfer.employee_transfer.EmployeeTransfer"
+
 }
 
 # Document Events
@@ -370,13 +370,10 @@ doc_events = {
         "on_cancel":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
         "on_trash":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
     },
-    #  "Employee Checkin":{
-    #     "on_update":"ezy_hr.ezy_hr.custom_script.attendance.attendance.get_attendance"
-    # }
+    "Employee Checkin":{
+        "after_insert":"ezy_hr.ezy_hr.custom_script.attendance.attendance.get_attendance"
+    }
 }
-
-# Scheduled Tasks
-# ---------------
 
 scheduler_events = {
     "cron": {
