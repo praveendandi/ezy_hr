@@ -2,6 +2,7 @@ import frappe
 import erpnext
 from frappe.model.meta import Meta
 from datetime import datetime
+import calendar
 
 def creating_additional_earn_and_com_off(doc,method=None):
     try:
@@ -115,8 +116,11 @@ def creating_addition(empl_detail,data):
         
         if start_date <= date_of_joining <= end_date:
             is_new_joining = True
+        
+        
+        month_day = get_number_of_days(start_date)
                
-        nfh_Wages_per_day = round(gross_amount/30)*each_item.get("no_of_day")
+        nfh_Wages_per_day = round(gross_amount/month_day)*each_item.get("no_of_day")
         
         details = {
             "doctype": "Additional Salary",
@@ -147,6 +151,15 @@ def cancel_addition_salary(doc,mothod=None):
     except Exception as e:
         frappe.log_error(f"cancel_addition_salary: {e}") 
         
-        
-        
+
+def get_number_of_days(start_date):
+    
+    year = start_date.year
+    month = start_date.month
+    
+    print(year,month)
+    
+    days_in_month = calendar.monthrange(year, month)[1]
+    return days_in_month
+
     
