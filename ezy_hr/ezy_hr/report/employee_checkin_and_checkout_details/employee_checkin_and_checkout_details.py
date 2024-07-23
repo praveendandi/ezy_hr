@@ -65,6 +65,8 @@ def get_data(filters):
 		"Flexi Week Off":"FWO",
 		"Flexi Public Holiday":"FPH",
 		"PH Holiday":"PH Holiday",
+        "Flexi Saturday":"FS",
+        "Flexi Public Holiday":"FPH"
 	}
 
 

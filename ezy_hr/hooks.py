@@ -323,7 +323,6 @@ override_doctype_class = {
     "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
     "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry",
     "Employee Transfer":"ezy_hr.ezy_hr.custom_script.employee_transfer.employee_transfer.EmployeeTransfer"
-
 }
 
 # Document Events
@@ -374,6 +373,9 @@ doc_events = {
         "after_insert":"ezy_hr.ezy_hr.custom_script.attendance.attendance.get_attendance"
     }
 }
+
+# Scheduled Tasks
+# ---------------
 
 scheduler_events = {
     "cron": {

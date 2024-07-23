@@ -21,7 +21,7 @@ def get_attendance(doc,method=None):
         if frappe.db.exists("Attendance", {"employee":doc.employee, "attendance_date":checkin_date,"status":'On Leave', "docstatus":1}):
             attendance_doc = frappe.get_doc("Attendance", {"employee":doc.employee, "attendance_date":checkin_date,"status":'On Leave', "docstatus":1})
             if attendance_doc:
-                attendance_doc.docstatus == 2
+                attendance_doc.docstatus = 2
                 attendance_doc.cancel()
 
         attendance_id = None
@@ -46,6 +46,7 @@ def get_attendance(doc,method=None):
                     frappe.db.commit()
                     attendance_id = attendance_doc.name
                     calculate_total_hours(attendance_doc.name,row_data.get("time"))
+                    update_attendance_in_checkins([row_data.get("name")], attendance_id)
 
                 else:
                     attendance_doc.out_time = row_data.get("time")
@@ -53,6 +54,7 @@ def get_attendance(doc,method=None):
                     frappe.db.commit()
                     attendance_id = attendance_doc.name
                     calculate_total_hours(attendance_doc.name,row_data.get("time"))
+                    update_attendance_in_checkins([row_data.get("name")], attendance_id)
 
             else:
                 previou_day = checkin_date - timedelta(1)
