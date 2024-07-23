@@ -19,7 +19,6 @@ def get_attendance(doc,method=None):
             checkin_date = convert_str.date()
 
         if frappe.db.exists("Attendance", {"employee":doc.employee, "attendance_date":checkin_date,"status":'On Leave', "docstatus":1}):
-            frappe.log_error("wwwwwwwwwwwwww")
             attendance_doc = frappe.get_doc("Attendance", {"employee":doc.employee, "attendance_date":checkin_date,"status":'On Leave', "docstatus":1})
             if attendance_doc:
                 attendance_doc.docstatus == 2
@@ -29,11 +28,9 @@ def get_attendance(doc,method=None):
        
         if row_data.get("log_type") == "IN":
             if not frappe.db.exists("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date,"docstatus":['!=',2]}):
-                frappe.log_error("firstinP")
             # Create a new attendance record if an "IN" log is received
                 attendance_id = create_attendance_record(row_data, checkin_date)
             else:
-                frappe.log_error("multipppp")
                 # if already creating attendance of that day
                 attendance_doc = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date,"docstatus":['!=',2]})
                 attendance_id_in = attendance_doc.name
