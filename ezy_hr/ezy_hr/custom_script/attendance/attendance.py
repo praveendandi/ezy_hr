@@ -112,7 +112,6 @@ def calculate_total_hours(attendance_doc, checkin_date):
         ORDER BY time ASC;
     """
     totalemp_checkins = frappe.db.sql(query, (attendance_doc,), as_dict=True)
-    frappe.log_error("empcheckin", totalemp_checkins)
 
     total_hour = 0
     intime_hours = None
@@ -122,12 +121,10 @@ def calculate_total_hours(attendance_doc, checkin_date):
         for each in totalemp_checkins:
             if each.get("log_type") == "IN":
                 intime_hours = each.get("time")
-                frappe.log_error("IN Time", f"{intime_hours} ({type(intime_hours)})")
 
             if each.get("log_type") == "OUT" and is_lastout:
                 inout_hours = each.get("time")
                 is_lastout = False
-                frappe.log_error("OUT Time", f"{inout_hours} ({type(inout_hours)})")
             if not is_lastout and each.get("log_type") != "OUT":
                 inout_hours = datetime.strptime(checkin_date, "%Y-%m-%d %H:%M:%S")
                 is_lastout = True
@@ -137,9 +134,7 @@ def calculate_total_hours(attendance_doc, checkin_date):
                 if intime_hours < inout_hours:
                     in_time = intime_hours
                     out_time = inout_hours
-
                     total_hour += (out_time - in_time).total_seconds() / 3600.0
-                    frappe.log_error("totalhours", total_hour)
                     intime_hours = None
                     inout_hours = None
                 else:
@@ -152,9 +147,8 @@ def calculate_total_hours(attendance_doc, checkin_date):
         if attendance_id.in_time and attendance_id.out_time:
             in_time = attendance_id.in_time
             out_time = attendance_id.out_time
-            frappe.log_error("Single IN/OUT", f"IN: {in_time} ({type(in_time)}), OUT: {out_time} ({type(out_time)})")
             total_hour = (out_time - in_time).total_seconds() / 3600.0
-    frappe.log_error("toltahrafter",total_hour)
+    
 
     if attendance_id.docstatus == 1:
         frappe.db.set_value("Attendance", attendance_id.name,{"working_hours":total_hour})
@@ -173,6 +167,5 @@ def calculate_total_hours(attendance_doc, checkin_date):
     else:
         attendance_id.working_hours = total_hour   
         attendance_id.save()
-        frappe.log_error("aftersave",totalemp_checkins)
         frappe.db.commit()
     
