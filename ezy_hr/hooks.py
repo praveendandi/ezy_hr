@@ -369,9 +369,9 @@ doc_events = {
         "on_cancel":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
         "on_trash":"ezy_hr.addition_earning_public_ho.cancel_addition_salary",
     },
-    #  "Employee Checkin":{
-    #     "on_update":"ezy_hr.ezy_hr.custom_script.attendance.attendance.get_attendance"
-    # }
+    "Employee Checkin":{
+        "after_insert":"ezy_hr.ezy_hr.custom_script.attendance.attendance.get_attendance"
+    }
 }
 
 # Scheduled Tasks
