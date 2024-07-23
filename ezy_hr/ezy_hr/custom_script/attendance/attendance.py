@@ -1,14 +1,14 @@
 
 import frappe
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,timezone
+
+# from datetime import datetime, timezone
 
 
 # @frappe.whitelist()
 def get_attendance(doc,method=None):
     try:
         row_data = doc.as_dict()
-        # print(row_data,";pppppppppppppppppppppppppppp")
-        frappe.log_error("row_data",row_data)
 
         if isinstance(row_data.get("time"),str):
             convert_str = row_data.get("time")
@@ -18,50 +18,63 @@ def get_attendance(doc,method=None):
             convert_str = row_data.get("time")
             checkin_date = convert_str.date()
 
+        if frappe.db.exists("Attendance", {"employee":doc.employee, "attendance_date":checkin_date,"status":'On Leave', "docstatus":1}):
+            frappe.log_error("wwwwwwwwwwwwww")
+            attendance_doc = frappe.get_doc("Attendance", {"employee":doc.employee, "attendance_date":checkin_date,"status":'On Leave', "docstatus":1})
+            if attendance_doc:
+                attendance_doc.docstatus == 2
+                attendance_doc.cancel()
+
         attendance_id = None
        
         if row_data.get("log_type") == "IN":
-            if not frappe.db.exists("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date}):
-                # print("firstinP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
+            if not frappe.db.exists("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date,"docstatus":['!=',2]}):
                 frappe.log_error("firstinP")
             # Create a new attendance record if an "IN" log is received
                 attendance_id = create_attendance_record(row_data, checkin_date)
             else:
-                # print("multipppp....................................")
                 frappe.log_error("multipppp")
                 # if already creating attendance of that day
-                attendance_doc = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date})
+                attendance_doc = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date,"docstatus":['!=',2]})
                 attendance_id_in = attendance_doc.name
                 update_attendance_in_checkins([row_data.get("name")], attendance_id_in)
 
-        # print("5","///////////////////////////////////")
         
         if row_data.get("log_type") == "OUT":
             # If an "OUT" log is received, update the latest attendance record that has no "OUT" time
-            if frappe.db.exists("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date}):
-                # print("yyyyyyyyyyyyyyyyyyyyyyyy")
-                frappe.log_error()
-                attendance_doc = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date})
+            if frappe.db.exists("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date,"docstatus":['!=',2]}):
+                attendance_doc = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date,"docstatus":['!=',2]})
+                if attendance_doc.docstatus == 1:
+                    frappe.db.set_value("Attendance", attendance_doc.name,{"out_time": row_data.get("time")})
+                    frappe.db.commit()
+                    attendance_id = attendance_doc.name
+                    calculate_total_hours(attendance_doc.name,row_data.get("time"))
 
-                if attendance_doc:
+                else:
                     attendance_doc.out_time = row_data.get("time")
-                    attendance_doc.save()
+                    attendance_doc.save(ignore_permissions = True)
                     frappe.db.commit()
                     attendance_id = attendance_doc.name
                     calculate_total_hours(attendance_doc.name,row_data.get("time"))
 
             else:
-                # print("7...................................")
                 previou_day = checkin_date - timedelta(1)
-                attendance_prev_id = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":previou_day})
-                if attendance_prev_id:
-                    # print(attendance_prev_id.name,"pmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
+                attendance_prev_id = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":previou_day,"docstatus":['!=',2]})
+                if attendance_prev_id.docstatus == 1:
+                    frappe.db.set_value("Attendance", attendance_prev_id.name,{"out_time": row_data.get("time")})
+                    frappe.db.commit()
+                    attendance_id = attendance_prev_id.name
+                    calculate_total_hours(attendance_prev_id.name,previou_day)
+
+                else:
                     attendance_prev_id.out_time = row_data.get("time")
                     attendance_prev_id.save()
                     frappe.db.commit()
                     attendance_id_pre = attendance_prev_id.name
                     calculate_total_hours(attendance_id_pre,previou_day)
                     update_attendance_in_checkins([row_data.get("name")],attendance_id_pre)
+                
+                
 
         if attendance_id:
             update_attendance_in_checkins([row_data.get("name")], attendance_id)
@@ -90,51 +103,8 @@ def update_attendance_in_checkins(log_names: list, attendance_id: str):
     ).run()
     frappe.db.commit()
 
-# def calculate_total_hours(attendance_doc,checkin_date):
-
-#     attendance_id = frappe.get_doc("Attendance",{"name":attendance_doc})
-#     totalemp_checkins = frappe.db.get_list("Employee Checkin",{"attendance":attendance_id.name},["name","log_type","time"],order_by="time DESC")
-#     frappe.log_error("empcheckin",totalemp_checkins)
-#     if len(totalemp_checkins) > 2:
-#         print("///////333333333333")
-#         total_hour = 0
-#         intime_hours = None
-#         inout_hours = None
-
-#         for each in totalemp_checkins:
-#             if each.get("log_type") == "IN":
-#                 intime_hours  = each.get("time")
-
-#             if each.get("log_type") == "OUT":
-#                 inout_hours  = each.get("time")
-
-#             if  intime_hours and inout_hours:
-
-#                 print(intime_hours,type(intime_hours),"llllllllllll",inout_hours,type(inout_hours))
-#                 frappe.log_error("inandout",f"{intime_hours,type(intime_hours)},{inout_hours,type(inout_hours)}")
-#                 convert_in = datetime.strftime(intime_hours, "%Y-%m-%d %H:%M:%S")
-#                 convert_out = datetime.strftime(inout_hours, "%Y-%m-%d %H:%M:%S")
-#                 in_time = datetime.strptime(convert_in, "%Y-%m-%d %H:%M:%S")
-#                 out_time = datetime.strptime(convert_out, "%Y-%m-%d %H:%M:%S")
-#                 total_hour += (out_time - in_time).total_seconds() / 3600.0
-#                 print(total_hour,"//////")
-#                 frappe.log_error("totalhours",total_hour)
-#                 # attendance_id.working_hours = total_hour
-#                 # attendance_id.save()
-#                 # frappe.db.commit()
-#     else:
-#         convert_in = datetime.strftime(attendance_id.in_time, "%Y-%m-%d %H:%M:%S")
-#         convert_out = datetime.strftime(attendance_id.out_time, "%Y-%m-%d %H:%M:%S")
-#         in_time = datetime.strptime(convert_in, "%Y-%m-%d %H:%M:%S")
-#         out_time = datetime.strptime(convert_out, "%Y-%m-%d %H:%M:%S")
-#         total_hour = (out_time - in_time).total_seconds() / 3600.0
-
-#     attendance_id.working_hours = total_hour
-#     attendance_id.save()
-#     frappe.db.commit()
 def calculate_total_hours(attendance_doc, checkin_date):
-    import frappe
-    from datetime import datetime, timezone
+    
 
     attendance_id = frappe.get_doc("Attendance", {"name": attendance_doc})
     # totalemp_checkins = frappe.db.get_("Employee Checkin", {"attendance": attendance_id.name}, ["name", "log_type", "time"])
@@ -164,7 +134,7 @@ def calculate_total_hours(attendance_doc, checkin_date):
             if not is_lastout and each.get("log_type") != "OUT":
                 inout_hours = datetime.strptime(checkin_date, "%Y-%m-%d %H:%M:%S")
                 is_lastout = True
-                
+
             if intime_hours and inout_hours:
         
                 if intime_hours < inout_hours:
@@ -189,8 +159,23 @@ def calculate_total_hours(attendance_doc, checkin_date):
             total_hour = (out_time - in_time).total_seconds() / 3600.0
     frappe.log_error("toltahrafter",total_hour)
 
-    attendance_id.working_hours = total_hour
-    attendance_id.save()
-    frappe.log_error("aftersave",totalemp_checkins)
-    frappe.db.commit()
+    if attendance_id.docstatus == 1:
+        frappe.db.set_value("Attendance", attendance_id.name,{"working_hours":total_hour})
+        frappe.db.commit()
+
+    
+    if total_hour > 7:
+        if attendance_id.docstatus == 1:
+            pass
+        else:
+            attendance_id.working_hours = total_hour
+            attendance_id.save()
+            attendance_id.submit()
+            frappe.db.commit()
+    
+    else:
+        attendance_id.working_hours = total_hour   
+        attendance_id.save()
+        frappe.log_error("aftersave",totalemp_checkins)
+        frappe.db.commit()
     
