@@ -106,15 +106,15 @@ def update_attendance_in_checkins(log_names: list, attendance_id: str):
     in_time = check_in_list[0].time
     out_time = check_in_list[-1].time
 
-    working_hours = calculate_total_hours(attendance_id)  
-    frappe.db.set_value("Attendance", attendance_id,
-                {
-                    "working_hours": working_hours,
-                    "in_time": in_time,
-                    "out_time": out_time,
-                    "docstatus":1}
-                )
-    frappe.db.commit()
+    # working_hours = calculate_total_hours(attendance_id)  
+    # frappe.db.set_value("Attendance", attendance_id,
+    #             {
+    #                 "working_hours": working_hours,
+    #                 "in_time": in_time,
+    #                 "out_time": out_time,
+    #                 "docstatus":1}
+    #             )
+    # frappe.db.commit()
         
     # EmployeeCheckin = frappe.qb.DocType("Employee Checkin")
     # (
