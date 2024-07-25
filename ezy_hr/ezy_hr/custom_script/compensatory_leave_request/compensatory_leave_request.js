@@ -59,3 +59,6 @@ async function update_compensatory_days(frm) {
         frm.refresh_field('custom_compensatory');
     }
 }
+
+
+
