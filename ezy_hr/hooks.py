@@ -32,7 +32,8 @@ doctype_js = {"Travel Request" : "ezy_hr/custom_script/traval_request/traval_req
               "Payroll Entry":"ezy_hr/custom_script/payroll_entry/payroll_entry.js",
               "Employee":"ezy_hr/custom_script/employee/employee.js",
               "Employee Promotion":"ezy_hr/custom_script/employee_promotion/employee_promotion.js",
-              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
+              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js",
+              "Compensatory Leave Request":"ezy_hr/custom_script/compensatory_leave_request/compensatory_leave_request.js"
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -48,7 +49,11 @@ doctype_js = {"Travel Request" : "ezy_hr/custom_script/traval_request/traval_req
 
 
 fixtures = [
-        "Role Profile"
+        "Role Profile",
+        "Role",
+        "Workflow",
+        "Workflow State",
+        "Print Format"     
 ]
 
 # application home page (will override Website Settings)
@@ -131,7 +136,8 @@ after_install = "ezy_hr.setup.setup_fixtures"
 # }
 override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
-    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType"
+    "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
+    "Employee Transfer":"ezy_hr.ezy_hr.custom_script.employee_transfer.employee_transfer.TestEmployeeTransfer"
 }
 
 # Document Events
@@ -153,8 +159,6 @@ doc_events = {
         "on_update":"ezy_hr.ezy_hr.doctype.personal_files.personal_files.create_personal_file_through_employee"
     },
     "Employee":{
-        # /home/caratred/Desktop/frappe15/apps/ezy_hr/ezy_hr/ezy_hr/custom_script/employee/employee.py
-        # "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.after_update",
         "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.create_salary_structure_through_employee",
         "before_save":"ezy_hr.ezy_hr.custom_script.employee.employee.update_employee_biometric_id",
     },
@@ -201,7 +205,13 @@ doc_events = {
 scheduler_events = {
     "cron": {
         "0 0 * * *": [
-            "ezy_hr.employee_checkins.get_employee_checkins"
+            "ezy_hr.employee_checkins.get_employee_checkins",
+			"ezy_hr.ezy_hr.custom_script.birthday_notification.birthday_notification.birthday_notification",
+			"ezy_hr.ezy_hr.custom_script.anniversary_notification.anniversary_notification.anniversary_notification",
+        ],
+
+        "0 10 * * *": [
+            "ezy_hr.ezy_hr.custom_script.send_checkins_notification.send_checkins_notification.send_checkins_notification"
         ]
     },
     "daily": [

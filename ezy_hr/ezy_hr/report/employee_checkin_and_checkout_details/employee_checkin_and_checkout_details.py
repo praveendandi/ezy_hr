@@ -77,8 +77,12 @@ def get_data(filters):
                 'status': status,
                 'actions': generate_actions(status, emp['name'], date)
             })
-
+            
+#               :------------------ Send by Surya ------------------:
+    if filters.get("status") and filters["status"] != "":
+        data = [row for row in data if row["status"] == filters["status"]]
     return data
+#               :---- -------------- Send by surya ------------------:
 
 def get_date_range(start_date, end_date):
     start = getdate(start_date)
@@ -148,7 +152,7 @@ def generate_actions(status, employee, date):
     return ''
 
 def get_leave_dates(filters):
-    print('Holidays details')
+    # print('Holidays details')
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
@@ -168,7 +172,7 @@ def get_leave_dates(filters):
     return leave_details
 
 def get_holiday_dates(filters, employees):
-    print('Holidays details')
+    # print('Holidays details')
     start_date = filters.get("from_date")
     end_date = filters.get("to_date")
     if not start_date or not end_date:
@@ -185,5 +189,4 @@ def get_holiday_dates(filters, employees):
             if emp["name"] not in holiday_details:
                 holiday_details[emp["name"]] = {}
             holiday_details[emp["name"]][date] = holiday["description"] or "Holiday"
-    
     return holiday_details

@@ -76,6 +76,15 @@ frappe.query_reports["Employee Checkin And Checkout Details"] = {
             options: "Company",
             default: frappe.defaults.get_default("company")
         },
+        {
+            fieldname: "status",
+            label: __("Missing IN & Missing OUT"),
+            fieldtype: "Select",
+            options:"\nMI\nMO\nMissing Punches",
+            default:" "
+
+        },
+
     ]
 };
 
@@ -168,7 +177,7 @@ function openPopup(employeeId, date) {
                             }
                         },
                         callback: function() {
-                            frappe.msgprint('Checkout added successfully.');
+                            frappe.msgprint('Attendance added successfully.');
                             dialog.hide();
                             frappe.query_report.refresh();
                         }

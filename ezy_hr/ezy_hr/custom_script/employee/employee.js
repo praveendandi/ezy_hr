@@ -7,12 +7,38 @@ frappe.ui.form.on('Employee', {
             };
             frappe.set_route('Form', 'Employee Fields Update', 'new_employee_fields_update');
         }).addClass('btn-primary');
-        
-        // Add the 'Create User' button if no user_id is set
-        if (!frm.doc.user_id) {
+
+        // Add the 'Create User' button if no user_id is set and employee status is not 'Left'
+        if (!frm.doc.user_id && frm.doc.employee && frm.doc.status != 'Left') {
             frm.add_custom_button(__('Create User'), function() {
                 create_user_for_employee(frm);
             }).addClass('btn-secondary');
+        }
+
+       
+        if (frm.doc.status === 'Left' && frm.doc.user_id) {
+            frappe.call({
+                method: 'frappe.client.set_value',
+                args: {
+                    doctype: 'User',
+                    name: frm.doc.user_id, 
+                    fieldname: 'enabled',
+                    value: 0
+                },
+                callback: function(r) {
+                    if (!r.exc) {
+                        frm.set_value('user_id', null);
+                        frm.refresh();
+                    } else {
+                        frappe.msgprint(__('Error occurred while updating the user status'));
+                        frappe.log_error(r.exc);
+                    }
+                },
+                error: function(r) {
+                    frappe.msgprint(__('Error occurred while updating the user status'));
+                    frappe.log_error(r);
+                }
+            });
         }
     }
 });
@@ -27,7 +53,14 @@ function create_user_for_employee(frm) {
             if (!r.exc) {
                 frm.set_value('user_id', r.message);
                 frm.refresh();
+            } else {
+                frappe.msgprint(__('Error occurred while creating user'));
+                frappe.log_error(r.exc);
             }
+        },
+        error: function(r) {
+            frappe.msgprint(__('Error occurred while creating user'));
+            frappe.log_error(r);
         }
     });
 }

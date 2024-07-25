@@ -2,6 +2,174 @@
  {
   "docstatus": 0,
   "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.806299",
+  "name": "Inventory",
+  "role_profile": "Inventory",
+  "roles": [
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.814259",
+  "name": "Manufacturing",
+  "role_profile": "Manufacturing",
+  "roles": [
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing User"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing Manager"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.828931",
+  "name": "Accounts",
+  "role_profile": "Accounts",
+  "roles": [
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.837080",
+  "name": "Sales",
+  "role_profile": "Sales",
+  "roles": [
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.859780",
+  "name": "Purchase",
+  "role_profile": "Purchase",
+  "roles": [
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Manager"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:10:11.036113",
+  "name": "HR",
+  "role_profile": "HR",
+  "roles": [
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR User"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR Manager"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
   "modified": "2024-07-08 13:11:17.961991",
   "name": "Ezy_admin",
   "role_profile": "Ezy admin",
@@ -784,6 +952,27 @@
  {
   "docstatus": 0,
   "doctype": "Role Profile",
+  "modified": "2024-07-08 13:08:53.775121",
+  "name": "Ezy_Employee",
+  "role_profile": "Ezy Employee",
+  "roles": [
+   {
+    "parent": "Ezy_Employee",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Ezy_Employee",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
   "modified": "2024-07-08 13:00:06.167648",
   "name": "Ezy_HR_Manager",
   "role_profile": "Ezy HR Manager",
@@ -853,27 +1042,6 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Functional Head"
-   }
-  ]
- },
- {
-  "docstatus": 0,
-  "doctype": "Role Profile",
-  "modified": "2024-07-08 13:08:53.775121",
-  "name": "Ezy_Employee",
-  "role_profile": "Ezy Employee",
-  "roles": [
-   {
-    "parent": "Ezy_Employee",
-    "parentfield": "roles",
-    "parenttype": "Role Profile",
-    "role": "Employee"
-   },
-   {
-    "parent": "Ezy_Employee",
-    "parentfield": "roles",
-    "parenttype": "Role Profile",
-    "role": "Employee Self Service"
    }
   ]
  }

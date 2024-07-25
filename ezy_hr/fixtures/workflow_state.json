@@ -1,0 +1,290 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "question-sign",
+  "modified": "2024-07-11 18:07:08.552314",
+  "name": "Pending",
+  "style": "",
+  "workflow_state_name": "Pending"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "ok-sign",
+  "modified": "2024-07-11 18:07:08.553800",
+  "name": "Approved",
+  "style": "Success",
+  "workflow_state_name": "Approved"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "remove",
+  "modified": "2024-07-11 18:07:08.554993",
+  "name": "Rejected",
+  "style": "Danger",
+  "workflow_state_name": "Rejected"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-12 16:59:40.080723",
+  "name": "Approval Pending From Reporting Manager",
+  "style": "",
+  "workflow_state_name": "Approval Pending From Reporting Manager"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-15 10:58:35.800096",
+  "name": "Approval Pending From HR Manager",
+  "style": "",
+  "workflow_state_name": "Approval Pending From HR Manager"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-15 11:26:40.673484",
+  "name": "Cancelled",
+  "style": "",
+  "workflow_state_name": "Cancelled"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:04:15.487805",
+  "name": "Pending From Current HR",
+  "style": "",
+  "workflow_state_name": "Pending From Current HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:04:39.514862",
+  "name": "Pending From GM-HR",
+  "style": "",
+  "workflow_state_name": "Pending From GM-HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:04:52.026205",
+  "name": "Pending From Unit GM",
+  "style": "",
+  "workflow_state_name": "Pending From Unit GM"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:06:08.796748",
+  "name": "Pending From Receiving HR",
+  "style": "",
+  "workflow_state_name": "Pending From Receiving HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:07:20.988167",
+  "name": "Accepted",
+  "style": "",
+  "workflow_state_name": "Accepted"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:23:35.458450",
+  "name": "Approval Pending From Unit HR",
+  "style": "",
+  "workflow_state_name": "Approval Pending From Unit HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:23:54.501196",
+  "name": "Approve",
+  "style": "",
+  "workflow_state_name": "Approve"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:35:19.623485",
+  "name": "Approval Pending From Unit Head",
+  "style": "",
+  "workflow_state_name": "Approval Pending From Unit Head"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:36:08.173918",
+  "name": "Approval Pending From Unit GM",
+  "style": "",
+  "workflow_state_name": "Approval Pending From Unit GM"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:52:22.899347",
+  "name": "Resignation Request Raised By Employee",
+  "style": "",
+  "workflow_state_name": "Resignation Request Raised By Employee"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:54:00.435219",
+  "name": "Approved By Unit Head",
+  "style": "",
+  "workflow_state_name": "Approved By Unit Head"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:54:15.552229",
+  "name": "Approval Rejected By Unit Head",
+  "style": "",
+  "workflow_state_name": "Approval Rejected By Unit Head"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:54:28.304673",
+  "name": "Approval Pending From GM-HR",
+  "style": "",
+  "workflow_state_name": "Approval Pending From GM-HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:54:46.739506",
+  "name": "Approved by GM-HR",
+  "style": "",
+  "workflow_state_name": "Approved by GM-HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:54:59.885622",
+  "name": "Approval Rejected By GM-HR",
+  "style": "",
+  "workflow_state_name": "Approval Rejected By GM-HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 11:55:25.590299",
+  "name": "Approved By Unit GM",
+  "style": "",
+  "workflow_state_name": "Approved By Unit GM"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:18:49.529451",
+  "name": "Raised By Unit HR",
+  "style": "",
+  "workflow_state_name": "Raised By Unit HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:19:40.448912",
+  "name": "Rejected By Current HR",
+  "style": "",
+  "workflow_state_name": "Rejected By Current HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:19:53.063620",
+  "name": "Approval Pending Form Unit GM",
+  "style": "",
+  "workflow_state_name": "Approval Pending Form Unit GM"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:29:01.023592",
+  "name": "Approved By Current HR",
+  "style": "",
+  "workflow_state_name": "Approved By Current HR"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:40:39.375519",
+  "name": "Pending From Functional Head",
+  "style": "",
+  "workflow_state_name": "Pending From Functional Head"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:40:50.790162",
+  "name": "Rejected By Functional Head",
+  "style": "",
+  "workflow_state_name": "Rejected By Functional Head"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:41:01.110377",
+  "name": "Pending From GGM",
+  "style": "",
+  "workflow_state_name": "Pending From GGM"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:41:11.865755",
+  "name": "Rejected By GGM",
+  "style": "",
+  "workflow_state_name": "Rejected By GGM"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:47:16.285080",
+  "name": "Rejected by Reporting Manager",
+  "style": "",
+  "workflow_state_name": "Rejected by Reporting Manager"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-17 12:50:29.116157",
+  "name": "Pending From Reporting Manager",
+  "style": "",
+  "workflow_state_name": "Pending From Reporting Manager"
+ }
+]

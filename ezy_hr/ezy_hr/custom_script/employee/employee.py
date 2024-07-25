@@ -9,6 +9,7 @@ from datetime import datetime
 from frappe.utils import getdate
 import traceback
 from frappe import _
+from frappe.exceptions import TimestampMismatchError
 # from erpnext.hr.doctype.employee.employee import get_user_email
 
 
@@ -30,11 +31,63 @@ def create_salary_structure_through_employee(doc, method=None):
 				update_salary_structure(doc, current_year, current_month)
 				update_gross_amount(doc)
 				update_salary_assigement_value_or_base(doc,structure_name)
-				
+
 	except frappe.exceptions.DuplicateEntryError as e:
 		frappe.log_error(f"Duplicate salary structure: {e}")
 	except Exception as e:
 		frappe.log_error(f"Error creating salary structure: {e}")
+
+
+	if doc.status == "Active":
+		if getattr(frappe.local, "handling_dynamic", False):
+			return
+		frappe.local.handling_dynamic = True
+
+		try:
+			if not doc.user_id:
+				user = create_employee_user(doc)
+				doc.user_id = user.name
+
+			if not doc.leave_approver:
+				report_user_id = frappe.get_value("Employee", doc.reports_to, "user_id")
+				doc.leave_approver = report_user_id
+				doc.shift_request_approver = report_user_id
+
+			if doc.custom_role:
+				user_doc = frappe.get_doc("User", doc.prefered_email)
+
+				if doc.custom_role != user_doc.role_profile_name:
+					frappe.db.set_value("User", doc.prefered_email, "role_profile_name", doc.custom_role)
+
+				role_data = frappe.get_roles(user_doc.name)
+				if "Employee" not in role_data:
+					doc.create_user_permission = 0
+
+					user_permissions = frappe.get_all("User Permission", filters={'for_value': doc.name}, fields=['name'])
+					if user_permissions:
+						frappe.delete_doc("User Permission", user_permissions[0]['name'])
+				else:
+					doc.create_user_permission = 1
+				user_doc.reload()
+			doc.save()
+			frappe.db.commit()
+
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), 'handle_employee_save')
+			frappe.db.rollback()  
+
+	elif doc.status == "Left":
+		try:
+			user_permissions = frappe.get_all("User Permission", filters={'user': doc.prefered_email}, fields=['name'])
+			for perm in user_permissions:
+				frappe.delete_doc("User Permission", perm.name)
+			doc.save()
+			frappe.db.commit()  
+			
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), 'handle_employee_status_update')
+			frappe.db.rollback() 
+
 
 def create_salary_structure(doc, structure_name, row_data):
 	earnings = []
@@ -230,59 +283,41 @@ def check_effective_date(doc, method=None):
 		if effective_date <= previous_effective_date:
 			frappe.throw("Please check the Effective Date. It should not be earlier than the previous effective date.")
 
-
+	
 @frappe.whitelist()
 def update_employee_biometric_id(doc, method=None):
-	try:
+	try:  
 		# Check if the attendance_device_id is already set
 		if not doc.attendance_device_id:
-			# Set attendance_device_id to a cleaned version of the employee name
+			# Remove hyphens from employee_id
 			employee_id = doc.name.replace('-', '')
-			frappe.db.set_value('Employee', doc.name, 'attendance_device_id', employee_id)
-			frappe.msgprint(f'Employee ID {employee_id} set as Attendance Device ID')
-
+			
+			# Set attendance_device_id to the cleaned employee_id
+			doc.attendance_device_id = employee_id
+			print(f'Employee ID {employee_id} set as Attendance Device ID')
+			
 	except Exception as e:
-		# Log any errors that occur
-		frappe.log_error(f"Error updating biometric ID for Employee {doc.name}: {str(e)}")
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Employee Checkin Details")
 
+#                        :--------------- Send by surya ---------------:
 
 @frappe.whitelist()
-def create_employee_user(employee):
+def create_employee_user(doc):
 	# Fetch the employee document
-	employee_doc = frappe.get_doc("Employee", employee)
-	
-	# Ensure required fields are present
-	if not employee_doc.company_email:
-		frappe.throw(_("Please enter the email for the employee"))
-	if not employee_doc.first_name:
-		frappe.throw(_("Please enter the first name for the employee"))
-	if not employee_doc.employee_name:
-		frappe.throw(_("Employee name is missing"))
-	if not employee_doc.prefered_email:
-		frappe.throw(_("Preferred email is missing for the employee"))
-
-	# Create a new User document
 	user = frappe.new_doc('User')
 	user.update({
-		'email': employee_doc.prefered_email,
-		'first_name': employee_doc.first_name,
-		'last_name': employee_doc.last_name,
-		'send_welcome_email': 1,
-		'user_type': 'System User',
-		'username': employee_doc.name,
-		"mobile_no":employee_doc.cell_number,
-		"role_profile_name":employee_doc.role,
+		'doctype': 'User',
+		'email': doc.prefered_email,
+		'first_name': doc.first_name,
+		'last_name': doc.last_name,
+		'send_welcome_email': 0
 	})
-	
-	# Insert the new User document
-	user.insert()
-	
-	# Link the new user to the employee document
-	employee_doc.user_id = user.name
-	employee_doc.save()
+	user.insert(ignore_permissions=True)
+	return user
 
-	# Return the name of the created user
-	return user.name
+#	                   :--------------- Send by surya ---------------:
+
 
 
 
