@@ -300,7 +300,6 @@ def update_employee_biometric_id(doc, method=None):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Employee Checkin Details")
 
-#                        :--------------- Send by surya ---------------:
 
 @frappe.whitelist()
 def create_employee_user(doc):
@@ -316,7 +315,6 @@ def create_employee_user(doc):
 	user.insert(ignore_permissions=True)
 	return user
 
-#	                   :--------------- Send by surya ---------------:
 
 
 

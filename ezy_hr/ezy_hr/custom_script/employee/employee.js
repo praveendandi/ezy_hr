@@ -47,19 +47,17 @@ function create_user_for_employee(frm) {
     frappe.call({
         method: 'ezy_hr.ezy_hr.custom_script.employee.employee.create_employee_user',
         args: {
-            employee: frm.doc.name
+            doc: frm.doc.name
         },
         callback: function(r) {
             if (!r.exc) {
                 frm.set_value('user_id', r.message);
                 frm.refresh();
             } else {
-                frappe.msgprint(__('Error occurred while creating user'));
                 frappe.log_error(r.exc);
             }
         },
         error: function(r) {
-            frappe.msgprint(__('Error occurred while creating user'));
             frappe.log_error(r);
         }
     });

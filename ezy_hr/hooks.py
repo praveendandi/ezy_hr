@@ -220,6 +220,8 @@ scheduler_events = {
     "hourly": [
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts"
 	]
+    
+    
 }
 
 # Testing
