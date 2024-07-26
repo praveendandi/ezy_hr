@@ -106,6 +106,7 @@ def execute(filters=None):
 		result['sheet'] = result['pf_employer'] + result['pf_employee']
 		# result['e_s_i_payable'] = result['esi'] + result['esie']
 		result['balance_sheet'] = result.get('esi', 0.0) + result.get('esie', 0.0)
+		result['Lwf Balance Sheet'] = result.get('labour_welfare_employee', 0.0) + result.get('labour_welfare_employer', 0.0)
 		del result['basic']
 		del result['dearness_allowance']
 		
@@ -113,14 +114,7 @@ def execute(filters=None):
 		
 		
 		final_data = melted_result.to_dict("records")
-		# for name, group in final_data:
-		# 	if name == "balance_sheet":
-		# 		nedict = group.to_dict("records")
-		# 	else:
-		# 		final_data.extend(group.to_dict("records"))
 		gl_codes = get_gl_code(final_data,filters)
-		# print(gl_codes,"////////////2")
-
 		columns = group_colunms(filters)
 		
 		return columns, gl_codes
@@ -133,6 +127,7 @@ def get_gl_code(final_data,filters):
 	try:
 		all_results = []
 		filters_data = final_data.copy()
+		
 		gl_code_data = frappe.db.get_list("GL Code Maping", fields=['name'])
 		for gl_code in gl_code_data:
 			holiday_query = """ 
@@ -153,7 +148,10 @@ def get_gl_code(final_data,filters):
 			elif map_gl == 'Esie':
 				each.update({'component': "ESIE"})
 			elif map_gl == "Nfh Wages":
-				each.update({"component":"NFH Wages"})    
+				each.update({"component":"NFH Wages"})
+			elif map_gl == "Lwf Balance Sheet":
+				each.update({"component":"LWF balance sheet"}) 
+   
 			else:
 				each.update({'component': map_gl})
 		
@@ -180,7 +178,7 @@ def get_gl_code(final_data,filters):
 					})
 					map_gl = None
 					break
-
+				
 		staff_dill_debit = 0.0
 		staff_dill_credit = 0.0
 		for each in filters_data:
@@ -195,19 +193,15 @@ def get_gl_code(final_data,filters):
 				each['credit'] = 0.0
 				each['debit'] = 0.0
 
-		# new_dict = {"component":"",'credit': round(staff_dill_debit-staff_dill_credit)}
 		new_dict = {"company":company,"deptcode":00,"deptname":"Balance Sheet","account_code":"26310","narration":"SALARY PAYABLE",'credit': staff_dill_debit-staff_dill_credit}
 
-		# filters_data.append(new_dict)
-		# print(staff_dill_debit,"/////////////////////////////////////",staff_dill_credit,"....",staff_dill_debit-staff_dill_credit)
 		final_value = []
-		excluded_narrations = ['E S I PAYABLE', 'E P F PAYABLE', 'PROFESSIONAL TAX PAYABLE','STAFF BILL RECOVERY','TDS ON SALARY','SALARY ADVANCE']
+		excluded_narrations = ['E S I PAYABLE', 'E P F PAYABLE','LWF PAYABLE(L)', 'PROFESSIONAL TAX PAYABLE','STAFF BILL RECOVERY','TDS ON SALARY','SALARY ADVANCE']
 		for item in filters_data:
 			if item.get("narration") not in excluded_narrations:
 				if item.get("credit") != 0 and  item.get("debit") != 0:
 					final_value.append(item)
-			
-		
+
 
 		esi_details = [item for item in filters_data if item.get("narration") == 'E S I PAYABLE']
 
@@ -342,7 +336,36 @@ def get_gl_code(final_data,filters):
 				'acc_code': None,
 				"deptcode":0,
 				'credit': advance_credit
-			})				
+			})
+	
+		lwf_account = [item for item in filters_data if item.get("narration") == 'LWF PAYABLE(L)']
+		lwf_amount = 0.0
+
+		lwf_dict = {
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				"deptname":"Balance Sheet",
+				'transaction_types': 'liability',
+				'narration': 'LWF PAYABLE(L)',
+				'gl_description': 'LWF PAYABLE(L)',
+				'account_code': '23608',
+				'credit': 0.0
+				}
+		
+		for item in lwf_account:
+			lwf_amount += item.get("credit", 0.0)
+			lwf_dict.update({
+				"company":company,
+				'gl_code': None,
+				'acc_code': None,
+				"deptcode":0,
+				'credit': lwf_amount
+			})
+
+
+
 
 		sorted_final_data = sorted(final_value, key=lambda x: x["component"],reverse=False)
 		for entry in sorted_final_data:
@@ -356,6 +379,7 @@ def get_gl_code(final_data,filters):
 			if entry['component'] == 'Sheet':
 				entry.update({'deptname': 'Balance Sheet', 'deptcode': 0})
 
+
 		sorted_final_data.append(advance_dict)
 		sorted_final_data.append(inconetax_dict)
 		sorted_final_data.append(staff_dict)
@@ -363,6 +387,7 @@ def get_gl_code(final_data,filters):
 		sorted_final_data.append(esi_dict)
 		sorted_final_data.append(epf_dict)
 		sorted_final_data.append(new_dict)
+		sorted_final_data.append(lwf_dict)
 
 		for i in sorted_final_data:
 			if 'debit' in i and i['debit'] is not None and i['debit'] >= 0:
