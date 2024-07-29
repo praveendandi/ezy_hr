@@ -6,7 +6,7 @@ variables:
 # Trigger the pipeline on a new commit to a main branch.
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "uat_ezy_hr"
 #      when: manual
 
 # Stages to define a workflow step by step.
