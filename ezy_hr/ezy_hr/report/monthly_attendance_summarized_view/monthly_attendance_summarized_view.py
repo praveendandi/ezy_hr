@@ -48,8 +48,10 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
            _("No attendance records found for this criteria."), alert=True, indicator="orange"
        )
        return columns, [], None, None
+   print(data,"/////////////////////")
+   sort_data = sorted(data, key=lambda x: x["date_of_joining"],reverse=False)
 
-   return columns, data
+   return columns, sort_data
 
 
 
