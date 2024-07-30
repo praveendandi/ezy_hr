@@ -254,8 +254,7 @@ doc_events = {
     "Employee":{
         # /home/caratred/Desktop/frappe15/apps/ezy_hr/ezy_hr/ezy_hr/custom_script/employee/employee.py
         # "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.after_update",
-        "on_update":["ezy_hr.custom_salary.create_salary_structure_through_employee",
-                     "ezy_hr.ezy_hr.custom_script.employee.employee.assign_leave_policy"],
+        "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.create_salary_structure_through_employee",
         "before_save":"ezy_hr.employee_biometric.update_employee_biometric_id",
         
         

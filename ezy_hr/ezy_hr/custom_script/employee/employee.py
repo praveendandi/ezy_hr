@@ -37,8 +37,8 @@ def create_salary_structure_through_employee(doc, method=None):
    except Exception as e:
        frappe.log_error(f"Error creating salary structure: {e}")
 
-
    if doc.status == "Active":
+       
        if getattr(frappe.local, "handling_dynamic", False):
            return
        frappe.local.handling_dynamic = True
@@ -310,7 +310,7 @@ def create_employee_user(doc):
        'first_name': doc.first_name,
        'last_name': doc.last_name,
        'send_welcome_email': 0,
-       "role_profile_name":doc.custom_role,
+       "role_profile_name":doc.custom_role
    })
    user.insert(ignore_permissions=True)
    return user
