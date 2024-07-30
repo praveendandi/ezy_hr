@@ -144,7 +144,11 @@ fixtures = [
                 },
                 
             ]]
-    }
+    },
+    "Role Profile",
+    "Role",
+    "Workflow",
+    "Workflow State"
 ]
 
 # application home page (will override Website Settings)
