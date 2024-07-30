@@ -30,9 +30,10 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 # include js in doctype views
 doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
-              "Employee":"ezy_hr/custom_script/employee/employee.js",
+              "Employee":["ezy_hr/custom_script/employee/employee.js","public/js/salary_hide.js"],
               "Employee Promotion":"public/js/employee_promotion.js",
-              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
+              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js",
+              
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
