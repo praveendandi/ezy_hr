@@ -288,7 +288,12 @@ scheduler_events = {
     "cron": {
         "0 0 * * *": [
             "ezy_hr.employee_checkins.get_employee_checkins",
-            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
+            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving",
+            "ezy_hr.notifications.birthday_notification",
+            "ezy_hr.notifications.anniversary_notification"
+        ],
+        "0 10 * * *": [
+            "ezy_hr.notifications.send_checkins_notification"
         ]
     },
     "daily": [
