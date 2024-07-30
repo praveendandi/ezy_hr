@@ -103,3 +103,5 @@ def assign_leave_policy(doc,method=None):
     
     except Exception as e:
         frappe.log_error(str(e))
+
+

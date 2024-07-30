@@ -55,6 +55,7 @@ fixtures = [
                 "name",
                 "in",
                 {
+                    
                     "Employee-custom_height",
                     "Employee-custom_weight",
                     "Employee-custom_aadhaar_card_detail",
