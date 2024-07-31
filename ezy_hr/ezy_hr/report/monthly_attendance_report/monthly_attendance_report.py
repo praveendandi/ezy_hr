@@ -52,6 +52,7 @@ def execute(filters=None):
             {"label": "A", "fieldname": "total_empty_columns", "fieldtype": "Data", "width": 50},
             {"label": "P", "fieldname": "total_present", "fieldtype": "Data", "width": 100},
             {"label": "L", "fieldname": "total_leave", "fieldtype": "Data", "width": 100},
+            {"label": "Wo", "fieldname": "wo", "fieldtype": "Data", "width": 100},
             {"label": "Total", "fieldname": "total_selected_dates", "fieldtype": "Data", "width": 100},
             {"label": "Total Payable Days", "fieldname": "total_payable_days", "fieldtype": "Data", "width": 100},
         ])
@@ -104,20 +105,22 @@ def get_counts(data,all_dates,leave_type_short_forms):
     total_present = 0
     total_leave = 0
     total_absent = 0
+    wo  = 0
    
     for data_row in data:
         
         total_present = sum(1 for key, value in data_row.items() if value == "P" and key in all_dates)
         total_leave = sum(1 for key, value in data_row.items() if value =="L" and key in all_dates)
         total_absent = sum(1 for key, value in data_row.items() if value == "A" and key in all_dates)
-       
+        wo = sum(1 for key, value in data_row.items() if value == "WO" and key in all_dates)
         # Add total selected dates count
         data_row['total_present'] = total_present
         data_row['total_empty_columns'] = total_absent
         data_row['total_leave'] = total_leave
+        data_row['wo'] = wo
         
         total_selected_dates_count = len(all_dates)
-        total_payable_days = total_present + total_leave
+        total_payable_days = total_present + total_leave + wo
         data_row['total_selected_dates'] = total_selected_dates_count
         data_row['total_payable_days'] = total_payable_days
     
