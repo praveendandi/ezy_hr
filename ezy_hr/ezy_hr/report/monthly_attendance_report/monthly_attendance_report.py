@@ -63,6 +63,7 @@ def execute(filters=None):
             "Absent": "A",
             "Sunday": "WO",
             "On Leave": 'L',
+            "MO": "MO",
         }
 
         for entry in source_data:
