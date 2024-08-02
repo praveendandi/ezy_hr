@@ -15,8 +15,6 @@ def get_columns():
     return [
         {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "options": "Employee", "width": 100},
         {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 110},
-        {"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 160},
-        {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 160},
         {"label": "Date", "fieldname": "attendance_date", "fieldtype": "Date", "width": 110},
         {"label": "First Checkin", "fieldname": "in_time", "fieldtype": "Data", "width": 160},
         {"label": "Last Checkout", "fieldname": "out_time", "fieldtype": "Data", "width": 160},
@@ -24,6 +22,8 @@ def get_columns():
         {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 130},
         {"label": "Leave Type", "fieldname": "leave_type", "fieldtype": "Data", "width": 130},
         {"label": "Actions", "fieldname": "add_checkin", "fieldtype": "Data", "width": 180},
+        {"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 160},
+        {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 160},
     ]
 
 def get_data(filters):
@@ -56,15 +56,17 @@ def get_data(filters):
                     
                     if attendance_record:
                         for record in attendance_record:
-
+                            # frappe.log_error("record",record)
                             if single_date in hoidaylist_data and not record:
                                 record["status"] = "Sunday"
 
                             if record.get("docstatus") == 0:
-                                record["status"] = "Absent"
-                            if not record.get("out_time") and record.get("status") != "On Leave":
-                                record["out_time"] = "MO"
+                                record["status"] = "MO"
+                                # add_checkin_missing(record)
+                            # if not record.get("out_time") and record.get("status") != "On Leave":
+                            #     record["out_time"] = "MO"
                             record["add_checkin"] = add_checkin_missing(record)
+                            
                             department_name = None
                             if employee["department"]:
                                 department_name = employee["department"].split(" - ")[0] if " - " in employee["department"] else employee["department"]
@@ -94,13 +96,13 @@ def get_data(filters):
                             "in_time": None,
                             "out_time": None,
                             "status":status,
-                            "add_checkin": add_checkin_missing({"out_time": "MO", "employee": employee["name"], "attendance_date": single_date_str})
+                            "add_checkin": add_checkin_missing({"out_time": None, "employee": employee["name"], "attendance_date": single_date_str})
                         })
-    
+    frappe.log_error("final_data",final_data)
     return final_data
 
 def add_checkin_missing(record):
-    if record['out_time'] == 'MO':
+    if record['out_time'] == None:
         return f'<a href="#" onclick="openPopup(\'{record["employee"]}\', \'{record["attendance_date"]}\')">Add Checkin Checkouts</a>'
     return ''
 
