@@ -181,7 +181,7 @@ def calculate_total_hours(attendance_doc, checkin_date):
         frappe.db.commit()
 
     
-    if total_hour > 6:
+    if total_hour >= 6:
         if attendance_id.docstatus == 1:
             pass
         else:
