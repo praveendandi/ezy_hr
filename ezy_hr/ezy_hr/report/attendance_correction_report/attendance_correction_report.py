@@ -28,6 +28,9 @@ def get_columns():
 
 def get_data(filters):
     final_data = []
+    leave_type_short_forms = frappe.get_list("Leave Type",['name','custom_abbreviation'])
+    leave_type_abbr = {item['name']: item['custom_abbreviation'] for item in leave_type_short_forms}
+
     if filters.get('from_date') and filters.get('to_date'):
         from_date = getdate(filters['from_date'])
         to_date = getdate(filters['to_date'])
@@ -57,11 +60,20 @@ def get_data(filters):
                     if attendance_record:
                         for record in attendance_record:
                             # frappe.log_error("record",record)
+                            if record.get("leave_type"):
+                                record["leave_type"] = leave_type_abbr.get(record["leave_type"], record["leave_type"])
+                                # record["status"] = leave_type_abbr.get(record["leave_type"], record["status"])
+
+
                             if single_date in hoidaylist_data and not record:
                                 record["status"] = "Sunday"
 
                             if record.get("docstatus") == 0:
-                                record["status"] = "MO"
+                                
+                                if 0 < record.get("working_hours",0) < 6:
+                                    record["status"] = "Absent"
+                                else:
+                                    record["status"] = "MO"
                                 # add_checkin_missing(record)
                             # if not record.get("out_time") and record.get("status") != "On Leave":
                             #     record["out_time"] = "MO"
@@ -96,15 +108,19 @@ def get_data(filters):
                             "in_time": None,
                             "out_time": None,
                             "status":status,
-                            "add_checkin": add_checkin_missing({"out_time": None, "employee": employee["name"], "attendance_date": single_date_str})
+                            "add_checkin": add_checkin_missing({"working_hours":"0.00","out_time": None, "employee": employee["name"], "attendance_date": single_date_str})
                         })
     frappe.log_error("final_data",final_data)
     return final_data
 
 def add_checkin_missing(record):
-    if record['out_time'] == None:
+    if record['out_time'] == None :
         return f'<a href="#" onclick="openPopup(\'{record["employee"]}\', \'{record["attendance_date"]}\')">Add Checkin Checkouts</a>'
+    if record["working_hours"] < 6:
+        return f'<a href="#" onclick="openPopup(\'{record["employee"]}\', \'{record["attendance_date"]}\')">Add Checkin Checkouts</a>'
+
     return ''
+
 
 def holiday_list(employee):
 
