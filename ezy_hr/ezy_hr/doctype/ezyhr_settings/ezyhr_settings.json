@@ -1,16 +1,17 @@
 {
  "actions": [],
- "allow_rename": 1,
- "creation": "2024-07-04 18:09:58.788008",
+ "creation": "2024-07-30 18:24:54.442623",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_0mef",
-  "exit_begins_on"
+  "section_break_zko5",
+  "exit_begins_on",
+  "custom_notice_period_days_for_associate",
+  "custom_notice_period_days_for_management"
  ],
  "fields": [
   {
-   "fieldname": "section_break_0mef",
+   "fieldname": "section_break_zko5",
    "fieldtype": "Section Break"
   },
   {
@@ -18,11 +19,22 @@
    "fieldname": "exit_begins_on",
    "fieldtype": "Int",
    "label": "Employee Exit Begins From"
+  },
+  {
+   "fieldname": "custom_notice_period_days_for_associate",
+   "fieldtype": "Int",
+   "label": "Notice Period Days For Associate"
+  },
+  {
+   "fieldname": "custom_notice_period_days_for_management",
+   "fieldtype": "Int",
+   "label": "Notice Period Days For Management"
   }
  ],
  "index_web_pages_for_search": 1,
+ "issingle": 1,
  "links": [],
- "modified": "2024-07-05 12:12:45.370758",
+ "modified": "2024-07-30 18:27:12.192853",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "EzyHr Settings",
@@ -32,49 +44,15 @@
    "create": 1,
    "delete": 1,
    "email": 1,
-   "export": 1,
    "print": 1,
    "read": 1,
-   "report": 1,
    "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "HR Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Unit HR",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Unit Head",
    "share": 1,
    "write": 1
   }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
