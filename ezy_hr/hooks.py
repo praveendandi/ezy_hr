@@ -383,9 +383,9 @@ scheduler_events = {
             "ezy_hr.employee_checkins.get_employee_checkins",
             "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
         ],
-        "0 10 * * *": [
-            "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification"
-        ]
+        # "0 10 * * *": [
+        #     "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification"
+        # ]
     },
     "daily": [
 		"ezy_hr.ezy_hr.events.flexi_weekoff"
