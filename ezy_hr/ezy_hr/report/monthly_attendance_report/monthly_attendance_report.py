@@ -23,6 +23,7 @@ def execute(filters=None):
             leave_type_short_forms[leave_type['name']] = leave_type['custom_abbreviation']
         
         leave_types = {leave_type['custom_abbreviation']: 0 for leave_type in all_leave_types}
+        frappe.log_error("leave arr....",leave_types)
         # Define columns
         columns = [
             {"label": "Employee ID", "fieldname": "employee", "fieldtype": "Data", "width": 100},
@@ -80,18 +81,24 @@ def execute(filters=None):
             if isinstance(attendance,str):
                 data_dict[employee_id].update({entry.get('attendance_date'):status_short_forms.get(entry.get("status"))})
                 if entry.get("leave_type"):
-                    data_dict[employee_id].update({leave_type_short_forms.get(entry.get("leave_type")):0})
-                    data_dict[employee_id][leave_type_short_forms.get(entry.get("leave_type"))] +=1
+                    data_dict[employee_id].update({entry.get('attendance_date'):entry.get("leave_type")})
+                    if not entry.get("leave_type") in  data_dict[employee_id]:
+                        data_dict[employee_id].update({entry.get("leave_type"):0})
+                    data_dict[employee_id][entry.get("leave_type")] +=1
             else:
                 date_str = entry.get('attendance_date').strftime("%Y-%m-%d")
                 data_dict[employee_id].update({date_str:status_short_forms.get(entry.get("status"))})
+
                 if entry.get("leave_type"):
-                    data_dict[employee_id].update({leave_type_short_forms.get(entry.get("leave_type")):0})
-                    data_dict[employee_id][leave_type_short_forms.get(entry.get("leave_type"))] +=1
+                    
+                    data_dict[employee_id].update({date_str:entry.get("leave_type")})
+                    if not entry.get("leave_type") in  data_dict[employee_id]:
+                        data_dict[employee_id].update({entry.get("leave_type"):0})
+                    data_dict[employee_id][entry.get("leave_type")] +=1
                 
         data = list(data_dict.values())
 
-        get_counts(data,all_dates,leave_type_short_forms)
+        get_counts(data,all_dates,leave_types)
 
         sort_data = sorted(data, key=lambda x: x["date_of_joining"],reverse=False)
 
@@ -101,18 +108,21 @@ def execute(filters=None):
         frappe.log_error("attendnace error",str(e))
 
 
-def get_counts(data,all_dates,leave_type_short_forms):
+def get_counts(data,all_dates,leave_types):
 
     total_present = 0
     total_leave = 0
     total_absent = 0
     wo  = 0
-   
+    frappe.log_error("final data f...",data)
     for data_row in data:
         
         total_present = sum(1 for key, value in data_row.items() if value == "P" and key in all_dates)
-        total_leave = sum(1 for key, value in data_row.items() if value =="L" and key in all_dates)
+        
+        total_leave = sum(1 for key, value in data_row.items() if (value in leave_types and value != "WO") and key in all_dates)
+
         total_absent = sum(1 for key, value in data_row.items() if value == "A" and key in all_dates)
+
         wo = sum(1 for key, value in data_row.items() if value == "WO" and key in all_dates)
         # Add total selected dates count
         data_row['total_present'] = total_present
@@ -125,7 +135,7 @@ def get_counts(data,all_dates,leave_type_short_forms):
         data_row['total_selected_dates'] = total_selected_dates_count
         data_row['total_payable_days'] = total_payable_days
     
-        for key, value in data_row.items():
-            
-            data_row[leave_type_short_forms.get(key, key)] = value
+        # for key, value in data_row.items():
+        #     if leave_types.get(key,None):
+        #         data_row[leave_types.get(key, key)] = value
         
