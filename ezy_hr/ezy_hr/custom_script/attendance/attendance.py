@@ -160,7 +160,7 @@ def calculate_total_hours(attendance_doc, checkin_date):
                 if intime_hours < inout_hours:
                     in_time = intime_hours
                     out_time = inout_hours
-                    total_hour += round((out_time - in_time).total_seconds() / 3600.0)
+                    total_hour += abs(round((out_time - in_time).total_seconds() / 3600.0))
                     intime_hours = None
                     inout_hours = None
                 else:
@@ -173,7 +173,7 @@ def calculate_total_hours(attendance_doc, checkin_date):
         if attendance_id.in_time and attendance_id.out_time:
             in_time = attendance_id.in_time
             out_time = attendance_id.out_time
-            total_hour = round((out_time - in_time).total_seconds() / 3600.0)
+            total_hour = abs(round((out_time - in_time).total_seconds() / 3600.0))
     
 
     if attendance_id.docstatus == 1:
