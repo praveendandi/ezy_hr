@@ -2,34 +2,43 @@ import frappe
 from frappe.utils import getdate, today
 from collections import defaultdict
 
-
 @frappe.whitelist()
 def birthday_notification():
-   current_date = getdate(today())
-   current_month = current_date.month
-   current_day = current_date.day
-   
-   employees = frappe.get_all("Employee", filters={"date_of_birth": ["is", "set"]}, fields=['employee_name', 'user_id', 'date_of_birth', 'company'])
-   
-   birthday_employees = []
-   for employee in employees:
-       dob = getdate(employee['date_of_birth'])
-       if dob.month == current_month and dob.day == current_day:
-           birthday_employees.append(employee)
-   
-   for employee in birthday_employees:
-       send_birthday_email(employee)
-   return birthday_employees
+    current_date = getdate(today())
+    current_month = current_date.month
+    current_day = current_date.day
+
+    # Fetch employees whose birthday matches today's date
+    employees = frappe.get_all(
+        "Employee", 
+        filters={"date_of_birth": ["is", "set"]}, 
+        fields=['employee_name', 'user_id', 'date_of_birth', 'company', 'image']
+    )
+    
+    birthday_employees = []
+    for employee in employees:
+        dob = getdate(employee['date_of_birth'])
+        if dob.month == current_month and dob.day == current_day:
+            birthday_employees.append(employee)
+
+    for employee in birthday_employees:
+        send_birthday_email(employee)
+
+    return birthday_employees
 
 def send_birthday_email(employee):
-   notification = frappe.get_doc("Notification", "Birthday Notification") 
-   context = {
-       'doc': employee
-   }
-   message = frappe.render_template(notification.message, context)
-   subject = f"Happy Birthday, {employee['employee_name']}!"
-   
-   frappe.sendmail(recipients=employee['user_id'], subject=subject, message=message,now=True)
+    notification = frappe.get_doc("Notification", "Birthday Notification") 
+
+    context = {
+        'doc': employee,
+        'employee_image': employee.get('image', None)  # Include the employee's image
+    }
+    
+    message = frappe.render_template(notification.message, context)
+
+    subject = f"Happy Birthday, {employee['employee_name']}!"
+    
+    frappe.sendmail(recipients=employee['user_id'], subject=subject, message=message, now=True)
 
 
 
@@ -83,34 +92,35 @@ def send_checkins_notification():
    for emp in employees:
        grouped_employees[emp['reports_to']].append(emp['name'])
    
-   missing_checkins = frappe.get_all("Employee Missing Checkins Request", fields=['employee', 'status', 'date', 'unit', 'employee_name', 'out_time', 'in_time'])
+   missing_checkins = frappe.get_all("Attendance", fields=['employee', 'working_hours', 'attendance_date', 'company', 'employee_name', 'out_time', 'in_time'])
    
    matched_data = {
        reports_to: [
            {
                'Employee': checkin['employee'],
                'Employee Name': checkin['employee_name'],
-               'Unit': checkin['unit'],
-               'Date': checkin['date'],
-               'First Checkin': checkin['in_time'],
-               'Last CheckedOut': checkin['out_time'],
-               'Status': checkin['status']
+               'Unit': checkin['company'],
+               'Date': checkin['attendance_date'],
+               'In Time': checkin['in_time'],
+               'Out Time': checkin['out_time'],
+               'Working Hours': checkin['working_hours']
            }
            for checkin in missing_checkins if checkin['employee'] in grouped_employees[reports_to]
        ]
        for reports_to in grouped_employees
        if any(checkin['employee'] in grouped_employees[reports_to] for checkin in missing_checkins)
    }
+   print(matched_data,'Missing Attendance Data')
    
    try:
-       notification_doc = frappe.get_doc("Notification", {"name": "Missing Chechins Notification"})
+       notification_doc = frappe.get_doc("Notification", {"name": "Missing Attendance Notification"})
        
        for reports_to, checkins in matched_data.items():
            context = {"checkins": checkins}
            message = frappe.render_template(notification_doc.message, context)
            subject = frappe.render_template(notification_doc.subject, context)
            
-           reports_to_email = frappe.get_value("Employee", reports_to, "prefered_email")
+           reports_to_email = frappe.get_value("Employee", reports_to, "user_id")
            
            if reports_to_email:
                frappe.sendmail(
