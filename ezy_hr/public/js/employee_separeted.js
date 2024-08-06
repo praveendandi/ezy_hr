@@ -22,7 +22,57 @@ frappe.ui.form.on('Payroll Entry', {
         }
         cur_frm.refresh_fields('employees');
 	}
-	}
+	},
+    refresh(frm) {
+        frm.add_custom_button(__('Generate Absents'), function() {
+            frappe.prompt([
+                {'fieldname': 'unit', 'fieldtype': 'Link', 'label': 'Select Unit', 'options': 'Company'},
+                {'fieldname': 'from_date', 'fieldtype': 'Date', 'label': 'From Date'},
+                {'fieldname': 'to_date', 'fieldtype': 'Date', 'label': 'To Date'},
+            ], function(values) {
+                let unit = values.unit;
+                let from_date = values.from_date;
+                let to_date = values.to_date;
+
+                // Fetch employees within the selected unit
+                frappe.call({
+                    method: "frappe.client.get_list",
+                    args: {
+                        doctype: "Employee",
+                        filters: {
+                            "company": unit,
+                            "status":"Active"
+                        },
+                        fields: ['name']
+                    },
+                    callback: function(data) {
+                        console.log(data.message,"/////////////////////////////////////////")
+                        if (data.message) {
+                            // Call the server-side method to create absents for all employees in the unit
+                            frappe.call({
+                                method: 'ezy_hr.ezy_hr.custom_script.attendance.absen_attendance.create_absents',
+                                args: {
+                                    "data":data.message,
+                                    // unit: unit,
+                                    "from_date": from_date,
+                                    "to_date": to_date,
+                                    // employee_ids: employee_ids
+                                },
+                                callback: function(response) {
+                                    if (response.message) {
+                                        frappe.msgprint(__('Response: ' + response.message));
+                                    }
+                                }
+                            });
+                        } else {
+                            frappe.msgprint(__('No employees found for the selected unit.'));
+                        }
+                    }
+                });
+            }, __('Generate Absents'), __('Submit'));
+        },);
+    }
+    
 });
  
 function employee_seperation(frm, data) {
