@@ -46,7 +46,6 @@ frappe.ui.form.on('Payroll Entry', {
                         fields: ['name']
                     },
                     callback: function(data) {
-                        console.log(data.message,"/////////////////////////////////////////")
                         if (data.message) {
                             // Call the server-side method to create absents for all employees in the unit
                             frappe.call({
