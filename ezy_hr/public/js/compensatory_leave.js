@@ -55,4 +55,7 @@ frappe.ui.form.on('Compensatory Leave Request', {
         frm.refresh_field('custom_attendance_logs');
     }
  }
+
+
+ 
  
