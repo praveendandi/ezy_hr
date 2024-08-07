@@ -1,0 +1,32 @@
+{
+ "actions": [],
+ "creation": "2024-08-06 13:04:16.952315",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "custom_responsible_unit"
+ ],
+ "fields": [
+  {
+   "fieldname": "custom_responsible_unit",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "Company"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-08-06 13:13:18.377806",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Responsible Unit",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
