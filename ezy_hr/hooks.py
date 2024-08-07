@@ -281,6 +281,9 @@ doc_events = {
     },
     "Employee Checkin":{
         "after_insert":"ezy_hr.ezy_hr.custom_script.attendance.attendance.get_attendance"
+    },
+    "Payroll Entry":{
+        "on_update":"ezy_hr.ezy_hr.custom_script.esi_conditions.esi_conditions.esi_conditions"
     }
 }
 
