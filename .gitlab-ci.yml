@@ -1,14 +1,14 @@
 variables:
   WORK_DIR: "/home/caratred/frappe-15/apps/ezy_hr"
   #CURRENT_BRANCH: "$(git rev-parse --abbrev-ref HEAD)"
-  #COMMIT_ID: $(git rev-parse --short "$CURRENT_BRANCH")
+  COMMIT_ID: "$(git rev-parse --short HEAD)"
   #ADMIN_EZYINVOICING_REPO_URL: https://jenkins:glpat-cLy2cXH2iVsP2mxoK_kj@gitlab.caratred.com/devops/admin_ezyinvoicing.git
   #BRANCH_NAME: "uat_ezy_hr"
 
-# Trigger the pipeline on a new commit to a uat_ezy_hr branch.
+# Trigger the pipeline on a new commit to the uat_ezy_hr branch.
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "uat_ezy_hr" #$CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH == "uat_ezy_hr"'
 
 # Stages to define a workflow step by step.
 stages:
@@ -17,46 +17,43 @@ stages:
 
 check_repo_job:
   stage: check_repo
-    # Verifying for Work directory if directory not exists then exit the pipeline.
-  script: |
-    
+  script:
+    - |
       if [ -d "$WORK_DIR" ]; then
-            echo "$WORK_DIR repo exists."
-            git config --global --add safe.directory $WORK_DIR
+        echo "$WORK_DIR repo exists."
+        git config --global --add safe.directory "$WORK_DIR"
       else
-            echo "The $WORK_DIR repo not exists."
-            exit 1
+        echo "The $WORK_DIR repo does not exist."
+        exit 1
       fi
 
-update_repo-job:
+update_repo_job:
   stage: update_repo
-  # Change to the work directory and get the current branch, if curren branch is not uat_ezy_hr then exit the pipeline
-  # And check for any local changes in git repo, then pull the latest changes.
-  script: |
-        echo "Change to work directory"
-        cd "$WORK_DIR" || { echo "Failed to change directory"; exit 1; }
+  script:
+    - |
+      echo "Changing to work directory"
+      cd "$WORK_DIR" || { echo "Failed to change directory"; exit 1; }
 
-          if [ -d .git ]; then
-              CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo "The repository is currently on branch: $CURRENT_BRANCH"
-            if [ "$CURRENT_BRANCH" == "uat_ezy_hr" ]; then
-                  echo "Checking for any local changes in the repo and backup last git commit ID"
-                  git log -1 >>/home/caratred/deepak/git-commit.log
-              if [[ -n $(git status -s) ]]; then
-                    echo "Error: There are local changes. Please commit or stash them before pulling."
-                      exit 1
-                else  
-                    echo "No local changes found, pulling code from $CURRENT_BRANCH"
-                    git pull origin "$CURRENT_BRANCH"
-              fi
-                else
-                  echo "$WORK_DIR repo is not on the uat_ezy_hr branch. Current branch: $CURRENT_BRANCH"
-                  exit 1
-            fi
-                else
-                  echo "$WORK_DIR directory is not a Git repository"
-                  exit 1
+      if [ -d .git ]; then
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo "The repository is currently on branch: $CURRENT_BRANCH"
+
+        if [ "$CURRENT_BRANCH" == "uat_ezy_hr" ]; then
+          echo "Checking for any local changes in the repo and backing up last git commit ID"
+          git log -1 >> /home/caratred/deepak/git-commit.log
+
+          if [ -n "$(git status -s)" ]; then
+            echo "Error: There are local changes. Please commit or stash them before pulling."
+            exit 1
+          else  
+            echo "No local changes found, pulling code from $CURRENT_BRANCH"
+            git pull origin "$CURRENT_BRANCH"
           fi
-
-
-
+        else
+          echo "$WORK_DIR repo is not on the uat_ezy_hr branch. Current branch: $CURRENT_BRANCH"
+          exit 1
+        fi
+      else
+        echo "$WORK_DIR directory is not a Git repository"
+        exit 1
+      fi
