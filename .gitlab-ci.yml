@@ -1,7 +1,7 @@
 variables:
   WORK_DIR: "/home/caratred/frappe-15/apps/ezy_hr"
   #CURRENT_BRANCH: "$(git rev-parse --abbrev-ref HEAD)"
-  COMMIT_ID: $(git rev-parse --short "$CURRENT_BRANCH")
+  #COMMIT_ID: $(git rev-parse --short "$CURRENT_BRANCH")
   #ADMIN_EZYINVOICING_REPO_URL: https://jenkins:glpat-cLy2cXH2iVsP2mxoK_kj@gitlab.caratred.com/devops/admin_ezyinvoicing.git
   #BRANCH_NAME: "uat_ezy_hr"
 
