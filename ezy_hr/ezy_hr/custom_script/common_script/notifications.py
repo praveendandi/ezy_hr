@@ -8,7 +8,7 @@ from collections import defaultdict
 def send_checkins_notification():
     yesterday = add_days(today(), -1)
     employees = frappe.get_all("Employee", 
-                               filters={"status": "Active"}, 
+                               filters={"status": "Active","name":["not in",["PRH-01","PRH-12","PRH-03","PRH-04","PRH-05"]]}, 
                                fields=["name", "employee_name", "user_id", "reports_to"])
  
     attendance_issues = defaultdict(list)
