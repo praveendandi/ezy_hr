@@ -40,7 +40,7 @@ update_repo_job:
 
         if [ "$CURRENT_BRANCH" == "uat_ezy_hr" ]; then
           echo "Checking for any local changes in the repo and backing up last git commit ID"
-          git log -1 >> /home/caratred/deepak/git-commit.log
+          git log -1 >> /home/caratred/git-commit.log
 
           if [ -n "$(git status -s)" ]; then
             echo "Error: There are local changes. Please commit or stash them before pulling."
