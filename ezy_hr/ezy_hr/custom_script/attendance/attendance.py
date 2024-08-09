@@ -43,44 +43,45 @@ def get_attendance(doc,method=None):
             # If an "OUT" log is received, update the latest attendance record that has no "OUT" time
             if frappe.db.exists("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date}):
                 attendance_doc = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":checkin_date})
-                if attendance_doc.docstatus == 1:
-                    frappe.db.set_value("Attendance", attendance_doc.name,{"out_time": row_data.get("time")})
-                    frappe.db.commit()
-                    attendance_id_out = attendance_doc.name
-                    update_attendance_in_checkins([row_data.get("name")], attendance_id_out)
-                    calculate_total_hours(attendance_id_out,row_data.get("time"))
-
+                if attendance_doc.status != "On Leave":
+                    if attendance_doc.docstatus == 1:
+                        frappe.db.set_value("Attendance", attendance_doc.name,{"out_time": row_data.get("time")})
+                        frappe.db.commit()
+                        attendance_id_out = attendance_doc.name
+                        update_attendance_in_checkins([row_data.get("name")], attendance_id_out)
+                        calculate_total_hours(attendance_id_out,row_data.get("time"))
+                    else:
+                        attendance_doc.out_time = row_data.get("time")
+                        attendance_doc.save()
+                        frappe.db.commit()
+                        attendance_id_out = attendance_doc.name
+                        update_attendance_in_checkins([row_data.get("name")], attendance_id_out)
+                        calculate_total_hours(attendance_id_out,row_data.get("time"))
                 else:
-                    attendance_doc.out_time = row_data.get("time")
-                    attendance_doc.save()
-                    frappe.db.commit()
-                    attendance_id_out = attendance_doc.name
-                    update_attendance_in_checkins([row_data.get("name")], attendance_id_out)
-                    calculate_total_hours(attendance_id_out,row_data.get("time"))
-
+                    get_checkout_present_or_previou(row_data,checkin_date)
             else:
-                previou_day = checkin_date - timedelta(1)
-                attendance_prev_id = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":previou_day})
-                if attendance_prev_id.docstatus == 1:
-                    frappe.db.set_value("Attendance", attendance_prev_id.name,{"out_time": row_data.get("time")})
-                    frappe.db.commit()
-                    attendance_id_out = attendance_prev_id.name
-                    update_attendance_in_checkins([row_data.get("name")], attendance_id_out)
-                    calculate_total_hours(attendance_id_out,previou_day,)
-
-                else:
-                    attendance_prev_id.out_time = row_data.get("time")
-                    attendance_prev_id.save()
-                    frappe.db.commit()
-                    attendance_id_pre = attendance_prev_id.name
-                    update_attendance_in_checkins([row_data.get("name")],attendance_id_pre)
-                    calculate_total_hours(attendance_id_pre,previou_day)
-                
-                
-
-        
+                get_checkout_present_or_previou(row_data,checkin_date)
+                    
     except Exception as e:
         frappe.log_error("get_attendance",str(e))
+
+def get_checkout_present_or_previou(row_data,checkin_date):         
+        previou_day = checkin_date - timedelta(1)
+        attendance_prev_id = frappe.get_doc("Attendance",{"employee":row_data.get("employee"),"attendance_date":previou_day})
+        if attendance_prev_id.docstatus == 1:
+            frappe.db.set_value("Attendance", attendance_prev_id.name,{"out_time": row_data.get("time")})
+            frappe.db.commit()
+            attendance_id_out = attendance_prev_id.name
+            update_attendance_in_checkins([row_data.get("name")], attendance_id_out)
+            calculate_total_hours(attendance_id_out,previou_day,)
+
+        else:
+            attendance_prev_id.out_time = row_data.get("time")
+            attendance_prev_id.save()
+            frappe.db.commit()
+            attendance_id_pre = attendance_prev_id.name
+            update_attendance_in_checkins([row_data.get("name")],attendance_id_pre)
+            calculate_total_hours(attendance_id_pre,previou_day)
 
 def create_attendance_record(row_data, checkin_date):
     attendance_doc = {
