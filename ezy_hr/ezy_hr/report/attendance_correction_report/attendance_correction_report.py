@@ -19,11 +19,11 @@ def get_columns():
         {"label": "First Checkin", "fieldname": "in_time", "fieldtype": "Data", "width": 160},
         {"label": "Last Checkout", "fieldname": "out_time", "fieldtype": "Data", "width": 160},
         {"label": "Working Hours", "fieldname": "working_hours", "fieldtype": "Data", "width": 90},
-        {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 130},
-        {"label": "Leave Type", "fieldname": "leave_type", "fieldtype": "Data", "width": 130},
+        {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 90},
+        {"label": "Leave Type", "fieldname": "leave_type", "fieldtype": "Data", "width": 70},
         {"label": "Actions", "fieldname": "add_checkin", "fieldtype": "Data", "width": 180},
         {"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 160},
-        {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 160},
+        # {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 160},
     ]
 
 def get_data(filters):

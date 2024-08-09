@@ -4,11 +4,10 @@ from frappe.utils.background_jobs import enqueue
 from collections import defaultdict
 
 
-@frappe.whitelist()
 def send_checkins_notification():
     yesterday = add_days(today(), -1)
     employees = frappe.get_all("Employee", 
-                               filters={"status": "Active","name":["not in",["PRH-01","PRH-12","PRH-03","PRH-04","PRH-05"]]}, 
+                               filters={"status": "Active","name":["not in",["PRH-01","PRH-12","PRH-05","PRH-03","PRH-04"]]}, 
                                fields=["name", "employee_name", "user_id", "reports_to"])
  
     attendance_issues = defaultdict(list)
@@ -44,6 +43,8 @@ def send_checkins_notification():
  
     for manager, employees in attendance_issues.items():
         send_consolidated_notification(manager, employees, yesterday)
+        for employee in employees:
+            send_employee_notification(employee, yesterday)
  
 def calculate_work_hours(in_time, out_time):
     if in_time and out_time:
@@ -150,5 +151,50 @@ def send_consolidated_notification(manager, employees, date):
         "type": "Alert",
         "document_type": "Attendance",
         "document_name": f"Attendance_Issues_{date}",
+        "email_content": message
+    }).insert(ignore_permissions=True)
+
+def send_employee_notification(employee, date):
+    employee_email = frappe.db.get_value("Employee", employee['employee_id'], "user_id")
+    
+    if not employee_email:
+        frappe.log_error(f"No email found for employee {employee['employee_name']}", "Attendance Issues Notification")
+        return
+    
+    subject = f"Your Attendance Report for {date}"
+    
+    message = f"""
+    <html>
+    <body>
+        <p>Dear {employee['employee_name']},</p>
+        <p>Your attendance not captured {date} punch is Missed:</p>
+        <ul>
+            <li>Status: {employee['status']}</li>
+            <li>Work Hours: {employee['work_hours']:.2f}</li>
+        </ul>
+        <p>Please ensure that your attendance record is accurate. If there are any discrepancies, please update your attendance or contact your manager.</p>
+        <p>Thank you.</p>
+        <p>Sincerely,</p>
+
+        <i>Paul Resorts & Hotels Pvt. Ltd.</i></p>
+    </body>
+    </html>"""
+    
+    # Send email notification to the employee
+    frappe.sendmail(
+        recipients=[employee_email],
+        subject=subject,
+        message=message,
+        as_markdown=False
+    )
+    
+    # Create a notification in Frappe for the employee
+    frappe.get_doc({
+        "doctype": "Notification Log",
+        "subject": subject,
+        "for_user": employee_email,
+        "type": "Alert",
+        "document_type": "Attendance",
+        "document_name": f"Attendance_Issues_{employee['employee_id']}_{date}",
         "email_content": message
     }).insert(ignore_permissions=True)
