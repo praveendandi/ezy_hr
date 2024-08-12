@@ -21,6 +21,7 @@ def get_columns():
         {"label": "Working Hours", "fieldname": "working_hours", "fieldtype": "Data", "width": 90},
         {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 90},
         {"label": "Leave Type", "fieldname": "leave_type", "fieldtype": "Data", "width": 70},
+        {"label": "Attendance Request", "fieldname": "attendance_request", "fieldtype": "Data","width":4,"hidden":1},
         {"label": "Actions", "fieldname": "add_checkin", "fieldtype": "Data", "width": 180},
         {"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 160},
         # {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 160},
@@ -55,7 +56,7 @@ def get_data(filters):
                 if employee.get("date_of_joining") <= single_date and relieving_date_change:
                     attendance_record = frappe.db.get_list("Attendance", 
                         filters={"employee": employee["name"], "attendance_date": single_date_str,"docstatus":["!=",2]}, 
-                        fields=['employee', 'employee_name', 'attendance_date', 'working_hours', 'in_time', 'out_time', 'status', 'docstatus','leave_type'])
+                        fields=['employee', 'employee_name', 'attendance_date', 'working_hours', 'in_time', 'out_time', 'status', 'docstatus','leave_type', 'attendance_request'])
                     
                     if attendance_record:
                         for record in attendance_record:
@@ -63,7 +64,6 @@ def get_data(filters):
                             if record.get("leave_type"):
                                 record["leave_type"] = leave_type_abbr.get(record["leave_type"], record["leave_type"])
                                 # record["status"] = leave_type_abbr.get(record["leave_type"], record["status"])
-
 
                             if single_date in hoidaylist_data and not record:
                                 record["status"] = "Sunday"
@@ -74,6 +74,10 @@ def get_data(filters):
                                     record["status"] = "Absent"
                                 else:
                                     record["status"] = "MO"
+                            if record.get("attendance_request"):
+                                onduty = frappe.db.get_list("Attendance Request",{"name":record.get("attendance_request")},["name","reason"])
+                                record["status"] = onduty[0]["reason"]
+                                frappe.log_error("onduty",onduty)
                                 # add_checkin_missing(record)
                             # if not record.get("out_time") and record.get("status") != "On Leave":
                             #     record["out_time"] = "MO"

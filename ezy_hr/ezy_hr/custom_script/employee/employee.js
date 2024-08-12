@@ -40,6 +40,15 @@ frappe.ui.form.on('Employee', {
                 }
             });
         }
+    },
+    reports_to: function(frm) {
+        frappe.db.get_value("Employee", {"name": frm.doc.reports_to}, "user_id")
+            .then(r => {
+                let report_user_id = r.message.user_id;
+                console.log(report_user_id);
+                frm.set_value('leave_approver', report_user_id);
+                frm.set_value('shift_request_approver', report_user_id);
+            });
     }
  });
  
