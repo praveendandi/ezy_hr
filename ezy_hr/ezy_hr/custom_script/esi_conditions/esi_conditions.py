@@ -1,6 +1,8 @@
 import frappe
 from datetime import datetime
 from frappe import _
+import sys
+import traceback
 
 def get_salary_cycle(date):
     
@@ -27,10 +29,10 @@ def process_esic_for_employee(doc, each_empl):
     convert_date = datetime.strptime(doc.start_date, "%Y-%m-%d").date()
     salary_cycle = get_salary_cycle(convert_date)
 
-    current_cycle_start, current_cycle_end = get_cycle_dates(salary_cycle, convert_date.year)
+    # current_cycle_start, current_cycle_end = get_cycle_dates(salary_cycle, convert_date.year)
    
-    start_date = current_cycle_start.date()
-    end_date = current_cycle_end.date()
+    # start_date = current_cycle_start.date()
+    # end_date = current_cycle_end.date()
     
     employee_docs = frappe.get_list("Employee",filters={ "name": ["not like", "%-T%"],"employee": each_empl.employee},fields=["name", "employee_name", "employee"])
     
@@ -47,12 +49,13 @@ def process_esic_for_employee(doc, each_empl):
             frappe.log_error("No Salary Structure Assignments found for employee {}".format(each_empl.employee))
             return
 
-        if start_date <= convert_date <= end_date and salary_cycle.get("first_contribution_cycle"):
+        if salary_cycle.get("first_contribution_cycle"):
             row_date = existing_entries[0]
             calculate_esi(doc, row_date, convert_date, each_empl)
 
-        if start_date <= convert_date <= end_date and salary_cycle.get("second_contribution_cycle"):
-            row_date = existing_entries[-1] if len(existing_entries) > 1 else existing_entries[0]
+        if salary_cycle.get("second_contribution_cycle"):
+            row_date = existing_entries[1] if len(existing_entries) > 1 else existing_entries[0]
+            frappe.log_error("row_data",row_date)
             calculate_esi(doc, row_date, convert_date, each_empl)
 
 
@@ -92,12 +95,12 @@ def calculate_esi(doc, row_date, convert_date, each_empl):
             frappe.log_error("Base salary exceeds limit for ESI calculation for employee {}".format(each_empl.employee))
 
 
-def get_cycle_dates(salary_cycle, year):
-   
-    if salary_cycle.get('range_date') == 'Apr-Sept':
-        return (datetime(year, 4, 1), datetime(year, 9, 30))
-    else:
-        return (datetime(year-1, 10, 1), datetime(year, 3, 31))
+# def get_cycle_dates(salary_cycle, year):
+        
+#     if salary_cycle.get('range_date') == 'Apr-Sept':
+#         return (datetime(year, 4, 1), datetime(year, 9, 30))
+#     else:
+#         return (datetime(year, 10, 1), datetime(year+1, 3, 31))
 
 
 @frappe.whitelist()
@@ -107,4 +110,5 @@ def esi_conditions(doc,method=None):
             process_esic_for_employee(doc,each_empl)
             
     except Exception as e:
-        frappe.log_error("esi_conditions",str(e))
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "esi_conditions")
