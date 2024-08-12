@@ -1,3 +1,4 @@
+
 import frappe
 from frappe.utils import today, add_days, getdate, time_diff_in_hours
 from frappe.utils.background_jobs import enqueue
@@ -8,12 +9,16 @@ from collections import defaultdict
 def send_checkins_notification():
     yesterday = add_days(today(), -1)
     employees = frappe.get_all("Employee", 
-                               filters={"status": "Active"}, 
-                               fields=["name", "employee_name", "user_id", "reports_to"])
+                               filters={"status": "Active", "name": ["not in", ["PRH-01", "PRH-12", "PRH-05", "PRH-03", "PRH-04"]]}, 
+                               fields=["name", "employee_name", "user_id", "reports_to", "holiday_list"])
  
     attendance_issues = defaultdict(list)
  
     for employee in employees:
+        # Skip if it's a holiday or a weekly off
+        if is_holiday_or_weekly_off(employee, yesterday):
+            continue
+        
         attendance = frappe.get_all("Attendance", 
                                     filters={
                                         "employee": employee.name,
@@ -21,7 +26,7 @@ def send_checkins_notification():
                                         "docstatus": ["in", [0, 1]]  # Include draft (0) and submitted (1)
                                     },
                                     fields=["name", "docstatus", "in_time", "out_time"])
- 
+    
         if not attendance:
             if employee.reports_to:
                 attendance_issues[employee.reports_to].append({
@@ -41,10 +46,31 @@ def send_checkins_notification():
                         "status": "MO",
                         "work_hours": work_hours
                     })
- 
+    
     for manager, employees in attendance_issues.items():
         send_consolidated_notification(manager, employees, yesterday)
- 
+        for employee in employees:
+            send_employee_notification(employee, yesterday)
+
+def is_holiday_or_weekly_off(employee, date):
+    """Check if the given date is a holiday or weekly off for the employee."""
+    # Check if the date is a holiday
+    if employee.holiday_list:
+        holidays = frappe.get_all("Holiday", 
+                                  filters={
+                                      "holiday_date": date,
+                                      "parent": employee.holiday_list  # Assuming "Holiday List" is stored in the "parent" field
+                                  }, 
+                                  fields=["name"])
+        if holidays:
+            return True
+
+    # Check if the date is the employee's weekly off
+    if employee.weekly_off and getdate(date).strftime("%A") == employee.weekly_off:
+        return True
+
+    return False
+
 def calculate_work_hours(in_time, out_time):
     if in_time and out_time:
         return time_diff_in_hours(out_time, in_time)
@@ -65,18 +91,6 @@ def send_consolidated_notification(manager, employees, date):
     <html>
     <head>
         <style>
-        
-            # table {{
-            #     border-collapse: collapse;
-            #     width: 100%;
-            #     max-width: 800px;
-            #     margin: 20px 0;
-            # }}
-            # th, td {{
-            #     border: 1px solid #ddd;
-            #     padding: 8px;
-            #     text-align: left;
-            # }}
             th {{
                 background-color: #f2f2f2;
                 font-weight: bold;
@@ -93,14 +107,12 @@ def send_consolidated_notification(manager, employees, date):
             .tableborder{{
                 border:1px solid black;
                 width:100%
-
-                }}
+            }}
             .tddata{{
                 border: 1px solid black;
                 text-align: left;
                 padding: 1px;
-                }}
-                
+            }}
         </style>
     </head>
     <body>
