@@ -208,3 +208,48 @@ def send_employee_notification(employee, date):
         "document_name": f"Attendance_Issues_{employee['employee_id']}_{date}",
         "email_content": message
     }).insert(ignore_permissions=True)
+
+def send_employee_notification(employee, date):
+    employee_email = frappe.db.get_value("Employee", employee['employee_id'], "user_id")
+    
+    if not employee_email:
+        frappe.log_error(f"No email found for employee {employee['employee_name']}", "Attendance Issues Notification")
+        return
+    
+    subject = f"Your Attendance Report for {date}"
+    
+    message = f"""
+    <html>
+    <body>
+        <p>Dear {employee['employee_name']},</p>
+        <p>Your attendance not captured {date} punch is Missed:</p>
+        <ul>
+            <li>Status: {employee['status']}</li>
+            <li>Work Hours: {employee['work_hours']:.2f}</li>
+        </ul>
+        <p>Please ensure that your attendance record is accurate. If there are any discrepancies, please update your attendance or contact your manager.</p>
+        <p>Thank you.</p>
+        <p>Sincerely,</p>
+
+        <i>Paul Resorts & Hotels Pvt. Ltd.</i></p>
+    </body>
+    </html>"""
+    
+    # Send email notification to the employee
+    frappe.sendmail(
+        recipients=[employee_email],
+        subject=subject,
+        message=message,
+        as_markdown=False
+    )
+    
+    # Create a notification in Frappe for the employee
+    frappe.get_doc({
+        "doctype": "Notification Log",
+        "subject": subject,
+        "for_user": employee_email,
+        "type": "Alert",
+        "document_type": "Attendance",
+        "document_name": f"Attendance_Issues_{employee['employee_id']}_{date}",
+        "email_content": message
+    }).insert(ignore_permissions=True)
