@@ -79,9 +79,7 @@ def get_data(filters):
                                 onduty = frappe.db.get_list("Attendance Request",{"name":record.get("attendance_request")},["name","reason"])
                                 record["status"] = onduty[0]["reason"]
                                 frappe.log_error("onduty",onduty)
-                                # add_checkin_missing(record)
-                            # if not record.get("out_time") and record.get("status") != "On Leave":
-                            #     record["out_time"] = "MO"
+                               
                             record["add_checkin"] = add_checkin_missing(record)
                             
                             department_name = None
