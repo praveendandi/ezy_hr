@@ -14,3 +14,5 @@ def get_user_employee_id(data):
        return resutl
    except Exception as e:
        frappe.log_error("get_user_employee_id",str(e))
+       
+       

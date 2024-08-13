@@ -31,7 +31,7 @@ web_include_css = "/assets/ezy_hr/css/custom_styles.css"
 doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
               "Employee":"ezy_hr/custom_script/employee/employee.js",
-            #   "Employee":"public/js/salary_hide.js",
+              "Employee":"public/js/salary_hide.js",
               "Employee Promotion":"public/js/employee_promotion.js",
               "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js",
               "Compensatory Leave Request":"public/js/compensatory_leave.js",
@@ -234,6 +234,7 @@ override_doctype_class = {
     "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
     "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry",
     "Employee Transfer":"ezy_hr.ezy_hr.custom_script.employee_transfer.employee_transfer.EmployeeTransfer"
+    
 }
 
 # Document Events
@@ -319,9 +320,23 @@ scheduler_events = {
 # Overriding Methods
 # ------------------------------
 
-# override_whitelisted_methods = {
-# 	"hrms.hr.doctype.job_offer.job_offer.make_employee": "ezy_hr.ezy_hr.custom_script.employee.employee.custom_api_for_make_employee_through_job_off"
-# }
+# hooks.py
+
+# ezy_hr/hooks.py
+
+# Include js, css files in the header of desk.html
+# This loads the JavaScript file in the Frappe Desk
+app_include_js = "/assets/ezy_hr/js/login.js"
+
+# Include js, css files in the header of web template
+# This loads the JavaScript file on the website (public-facing pages)
+web_include_js = "/assets/ezy_hr/js/login.js"
+
+
+# Whitelisted methods
+override_whitelisted_methods = {
+    "frappe.core.doctype.user.user.reset_password": "ezy_hr.ezy_hr.custom_script.users.forgot_password.reset_password"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
