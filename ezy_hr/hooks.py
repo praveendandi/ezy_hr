@@ -284,6 +284,10 @@ doc_events = {
     },
     "Payroll Entry":{
         "on_update":"ezy_hr.ezy_hr.custom_script.esi_conditions.esi_conditions.esi_conditions"
+    },
+    "Salary Structure Assignment":{
+        "on_submit":"ezy_hr.ezy_hr.custom_script.esi_conditions.create_esi_entry.set_esi_for_employee",
+        "on_cancel":"ezy_hr.ezy_hr.custom_script.esi_conditions.create_esi_entry.on_cancel_of_ssa"
     }
 }
 

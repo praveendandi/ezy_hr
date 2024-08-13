@@ -1,0 +1,181 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:id",
+ "creation": "2024-08-09 16:00:49.694045",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_j3mb",
+  "id",
+  "employee",
+  "employee_name",
+  "date_of_joining",
+  "unit",
+  "esi_detail_section",
+  "enable",
+  "actual_base",
+  "esi",
+  "esie",
+  "esic_contribution_period_section",
+  "start_date",
+  "end_date",
+  "s_assignment_id",
+  "column_break_mr0c",
+  "start_year",
+  "end_year",
+  "salary_structure_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_j3mb",
+   "fieldtype": "Section Break",
+   "label": "Employee Detail"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fetch_from": "employee.date_of_joining",
+   "fieldname": "date_of_joining",
+   "fieldtype": "Date",
+   "label": "Date Of Joining"
+  },
+  {
+   "fieldname": "esi_detail_section",
+   "fieldtype": "Section Break",
+   "label": "ESI Detail"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Company"
+  },
+  {
+   "fieldname": "actual_base",
+   "fieldtype": "Data",
+   "label": "Actual Base"
+  },
+  {
+   "fieldname": "esi",
+   "fieldtype": "Float",
+   "label": "ESI"
+  },
+  {
+   "fieldname": "esie",
+   "fieldtype": "Float",
+   "label": "ESIE"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Select",
+   "label": "Start Date",
+   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Select",
+   "label": "End Date",
+   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable",
+   "fieldtype": "Check",
+   "label": "Enable"
+  },
+  {
+   "fieldname": "start_year",
+   "fieldtype": "Data",
+   "label": "Start Year"
+  },
+  {
+   "fieldname": "end_year",
+   "fieldtype": "Data",
+   "label": "End Year"
+  },
+  {
+   "fieldname": "esic_contribution_period_section",
+   "fieldtype": "Section Break",
+   "label": "ESIC Contribution Period"
+  },
+  {
+   "fieldname": "column_break_mr0c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "s_assignment_id",
+   "fieldtype": "Link",
+   "label": "Salary Assignment Id",
+   "options": "Salary Structure Assignment"
+  },
+  {
+   "fetch_from": "s_assignment_id.salary_structure",
+   "fieldname": "salary_structure_id",
+   "fieldtype": "Link",
+   "label": "Salary Structure Id",
+   "options": "Salary Structure"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-08-12 13:28:59.697261",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "ESI Applicable List",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1
+}
