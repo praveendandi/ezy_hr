@@ -913,7 +913,7 @@
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2024-07-08 13:05:48.446092",
+  "modified": "2024-08-13 15:38:35.512185",
   "name": "Ezy_Manager",
   "role_profile": "Ezy Manager",
   "roles": [
@@ -946,6 +946,12 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Leave Approver"
+   },
+   {
+    "parent": "Ezy_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Report Manager Workspace"
    }
   ]
  },

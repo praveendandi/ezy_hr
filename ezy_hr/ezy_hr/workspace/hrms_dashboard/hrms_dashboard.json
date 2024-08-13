@@ -1,0 +1,58 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"xub-1s93dh\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Welcome Note\",\"col\":12}},{\"id\":\"VCAXApNfVG\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Today Attendance\",\"col\":3}},{\"id\":\"Lx9xnA9pnl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Today Absent's\",\"col\":3}},{\"id\":\"nwBqwAUv6P\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Today Leave\",\"col\":3}},{\"id\":\"mmGZ99e2dZ\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Today On Duty\",\"col\":2}},{\"id\":\"FtHypEcsS-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Birthday\",\"col\":3}},{\"id\":\"m3S8V4enVy\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Anniversary\",\"col\":3}}]",
+ "creation": "2024-08-12 15:26:45.705270",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Welcome Note",
+   "label": "Welcome Note"
+  },
+  {
+   "custom_block_name": "Today Present",
+   "label": "Today Attendance"
+  },
+  {
+   "custom_block_name": "Birthday",
+   "label": "Birthday"
+  },
+  {
+   "custom_block_name": "Anniversary",
+   "label": "Anniversary"
+  },
+  {
+   "custom_block_name": "Today Absent's",
+   "label": "Today Absent's"
+  },
+  {
+   "custom_block_name": "Today Leave",
+   "label": "Today Leave"
+  },
+  {
+   "custom_block_name": "Today On Duty",
+   "label": "Today On Duty"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "dashboard",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "HRMS Dashboard",
+ "links": [],
+ "modified": "2024-08-13 15:48:18.714901",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "HRMS Dashboard",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [],
+ "title": "HRMS Dashboard"
+}
