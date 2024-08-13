@@ -25,9 +25,15 @@ frappe.ui.form.on('Employee', {
                         frm.set_df_property('custom_deductions', 'hidden', 1);
                     }
                 } else {
-                    frm.set_df_property('custom_gross_amount', 'hidden', 1);
-                    frm.set_df_property('custom_earnings', 'hidden', 1);
-                    frm.set_df_property('custom_deductions', 'hidden', 1);
+                    if(frappe.user.has_role(["System Manager", "HR Manager", "Salary Slips"])){
+                        frm.set_df_property('custom_gross_amount', 'hidden', 0);
+                        frm.set_df_property('custom_earnings', 'hidden', 0);
+                        frm.set_df_property('custom_deductions', 'hidden', 0);
+                    }else{
+                        frm.set_df_property('custom_gross_amount', 'hidden', 1);
+                        frm.set_df_property('custom_earnings', 'hidden', 1);
+                        frm.set_df_property('custom_deductions', 'hidden', 1);
+                    }
                 }
             }
         });
