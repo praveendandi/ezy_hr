@@ -6,6 +6,31 @@ frappe.ui.form.on('Employee', {
             };
             frappe.set_route('Form', 'Employee Fields Update','new_employee_fields_update');
         }).addClass('btn-primary');
+        frappe.call({
+            method: 'ezy_hr.employee_salary.get_user_employee_id',
+            args: {
+                data: frm.doc
+            },
+            callback: function (value) {
+                if (value.message && value.message.length > 0) {
+                    let employee_id = value.message[0].for_value;
+                    if (employee_id === frm.doc.name || frappe.user.has_role(["System Manager", "HR Manager", "Salary Slips"])) {
+
+                        frm.set_df_property('custom_gross_amount', 'hidden', 0);
+                        frm.set_df_property('custom_earnings', 'hidden', 0);
+                        frm.set_df_property('custom_deductions', 'hidden', 0);
+                    } else {
+                        frm.set_df_property('custom_gross_amount', 'hidden', 1);
+                        frm.set_df_property('custom_earnings', 'hidden', 1);
+                        frm.set_df_property('custom_deductions', 'hidden', 1);
+                    }
+                } else {
+                    frm.set_df_property('custom_gross_amount', 'hidden', 1);
+                    frm.set_df_property('custom_earnings', 'hidden', 1);
+                    frm.set_df_property('custom_deductions', 'hidden', 1);
+                }
+            }
+        });
     },
     custom_leave_policy: function(frm) {       
         frappe.call({
