@@ -1,80 +1,98 @@
 {
- "actions": [],
- "allow_rename": 1,
- "creation": "2024-07-04 18:09:58.788008",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "section_break_0mef",
-  "exit_begins_on"
- ],
- "fields": [
-  {
-   "fieldname": "section_break_0mef",
-   "fieldtype": "Section Break"
-  },
-  {
-   "description": "Please Set The No Of Days That The Employee Relieving Process Begins Before the Employee Relieving date",
-   "fieldname": "exit_begins_on",
-   "fieldtype": "Int",
-   "label": "Employee Exit Begins From"
-  }
- ],
- "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-07-05 12:12:45.370758",
- "modified_by": "Administrator",
- "module": "Ezy HR",
- "name": "EzyHr Settings",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "HR Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Unit HR",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Unit Head",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": []
-}
+    "actions": [],
+    "creation": "2024-07-30 18:24:54.442623",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+     "section_break_zko5",
+     "exit_begins_on",
+     "esic_contribution_period_section",
+     "first_contribution_cycle_column",
+     "f_start_month",
+     "f_end_month",
+     "second_contribution_cycle_column",
+     "s_start_month",
+     "s_end_month"
+    ],
+    "fields": [
+     {
+      "fieldname": "section_break_zko5",
+      "fieldtype": "Section Break"
+     },
+     {
+      "description": "Please Set The No Of Days That The Employee Relieving Process Begins Before the Employee Relieving date",
+      "fieldname": "exit_begins_on",
+      "fieldtype": "Int",
+      "label": "Employee Exit Begins From"
+     },
+     {
+      "fieldname": "esic_contribution_period_section",
+      "fieldtype": "Section Break",
+      "label": "ESIC Contribution Period"
+     },
+     {
+      "fieldname": "first_contribution_cycle_column",
+      "fieldtype": "Column Break",
+      "label": "First Contribution Cycle"
+     },
+     {
+      "fieldname": "f_start_month",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "label": "Start Month",
+      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
+      "reqd": 1
+     },
+     {
+      "fieldname": "f_end_month",
+      "fieldtype": "Select",
+      "label": "End Month",
+      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
+      "reqd": 1
+     },
+     {
+      "fieldname": "second_contribution_cycle_column",
+      "fieldtype": "Column Break",
+      "label": "Second Contribution Cycle"
+     },
+     {
+      "fieldname": "s_start_month",
+      "fieldtype": "Select",
+      "label": "Start Month",
+      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
+      "reqd": 1
+     },
+     {
+      "fieldname": "s_end_month",
+      "fieldtype": "Select",
+      "label": "End Month",
+      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
+      "reqd": 1
+     }
+    ],
+    "index_web_pages_for_search": 1,
+    "issingle": 1,
+    "links": [],
+    "modified": "2024-08-06 17:21:10.330699",
+    "modified_by": "Administrator",
+    "module": "Ezy HR",
+    "name": "EzyHr Settings",
+    "owner": "Administrator",
+    "permissions": [
+     {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+     }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
+   }
+   

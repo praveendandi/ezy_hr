@@ -1,98 +1,225 @@
 {
-    "actions": [],
-    "creation": "2024-07-30 18:24:54.442623",
-    "doctype": "DocType",
-    "engine": "InnoDB",
-    "field_order": [
-     "section_break_zko5",
-     "exit_begins_on",
-     "esic_contribution_period_section",
-     "first_contribution_cycle_column",
-     "f_start_month",
-     "f_end_month",
-     "second_contribution_cycle_column",
-     "s_start_month",
-     "s_end_month"
-    ],
-    "fields": [
-     {
-      "fieldname": "section_break_zko5",
-      "fieldtype": "Section Break"
-     },
-     {
-      "description": "Please Set The No Of Days That The Employee Relieving Process Begins Before the Employee Relieving date",
-      "fieldname": "exit_begins_on",
-      "fieldtype": "Int",
-      "label": "Employee Exit Begins From"
-     },
-     {
-      "fieldname": "esic_contribution_period_section",
-      "fieldtype": "Section Break",
-      "label": "ESIC Contribution Period"
-     },
-     {
-      "fieldname": "first_contribution_cycle_column",
-      "fieldtype": "Column Break",
-      "label": "First Contribution Cycle"
-     },
-     {
-      "fieldname": "f_start_month",
-      "fieldtype": "Select",
-      "in_list_view": 1,
-      "label": "Start Month",
-      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
-      "reqd": 1
-     },
-     {
-      "fieldname": "f_end_month",
-      "fieldtype": "Select",
-      "label": "End Month",
-      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
-      "reqd": 1
-     },
-     {
-      "fieldname": "second_contribution_cycle_column",
-      "fieldtype": "Column Break",
-      "label": "Second Contribution Cycle"
-     },
-     {
-      "fieldname": "s_start_month",
-      "fieldtype": "Select",
-      "label": "Start Month",
-      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
-      "reqd": 1
-     },
-     {
-      "fieldname": "s_end_month",
-      "fieldtype": "Select",
-      "label": "End Month",
-      "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
-      "reqd": 1
-     }
-    ],
-    "index_web_pages_for_search": 1,
-    "issingle": 1,
-    "links": [],
-    "modified": "2024-08-06 17:21:10.330699",
-    "modified_by": "Administrator",
-    "module": "Ezy HR",
-    "name": "EzyHr Settings",
-    "owner": "Administrator",
-    "permissions": [
-     {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "print": 1,
-      "read": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-     }
-    ],
-    "sort_field": "modified",
-    "sort_order": "DESC",
-    "states": [],
-    "track_changes": 1
-   }
-   
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "creation": "2024-05-01 20:10:46.606081",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "id",
+  "emp_code",
+  "punch_time",
+  "punch_state",
+  "verify_type",
+  "work_code",
+  "terminal_ip",
+  "terminal_sn",
+  "terminal_alias",
+  "area_alias",
+  "longitude",
+  "latitude",
+  "gps_location",
+  "mobile",
+  "source",
+  "purpose",
+  "crc",
+  "is_attendance",
+  "reserved",
+  "upload_time",
+  "sync_status",
+  "sync_time",
+  "emp_id",
+  "terminal_id",
+  "company_id",
+  "mask_flag",
+  "temperature",
+  "in_out"
+ ],
+ "fields": [
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "Id",
+   "no_copy": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "emp_code",
+   "fieldtype": "Data",
+   "label": "Emp Code",
+   "search_index": 1
+  },
+  {
+   "fieldname": "punch_time",
+   "fieldtype": "Datetime",
+   "label": "Punch Time"
+  },
+  {
+   "fieldname": "punch_state",
+   "fieldtype": "Data",
+   "label": "Punch State"
+  },
+  {
+   "fieldname": "verify_type",
+   "fieldtype": "Data",
+   "label": "Verify Type"
+  },
+  {
+   "fieldname": "work_code",
+   "fieldtype": "Data",
+   "label": "Work Code"
+  },
+  {
+   "fieldname": "terminal_ip",
+   "fieldtype": "Data",
+   "label": "Terminal IP"
+  },
+  {
+   "fieldname": "terminal_sn",
+   "fieldtype": "Data",
+   "label": "Terminal Sn"
+  },
+  {
+   "fieldname": "terminal_alias",
+   "fieldtype": "Data",
+   "label": "Terminal Alias",
+   "search_index": 1
+  },
+  {
+   "fieldname": "area_alias",
+   "fieldtype": "Data",
+   "label": "Area Alias"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude"
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude"
+  },
+  {
+   "fieldname": "gps_location",
+   "fieldtype": "Data",
+   "label": "Gps Location"
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Data",
+   "label": "Source"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Data",
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "crc",
+   "fieldtype": "Data",
+   "label": "Crc"
+  },
+  {
+   "fieldname": "is_attendance",
+   "fieldtype": "Data",
+   "label": "Is Attendance"
+  },
+  {
+   "fieldname": "reserved",
+   "fieldtype": "Data",
+   "label": "Reserved"
+  },
+  {
+   "fieldname": "upload_time",
+   "fieldtype": "Data",
+   "label": "Upload Time"
+  },
+  {
+   "fieldname": "sync_status",
+   "fieldtype": "Data",
+   "label": "Sync Status"
+  },
+  {
+   "fieldname": "sync_time",
+   "fieldtype": "Data",
+   "label": "Sync Time"
+  },
+  {
+   "fieldname": "emp_id",
+   "fieldtype": "Data",
+   "label": "Emp Id",
+   "search_index": 1
+  },
+  {
+   "fieldname": "terminal_id",
+   "fieldtype": "Data",
+   "label": "Terminal Id"
+  },
+  {
+   "fieldname": "company_id",
+   "fieldtype": "Data",
+   "label": "Company Id",
+   "search_index": 1
+  },
+  {
+   "fieldname": "mask_flag",
+   "fieldtype": "Data",
+   "label": "Mask Flag"
+  },
+  {
+   "fieldname": "temperature",
+   "fieldtype": "Data",
+   "label": "Temperature"
+  },
+  {
+   "fieldname": "in_out",
+   "fieldtype": "Data",
+   "label": "IN/OUT",
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-05-02 11:07:42.949254",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "EzyHrms Transaction",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "EzyHrms",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
