@@ -24,7 +24,7 @@ def get_columns():
         {"label": "Attendance Request", "fieldname": "attendance_request", "fieldtype": "Data","width":4,"hidden":1},
         {"label": "Actions", "fieldname": "add_checkin", "fieldtype": "Data", "width": 180},
         {"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 160},
-        {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 160},
+        # {"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 160},
     ]
 
 def get_data(filters):
