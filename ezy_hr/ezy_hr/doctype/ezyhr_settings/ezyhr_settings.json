@@ -40,14 +40,14 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Start Month",
-   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSept\nOct\nNov\nDec",
+   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
    "reqd": 1
   },
   {
    "fieldname": "f_end_month",
    "fieldtype": "Select",
    "label": "End Month",
-   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSept\nOct\nNov\nDec",
+   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
    "reqd": 1
   },
   {
@@ -59,14 +59,14 @@
    "fieldname": "s_start_month",
    "fieldtype": "Select",
    "label": "Start Month",
-   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSept\nOct\nNov\nDec",
+   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
    "reqd": 1
   },
   {
    "fieldname": "s_end_month",
    "fieldtype": "Select",
    "label": "End Month",
-   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSept\nOct\nNov\nDec",
+   "options": "\nJan\nFeb\nMar\nApr\nMay\nJun\nJuly\nAug\nSep\nOct\nNov\nDec",
    "reqd": 1
   }
  ],
