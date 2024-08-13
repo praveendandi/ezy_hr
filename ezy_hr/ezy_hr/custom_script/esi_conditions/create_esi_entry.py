@@ -9,7 +9,6 @@ from erpnext.accounts.utils import get_fiscal_year
 def get_salary_cycle(date):
     
     settings = frappe.get_doc("EzyHr Settings")
-    
     if date.month in range(4, 10):
         return {
             "range_date": f"{settings.f_start_month}-{settings.f_end_month}",
@@ -67,14 +66,17 @@ def process_esi(doc, cycle, start_date, end_date):
 
 def set_esi_for_employee(doc, method=None):
     try:
-        if isinstance(doc.from_date,str):
-            current_date = datetime.strptime(doc.from_date, "%Y-%m-%d").date()
-        else:
-            current_date = doc.from_date
+        employee_docs = frappe.get_list("Employee",filters={ "name": ["not like", "%-T%"],"employee": doc.employee},fields=["name", "employee_name", "employee","company"])
+        if employee_docs:
+            if isinstance(doc.from_date,str):
+                current_date = datetime.strptime(doc.from_date, "%Y-%m-%d").date()
+            else:
+                current_date = doc.from_date
+                
+            cycle = get_salary_cycle(current_date)
+            start_date, end_date = get_custom_fiscal_year(current_date)
+            process_esi(doc, cycle, start_date, end_date)
             
-        cycle = get_salary_cycle(current_date)
-        start_date, end_date = get_custom_fiscal_year(current_date)
-        process_esi(doc, cycle, start_date, end_date)
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error(f"Line No:{exc_tb.tb_lineno}\n{traceback.format_exc()}", "set_esi_for_employee")
