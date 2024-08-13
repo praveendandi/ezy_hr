@@ -32,7 +32,6 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Payroll Entry":"public/js/employee_separeted.js",
               "Employee":"ezy_hr/custom_script/employee/employee.js",
               "Employee Promotion":"public/js/employee_promotion.js",
-              "Employee":"public/js/salary_hide.js",
               "Compensatory Leave Request":"public/js/compensatory_leave.js",
               "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
               }
