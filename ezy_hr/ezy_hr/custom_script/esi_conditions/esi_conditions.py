@@ -5,7 +5,6 @@ import sys
 import traceback
 from erpnext.accounts.utils import get_fiscal_year
 
-
 def get_salary_cycle(date):
     settings = frappe.get_doc("EzyHr Settings")
     if date.month in range(4, 10):
@@ -38,8 +37,8 @@ def create_esi_application(row_date, name, employee, company, start_date, end_da
         return True
     return False
 
-def update_esi(name, employee):
-    latest_doc = frappe.db.get_list("Salary Structure Assignment",{"employee":employee,"docstatus":1},["name","base"],order_by="from_date desc",limit=1)
+def update_esi(name, employee,end_convert_date):
+    latest_doc = frappe.get_all("Salary Structure Assignment", filters={"employee": employee, "docstatus": 1,"from_date": ("<=",end_convert_date)}, fields=["from_date", "name", "salary_structure", "base"], order_by="from_date desc", limit=1)
     esi_data = frappe.get_list("ESI Applicable List", filters={'id': name, "employee": employee}, fields=["esi", "esie"])
     
     if esi_data:
@@ -51,19 +50,25 @@ def update_esi(name, employee):
     frappe.db.commit()
 
 def process_esic_for_employee(doc, employee):
+    
     if isinstance(doc.start_date,str):
         convert_date = datetime.strptime(doc.start_date, "%Y-%m-%d").date()
+        end_convert_date = datetime.strptime(doc.end_date, "%Y-%m-%d").date()
     else:
         convert_date = doc.start_date
+        end_convert_date = doc.end_date
         
     salary_cycle = get_salary_cycle(convert_date)
     start_date, end_date = get_custom_fiscal_year(convert_date)
     
-    employee_doc,company = frappe.get_value("Employee", {"name": ["not like", "%-T%"],"employee": employee.employee}, ["employee_name", "company"])
+    employee_details= frappe.get_value("Employee", {"name": ["not like", "%-T%"],"employee": employee.employee}, ["employee_name", "company"])
 
-    if company:
-        existing_entries = frappe.get_all("Salary Structure Assignment", filters={"employee": employee.employee, "docstatus": 1}, fields=["from_date", "name", "salary_structure", "base"], order_by="from_date desc", limit=2)
-
+    if employee_details:
+        
+        employee_name,company = employee_details
+        
+        existing_entries = frappe.get_all("Salary Structure Assignment", filters={"employee": employee.employee, "docstatus": 1,"from_date": ("<=",end_convert_date)}, fields=["from_date", "name", "salary_structure", "base"], order_by="from_date desc", limit=1)
+        
         if not existing_entries:
             frappe.log_error(f"No Salary Structure Assignments found for employee {employee.employee}")
             return
@@ -77,9 +82,9 @@ def process_esic_for_employee(doc, employee):
         if not esi_detail:
             row_date = existing_entries[0]
             is_created = create_esi_application(row_date, name, employee.employee, company, start_date=range_month[0], end_date=range_month[1], start_year=current_year, end_year=end_date.year if not salary_cycle['is_first_cycle'] else current_year)
-            update_esi(name, employee.employee)
+            update_esi(name, employee.employee,end_convert_date)
         else:
-            update_esi(name, employee.employee)
+            update_esi(name, employee.employee,end_convert_date)
 
 @frappe.whitelist()
 def esi_conditions(doc, method=None):
