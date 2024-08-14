@@ -24,6 +24,32 @@ class EzyHrmsTransaction(Document):
         if "App" in self.terminal_sn:
             self.terminal_alias = "App"
         
+        check_in_date = self.punch_time
+        device_info = frappe.get_value("Biometric Devices", {'device_id': self.terminal_sn}, ['device_type'])
+        if device_info:
+            if device_info == "In & Out":
+                emp_id = frappe.db.get_value(
+                "Employee",
+                    filters={'attendance_device_id': self.emp_code},
+                    fieldname='name'
+                )
+                # Update
+                if isinstance(self.punch_time,str):
+                    datetime_obj = datetime.strptime(self.punch_time,"%Y-%m-%d %H:%M:%S").replace(hour=0,minute=0,second=0)
+                    check_in_date = datetime_obj
+                else:
+                    check_in_date = self.punch_time
+
+                date_in_out = check_in_date.date()
+                first_punch = frappe.get_list("Employee Checkin",filters={"employee":emp_id,"time":['Between',[date_in_out,date_in_out]]},fields=['log_type','time'],order_by="time desc",limit=1)
+                
+                if len(first_punch) <=0:
+                    self.in_out = "IN"
+                else:
+                    if first_punch[0].get('log_type') == "IN":
+                        self.in_out = "OUT"
+                    if first_punch[0].get("log_type") == "OUT":
+                        self.in_out = "IN"
         
         try:
             add_log_based_on_employee_field(employee_field_value = self.emp_code,timestamp=self.punch_time,device_id=self.terminal_alias,log_type=self.in_out)
