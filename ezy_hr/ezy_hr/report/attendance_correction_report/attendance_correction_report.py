@@ -66,7 +66,8 @@ def get_data(filters):
                                 # record["status"] = leave_type_abbr.get(record["leave_type"], record["status"])
 
                             if single_date in hoidaylist_data and not record:
-                                record["status"] = "Sunday"
+                                description = frappe.db.get_list("Holiday",filters={"parent":employee["holiday_list"],'holiday_date':single_date},fields=["description"],ignore_permissions=True)
+                                record["status"] =  description[0].get("description") if description[0].get("description") == "Sunday" else "Public Holiday"
 
                             if record.get("docstatus") == 0:
                                 
@@ -98,7 +99,8 @@ def get_data(filters):
                         if employee["department"]:
                             department_name = employee["department"].split(" - ")[0] if " - " in employee["department"] else employee["department"]
                         if single_date in hoidaylist_data:
-                            status = "Sunday"
+                            description = frappe.db.get_list("Holiday",filters={"parent":employee["holiday_list"],'holiday_date':single_date},fields=["description"],ignore_permissions=True)
+                            status = description[0].get("description") if description[0].get("description") == "Sunday" else "Public Holiday"
                         else:
                             status = "Absent"
                         final_data.append({
