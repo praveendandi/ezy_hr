@@ -136,54 +136,61 @@ def create_salary_structure_through_employee(doc, method=None):
        if getattr(frappe.local, "handling_dynamic", False):
            return
        frappe.local.handling_dynamic = True
-       try:
-           if not doc.user_id:
+       try: 
+           employee_id = frappe.get_doc("Employee",doc.name)
+           if not doc.user_id and doc.custom_role:
                user = create_employee_user(doc)
-               doc.user_id = user.name
+               if user:
+                   role_profile_detail = frappe.get_doc("Role Profile",doc.custom_role)
+                   employee_id.user_id = user.name
+                   employee_id.create_user_permission =role_profile_detail.custom_create_user_permission
+                   employee_id.save()
+                   frappe.db.commit()
+                   employee_id.reload()
+               
            if not doc.leave_approver:
                report_user_id = frappe.get_value("Employee", doc.reports_to, "user_id")
-               doc.leave_approver = report_user_id
-               doc.shift_request_approver = report_user_id
-           user_doc = frappe.get_doc("User", doc.user_id)
-           if doc.custom_role != user_doc.role_profile_name:
-               frappe.db.set_value("User", doc.user_id, "role_profile_name", doc.custom_role)
+               employee_id.leave_approver = report_user_id
+               employee_id.shift_request_approver = report_user_id
                frappe.db.commit()
-           user_doc.reload()
-           doc.save()
-           frappe.db.commit()
-           role_data = frappe.get_roles(user_doc.name)
-           if "Employee" not in role_data:
-               doc.create_user_permission = 0
-               user_permissions = frappe.get_all("User Permission", filters={'for_value': doc.name}, fields=['name'])
-               if user_permissions:
-                   frappe.delete_doc("User Permission", user_permissions[0]['name'])
-           else:
-               doc.create_user_permission = 1
-           user_doc.reload()
-           doc.save()
+               
+           if doc.user_id and doc.custom_role:
+               user_doc = frappe.get_doc("User", doc.user_id)
+               if doc.custom_role != user_doc.role_profile_name:
+                   user_doc.role_profile_name =  doc.custom_role
+                   user_doc.save()
+                   frappe.db.commit()
+                   
+                   role_profile_detail = frappe.get_doc("Role Profile",doc.custom_role)
+                   employee_id.create_user_permission =role_profile_detail.custom_create_user_permission
+                   employee_id.save()
+                   frappe.db.commit()
+                   employee_id.reload()
 
-           current_permissions = frappe.get_all(
-               "User Permission",
-               filters={'user': doc.user_id, 'allow': 'Company'},
-               fields=['name', 'for_value']
-           )
-           existing_units = [perm['for_value'] for perm in current_permissions]
-           custom_list = [comp.as_dict().get("unit") for comp in doc.custom_responsible_unit]
-           custom_list.append(doc.company)
-
-           if set(existing_units) != set(custom_list):
-               for perm in current_permissions:
-                   frappe.delete_doc("User Permission", perm['name'])
-               for unit in custom_list:
-                   user_permission = frappe.new_doc('User Permission')
-                   user_permission.update({
-                       "for_value": unit,
-                       "allow": "Company",
-                       "user": doc.user_id
-                   })
-                   user_permission.insert(ignore_permissions=True)
-               frappe.db.commit()
-
+                       
+           if doc.custom_responsible_unit:
+               current_permissions = frappe.get_all(
+				"User Permission",
+				filters={'user': doc.user_id, 'allow': 'Company'},
+				fields=['name', 'for_value']
+               )
+               existing_units = [perm['for_value'] for perm in current_permissions]
+               custom_list = [comp.as_dict().get("unit") for comp in doc.custom_responsible_unit]
+               custom_list.append(doc.company)
+               
+               if set(existing_units) != set(custom_list):
+                   for perm in current_permissions:
+                       frappe.delete_doc("User Permission", perm['name'])
+                   for unit in custom_list:
+                       user_permission = frappe.new_doc('User Permission')
+                       user_permission.update({
+							"for_value": unit,
+							"allow": "Company",
+							"user": doc.user_id
+						})
+                       user_permission.insert(ignore_permissions=True)
+                       frappe.db.commit()
+                       
        except Exception as e:
            frappe.log_error(frappe.get_traceback(), 'handle_employee_save')
            frappe.db.rollback()
@@ -410,17 +417,17 @@ def update_employee_biometric_id(doc, method=None):
 
 @frappe.whitelist()
 def create_employee_user(doc):
-   if not frappe.db.exists("Employee", doc.name):
-       frappe.throw(f"Employee {doc.name} not found")
-   user = frappe.new_doc('User')
-   user.update({
-       'doctype': 'User',
-       'email': doc.prefered_email,
-       'first_name': doc.first_name,
-       'last_name': doc.last_name,
-       'send_welcome_email': 0,
-       "role_profile_name": doc.custom_role,
-       "username": doc.name
-   })
-   user.insert(ignore_permissions=True)
-   return user
+   if not frappe.db.exists("User", doc.prefered_email):
+       user = frappe.new_doc('User')
+       user.update({
+			'doctype': 'User',
+			'email': doc.prefered_email,
+			'first_name': doc.first_name,
+			'last_name': doc.last_name,
+			'send_welcome_email': 0,
+			"role_profile_name": doc.custom_role,
+			"username": doc.name
+		})
+       user.insert(ignore_permissions=True)
+       return user
+   return None
