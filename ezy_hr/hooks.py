@@ -326,7 +326,8 @@ override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
     "Shift Type": "ezy_hr.ezy_hr.create_attendance.ShiftType",
     "Payroll Entry":"ezy_hr.payroll_entry.custom_class.PayrollEntry",
-    "Employee Transfer":"ezy_hr.ezy_hr.custom_script.employee_transfer.employee_transfer.EmployeeTransfer"
+    "Employee Transfer":"ezy_hr.ezy_hr.custom_script.employee_transfer.employee_transfer.EmployeeTransfer",
+    "Salary Slip":"ezy_hr.payroll_entry.salary_silp.SalarySlip"
 }
 
 # Document Events
