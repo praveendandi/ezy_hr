@@ -29,6 +29,17 @@ filters: [
 		options: "Company",
 		reqd: 1
 	},
+	
 ],
 };
+if (frappe.user.has_role("Report Manager")) {
+    frappe.query_reports["Monthly Attendance Report"].filters.push({
+        fieldname: "reports",
+        label: __("Reports"),
+        fieldtype: "Select",
+        options: "All\nMy Team",
+        default:"All"
+    });
+
+}
 
