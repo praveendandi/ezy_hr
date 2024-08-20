@@ -138,13 +138,12 @@ def calculate_total_hours(attendance_doc, checkin_date):
         ORDER BY time ASC;
     """
     totalemp_checkins = frappe.db.sql(query, (attendance_doc,), as_dict=True)
-    frappe.log_error("totalemp_checkins",totalemp_checkins)
 
     total_hour = 0
     intime_hours = None
     inout_hours = None
     is_lastout = True
-    if len(totalemp_checkins) > 2:
+    if len(totalemp_checkins) >= 2:
         for each in totalemp_checkins:
             if each.get("log_type") == "IN":
                 intime_hours = each.get("time")
@@ -165,7 +164,6 @@ def calculate_total_hours(attendance_doc, checkin_date):
                     intime_hours = None
                     inout_hours = None
                 else:
-                    frappe.log_error("time_error", f"IN time {intime_hours} is after OUT time {inout_hours}")
                     intime_hours = None
                     inout_hours = None
                     is_lastout = True

@@ -240,6 +240,7 @@ fixtures = [
                     "Leave Type-custom_enable",
                     "Employee-custom_role",
                     "Employee-custom_responsible_unit",
+                    "Leave Type-custom_flexi_off_detail",
                 },
                 
             ]]
@@ -399,7 +400,7 @@ scheduler_events = {
         ]
     },
     "daily": [
-		"ezy_hr.ezy_hr.events.flexi_weekoff"
+		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff"
 	],
 
     "hourly": [
