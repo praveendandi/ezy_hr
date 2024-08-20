@@ -71,14 +71,13 @@ def get_data(filters):
 
                             if record.get("docstatus") == 0:
                                 
-                                if 0 < record.get("working_hours",0) < 6:
+                                if 0 < record.get("working_hours",0) <= 6:
                                     record["status"] = "Absent"
                                 else:
                                     record["status"] = "MO"
                             if record.get("attendance_request"):
                                 onduty = frappe.db.get_list("Attendance Request",{"name":record.get("attendance_request")},["name","reason"])
                                 record["status"] = onduty[0]["reason"]
-                                frappe.log_error("onduty",onduty)
                                 # add_checkin_missing(record)
                             # if not record.get("out_time") and record.get("status") != "On Leave":
                             #     record["out_time"] = "MO"
@@ -116,13 +115,12 @@ def get_data(filters):
                             "status":status,
                             "add_checkin": add_checkin_missing({"working_hours":"0.00","out_time": None, "employee": employee["name"], "attendance_date": single_date_str})
                         })
-    frappe.log_error("final_data",final_data)
     return final_data
 
 def add_checkin_missing(record):
     if record['out_time'] == None :
         return f'<a href="#" onclick="openPopup(\'{record["employee"]}\', \'{record["attendance_date"]}\')">Add Checkin Checkouts</a>'
-    if record["working_hours"] < 6:
+    if record["working_hours"] <= 6:
         return f'<a href="#" onclick="openPopup(\'{record["employee"]}\', \'{record["attendance_date"]}\')">Add Checkin Checkouts</a>'
 
     return ''
