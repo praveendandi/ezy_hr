@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-08-19 14:20:33.147684",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_pibf",
+  "unit",
+  "holiday_list",
+  "unit_holiday_list",
+  "select_holiday_type"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_pibf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "Company"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Holiday List",
+   "options": "Holiday List"
+  },
+  {
+   "fieldname": "unit_holiday_list",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit Holiday List",
+   "options": "Holiday List"
+  },
+  {
+   "fieldname": "select_holiday_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Select Holiday type",
+   "options": "\nFor Week Off\nFor Public Holiday"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-08-19 15:18:01.998851",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Flexi Weekoff list",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
