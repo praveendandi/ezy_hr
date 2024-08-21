@@ -51,10 +51,11 @@ def execute(filters=None):
 
         columns.extend([
             {"label": "A", "fieldname": "total_empty_columns", "fieldtype": "Data", "width": 50},
-            {"label": "P", "fieldname": "total_present", "fieldtype": "Data", "width": 100},
-            {"label": "L", "fieldname": "total_leave", "fieldtype": "Data", "width": 100},
-            {"label": "Wo", "fieldname": "wo", "fieldtype": "Data", "width": 100},
+            {"label": "P", "fieldname": "total_present", "fieldtype": "Data", "width": 70},
+            {"label": "L", "fieldname": "total_leave", "fieldtype": "Data", "width": 70},
+            {"label": "Wo", "fieldname": "wo", "fieldtype": "Data", "width": 70},
             {"label": "OD", "fieldname": "od", "fieldtype": "Data", "width": 70},
+            {"label": "PH", "fieldname": "ph", "fieldtype": "Data", "width": 70},
             {"label": "Total", "fieldname": "total_selected_dates", "fieldtype": "Data", "width": 100},
             {"label": "Total Payable Days", "fieldname": "total_payable_days", "fieldtype": "Data", "width": 100},
         ])
@@ -66,7 +67,8 @@ def execute(filters=None):
             "Sunday": "WO",
             "On Leave": 'L',
             "MO": "MO",
-            "On Duty":"OD"
+            "On Duty":"OD",
+            "Public Holiday":"PH"
         }
 
         for entry in source_data:
@@ -117,6 +119,7 @@ def get_counts(data,all_dates,leave_types):
     total_absent = 0
     wo  = 0
     od = 0
+    ph = 0
     frappe.log_error("final data f...",data)
     for data_row in data:
         
@@ -129,15 +132,17 @@ def get_counts(data,all_dates,leave_types):
         wo = sum(1 for key, value in data_row.items() if value == "WO" and key in all_dates)
 
         od = sum(1 for key, value in data_row.items() if value == "OD" and key in all_dates)
+        ph = sum(1 for key, value in data_row.items() if value == "PH")
         # Add total selected dates count
         data_row['total_present'] = total_present
         data_row['total_empty_columns'] = total_absent
         data_row['total_leave'] = total_leave
         data_row['wo'] = wo
         data_row['od'] = od
+        data_row['ph'] = ph
         
         total_selected_dates_count = len(all_dates)
-        total_payable_days = total_present + total_leave + wo + od
+        total_payable_days = total_present + total_leave + wo + od + ph
         data_row['total_selected_dates'] = total_selected_dates_count
         data_row['total_payable_days'] = total_payable_days
     
