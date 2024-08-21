@@ -1,8 +1,9 @@
-// Copyright (c) 2024, Ganu Reddy and contributors
+//  Copyright (c) 2024, Ganu Reddy and contributors
 // For license information, please see license.txt
 
+
 frappe.query_reports["Attendance Correction Report"] = {
-	filters: [
+    filters: [
         {
             fieldname: "from_date",
             label: __("From Date"),
@@ -73,9 +74,20 @@ frappe.query_reports["Attendance Correction Report"] = {
             fieldtype: "Link",
             options: "Company",
             default: frappe.defaults.get_default("company")
-        },
+        }
     ]
 };
+
+if (frappe.user.has_role("Report Manager")) {
+    frappe.query_reports["Attendance Correction Report"].filters.push({
+        fieldname: "reports",
+        label: __("Reports"),
+        fieldtype: "Select",
+        options: "All\nMy Team",
+        default:"All"
+    });
+
+}
 
 function fetch_employee_name(employee, callback) {
     frappe.call({
@@ -169,230 +181,3 @@ function openPopup(employee, date) {
         dialog.show();
     });
 }
-
-
-// function openPopup(employee, date) {
-//     fetch_employee_name(employee, function(employee_name) {
-//         var dialog = new frappe.ui.Dialog({
-//             title: 'Add Attiendance',
-//             fields: [
-//                 {
-//                     fieldname: 'employee',
-//                     label: 'Employee',
-//                     fieldtype: 'Link',
-//                     options: 'Employee',
-//                     default: employee,
-//                     change: function() {
-//                         var employee_id = dialog.get_value("employee");
-//                         fetch_employee_name(employee, function(employee_name) {
-//                             dialog.set_value("employee_name", employee_name);
-//                         });
-//                     }
-//                 },
-//                 {
-//                     fieldname: 'employee_name',
-//                     label: 'Employee Name',
-//                     fieldtype: 'Data',
-//                     read_only: 1,
-//                     default: employee_name
-//                 },
-//                 {
-//                     fieldname: 'time',
-//                     label: 'Time',
-//                     fieldtype: 'Datetime',
-//                     default: date + " 18:00:00"
-//                 },
-//                 {
-//                     fieldname: 'log_type',
-//                     label: 'Log Type',
-//                     fieldtype: 'Select',
-//                     options: ["IN", "OUT"],
-//                     default: ""
-//                 },
-//                 {
-//                     fieldname: 'custom_correction',
-//                     label: 'Correction',
-//                     fieldtype: 'Data',
-//                     read_only: 1,
-//                     default: "Manual"
-//                 },
-//             ],
-//             primary_action_label: 'Submit',
-//             primary_action: function() {
-//                 var values = dialog.get_values();
-//                 if (values) {
-//                     frappe.call({
-//                         method: 'frappe.client.insert',
-//                         args: {
-//                             doc: {
-//                                 doctype: 'Employee Checkin',
-//                                 employee: values.employee,
-//                                 employee_name: values.employee_name,
-//                                 time: values.time,
-//                                 log_type: values.log_type,
-//                                 custom_correction: values.custom_correction
-//                             }
-//                         },
-//                         callback: function() {
-//                             frappe.msgprint('Checkout added successfully.');
-//                             dialog.hide();
-//                             frappe.query_report.refresh();
-//                         }
-//                     });
-//                 }
-//             }
-//         });
-//         dialog.show();
-//     });
-// }
-
-// function openPopupforcheckin(employeeId, date) {
-//     fetch_employee_name(employeeId, function(employee_name) {
-//         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-//         var dialog = new frappe.ui.Dialog({
-//             title: 'Add Checkin',
-//             fields: [
-//                 {
-//                     fieldname: 'employee',
-//                     label: 'Employee',
-//                     fieldtype: 'Link',
-//                     options: 'Employee',
-//                     default: employeeId,
-//                     change: function() {
-//                         var employee_id = dialog.get_value("employee");
-//                         fetch_employee_name(employee_id, function(employee_name) {
-//                             dialog.set_value("employee_name", employee_name);
-//                         });
-//                     }
-//                 },
-//                 {
-//                     fieldname: 'employee_name',
-//                     label: 'Employee Name',
-//                     fieldtype: 'Data',
-//                     read_only: 1,
-//                     default: employee_name
-//                 },
-//                 {
-//                     fieldname: 'time',
-//                     label: 'Time',
-//                     fieldtype: 'Datetime',
-//                     default: date + " 09:00:00"
-//                 },
-//                 {
-//                     fieldname: 'log_type',
-//                     label: 'Log Type',
-//                     fieldtype: 'Select',
-//                     options: ["IN", "OUT"],
-//                     default: "IN"
-//                 },
-//                 {
-//                     fieldname: 'custom_correction',
-//                     label: 'Correction',
-//                     fieldtype: 'Data',
-//                     read_only: 1,
-//                     default: "Manual",
-//                 },
-//             ],
-//             primary_action_label: 'Submit',
-//             primary_action: function() {
-//                 var values = dialog.get_values();
-//                 if (values) {
-//                     frappe.call({
-//                         method: 'frappe.client.insert',
-//                         args: {
-//                             doc: {
-//                                 doctype: 'Employee Checkin',
-//                                 employee: values.employee,
-//                                 employee_name: values.employee_name,
-//                                 time: values.time,
-//                                 log_type: values.log_type,
-//                                 custom_correction: values.custom_correction
-//                             }
-//                         },
-//                         callback: function() {
-//                             frappe.msgprint('Checkin added successfully.');
-//                             dialog.hide();
-//                             frappe.query_report.refresh();
-//                         }
-//                     });
-//                 }
-//             }
-//         });
-//         dialog.show();
-//     });
-// }
-
-// function openPopupforcheckout(employeeId, date) {
-//     fetch_employee_name(employeeId, function(employee_name) {
-//         var dialog = new frappe.ui.Dialog({
-//             title: 'Add Checkout',
-//             fields: [
-//                 {
-//                     fieldname: 'employee',
-//                     label: 'Employee',
-//                     fieldtype: 'Link',
-//                     options: 'Employee',
-//                     default: employeeId,
-//                     change: function() {
-//                         var employee_id = dialog.get_value("employee");
-//                         fetch_employee_name(employee_id, function(employee_name) {
-//                             dialog.set_value("employee_name", employee_name);
-//                         });
-//                     }
-//                 },
-//                 {
-//                     fieldname: 'employee_name',
-//                     label: 'Employee Name',
-//                     fieldtype: 'Data',
-//                     read_only: 1,
-//                     default: employee_name
-//                 },
-//                 {
-//                     fieldname: 'time',
-//                     label: 'Time',
-//                     fieldtype: 'Datetime',
-//                     default: date + " 18:00:00"
-//                 },
-//                 {
-//                     fieldname: 'log_type',
-//                     label: 'Log Type',
-//                     fieldtype: 'Select',
-//                     options: ["IN", "OUT"],
-//                     default: "OUT"
-//                 },
-//                 {
-//                     fieldname: 'custom_correction',
-//                     label: 'Correction',
-//                     fieldtype: 'Data',
-//                     read_only: 1,
-//                     default: "Manual"
-//                 },
-//             ],
-//             primary_action_label: 'Submit',
-//             primary_action: function() {
-//                 var values = dialog.get_values();
-//                 if (values) {
-//                     frappe.call({
-//                         method: 'frappe.client.insert',
-//                         args: {
-//                             doc: {
-//                                 doctype: 'Employee Checkin',
-//                                 employee: values.employee,
-//                                 employee_name: values.employee_name,
-//                                 time: values.time,
-//                                 log_type: values.log_type,
-//                                 custom_correction: values.custom_correction
-//                             }
-//                         },
-//                         callback: function() {
-//                             frappe.msgprint('Checkout added successfully.');
-//                             dialog.hide();
-//                             frappe.query_report.refresh();
-//                         }
-//                     });
-//                 }
-//             }
-//         });
-//         dialog.show();
-//     });
-// }
