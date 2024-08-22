@@ -113,14 +113,20 @@ def get_data(filters):
                             "in_time": None,
                             "out_time": None,
                             "status":status,
-                            "add_checkin": add_checkin_missing({"working_hours":"0.00","out_time": None, "employee": employee["name"], "attendance_date": single_date_str})
+                            "add_checkin": add_checkin_missing({"working_hours":"0.00","out_time": None, "employee": employee["name"], "attendance_date": single_date_str,"status":status})
                         })
     return final_data
 
+
 def add_checkin_missing(record):
-    if record['out_time'] == None :
+    user_roles = frappe.get_roles()
+
+    can_edit_if_absent = "Report Manager" in user_roles or "HR Manager" in user_roles
+    
+    if record["status"] == "MO":
         return f'<a href="#" onclick="openPopup(\'{record["employee"]}\', \'{record["attendance_date"]}\')">Add Checkin Checkouts</a>'
-    if record["working_hours"] <= 6:
+    
+    if record["status"] == "Absent" and can_edit_if_absent:
         return f'<a href="#" onclick="openPopup(\'{record["employee"]}\', \'{record["attendance_date"]}\')">Add Checkin Checkouts</a>'
 
     return ''
