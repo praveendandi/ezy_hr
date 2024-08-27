@@ -151,22 +151,19 @@ def calculate_total_hours(attendance_doc, checkin_date):
             if each.get("log_type") == "OUT":
                 inout_hours = each.get("time")
                 is_lastout = False
-            # if not is_lastout and each.get("log_type") != "OUT":
-            #     inout_hours = datetime.strptime(checkin_date, "%Y-%m-%d %H:%M:%S")
-            #     is_lastout = True
 
             if intime_hours and inout_hours:
         
-                if intime_hours < inout_hours:
-                    in_time = intime_hours
-                    out_time = inout_hours
-                    total_hour += abs(round((out_time - in_time).total_seconds() / 3600.0))
-                    intime_hours = None
-                    inout_hours = None
-                else:
-                    intime_hours = None
-                    inout_hours = None
-                    is_lastout = True
+                # if intime_hours < inout_hours:
+                in_time = intime_hours
+                out_time = inout_hours
+                total_hour += abs(round((out_time - in_time).total_seconds() / 3600.0))
+                intime_hours = None
+                inout_hours = None
+                # else:
+                #     intime_hours = None
+                #     inout_hours = None
+                #     is_lastout = True
 
     else:
         if attendance_id.in_time and attendance_id.out_time:
