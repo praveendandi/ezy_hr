@@ -142,47 +142,50 @@ def sync_transaction_month_wise(list_of_ids):
         return {"success": False, "error": str(e)}
 
 
+
+
+
 @frappe.whitelist()
 def get_checkin_alert():
-    
     try:
-        # it give me last doc id 
+        
+        # Get the latest document in EzyHrms Transaction
         get_latest = frappe.get_last_doc('EzyHrms Transaction')
         
-        get_doc_detail = frappe.get_doc("EzyHrms Transaction",{"name":get_latest.name})
+        get_doc_detail = frappe.get_doc("EzyHrms Transaction", {"name": get_latest.name})
         
-        # calcuate Duration through current date and last doc creation date
-        current_time  = datetime.now()
-        doc_creation =  get_doc_detail.creation
-
+        # Calculate the duration between the current time and the creation of the last document
+        current_time = datetime.now()
+        doc_creation = get_doc_detail.creation
         duration = current_time - doc_creation
-        seconds = duration.seconds
-        hours = seconds // 3600
+        hours = duration.total_seconds() // 3600
         
-        # Getting Recipients Mail,Subject,Message
         
+        
+        # Get email details from EzyHrms Maintenance
         get_recipient_details = frappe.get_last_doc('EzyHrms Maintenance')
-        
-        recipients_details = frappe.get_doc("EzyHrms Maintenance",{"name":get_recipient_details.name})
+        recipients_details = frappe.get_doc("EzyHrms Maintenance", {"name": get_recipient_details.name})
         
         recipients = recipients_details.receipts.split(",") if recipients_details.receipts else None
         subject = recipients_details.subject
         message = recipients_details.message
         
-        # compare hour (condition)
+        # Log email information
+        frappe.logger().info(f"Recipients: {recipients}, Subject: {subject}")
+        
+        # Send email if the last record was created more than 6 hours ago
         if hours >= 6:
-            
             email_args = {
-                "recipients":recipients,
-                "subject":subject,
-                "message":message,
-                "now":True
+                "recipients": recipients,
+                "subject": subject,
+                "message": message,
+                "now": True
             }
-            
-            eamil = frappe.sendmail(**email_args)
-            eamil.reload()
-            
+            frappe.sendmail(**email_args)
+        else:
+            frappe.logger().info("No email sent. Condition not met.")
+        
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
-        frappe.log_error("EzyHrms Transaction Fail", "line No:{}\n{}".format(
-            exc_tb.tb_lineno, traceback.format_exc()))
+        frappe.log_error("EzyHrms Transaction Fail", "Line No: {}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()))
+        frappe.logger().error(f"Error: {str(e)}")
