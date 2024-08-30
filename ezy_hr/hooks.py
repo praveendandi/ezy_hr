@@ -241,6 +241,7 @@ fixtures = [
                     "Employee-custom_role",
                     "Employee-custom_responsible_unit",
                     "Leave Type-custom_flexi_off_detail",
+                    "Leave Type-custom_flexi_saturday_off",
                 },
                 
             ]]
@@ -408,6 +409,9 @@ scheduler_events = {
 		"ezy_hr.ezy_hr.create_attendance.process_auto_attendance_for_all_shifts",
         "ezy_hr.ezy_hr.doctype.ezyhrms_transaction.ezyhrms_transaction.get_checkin_alert"
 	],
+    "monthly":[
+        "ezy_hr.ezy_hr.custom_script.flexi_saturday.flexi_saturday_off.get_flexi_saturday_weekoff"
+    ]
 }
 
 
