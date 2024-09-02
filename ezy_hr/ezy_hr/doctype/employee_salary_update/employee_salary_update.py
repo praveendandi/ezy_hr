@@ -28,6 +28,18 @@ class EmployeeSalaryUpdate(Document):
                         "salary_component": each.get("salary_component"),
                         "amount": each.get("new_amount"),
                     })
+                
+                if len(employee_details.get("custom_deductions",[])) <= 0:
+                    for each_ded in self.deductions_detail:
+                        employee_details.append("custom_deductions", {
+                            "salary_component": each_ded.get("salary_component"),
+                            "amount": each_ded.get("new_amount"),
+                            "custom_employee_condition":each_ded.get("custom_employee_condition"),
+                            "condition": each_ded.get("custom_employee_condition"),
+                            "amount_based_on_formula": 1 if each_ded.get("amount_based_on_formula") else 0,
+                            "formula": each_ded.get("formula"),
+                            "do_not_include_in_total": 1 if each_ded.get("do_not_include_in_total") else 0
+                        })
                     
                 employee_details.custom_effective_date = self.new_effective_date
                 # employee_details.custom_gross_amount = self.custom_new_gross_amount
@@ -61,6 +73,28 @@ def update_earning_table(data):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "update_earning_table")
 
+@frappe.whitelist()
+def update_deduction_table(data):
+    try:
+        row_data = json.loads(data) 
+        employee_id = row_data.get("employee_id") or row_data.get("employee")
+        employee_docs = frappe.get_list("Employee",filters={ "name": ["not like", "%-T%"],"employee": employee_id},fields=["name", "employee_name", "employee","company"])
+        if employee_docs:
+            get_deduction_detail = frappe.db.sql("""
+                SELECT sd.*
+                FROM `tabSalary Detail` sd
+                JOIN `tabEzy Deductions Formula` ezyd ON sd.parent = ezyd.name
+                WHERE ezyd.unit = %s
+                AND sd.parentfield = %s
+                AND sd.parenttype = %s
+                ORDER BY sd.idx ASC
+                """, (employee_docs[0].get("company"), 'deductions', 'Ezy Deductions Formula'), as_dict=True
+            )
 
+            return get_deduction_detail
+        
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "update_deduction_table")
 
 

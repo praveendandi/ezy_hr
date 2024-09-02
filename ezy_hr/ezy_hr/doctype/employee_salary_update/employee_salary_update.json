@@ -8,15 +8,23 @@
   "section_break_qcaq",
   "employee_id",
   "employee_name",
+  "department",
   "column_break_8mu3",
   "unit",
   "creation_date",
+  "designation",
   "earning_details_section",
   "previous_review_date",
   "column_break_cs2f",
   "new_effective_date",
-  "section_break_w0au",
+  "earning_section",
   "component_detail",
+  "section_break_gnpr",
+  "old_gorss_amount",
+  "column_break_r922",
+  "new_gross_amount",
+  "deduction_section",
+  "deduction_detail",
   "amended_from",
   "naming_serise"
  ],
@@ -50,6 +58,8 @@
    "label": "Employee Name"
   },
   {
+   "fetch_from": "employee_id.custom_unit",
+   "fetch_if_empty": 1,
    "fieldname": "unit",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -85,10 +95,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "section_break_w0au",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "creation_date",
    "fieldtype": "Date",
    "label": "Creation Date",
@@ -98,8 +104,7 @@
    "fieldname": "component_detail",
    "fieldtype": "Table",
    "label": "Component Detail",
-   "options": "Earning Child",
-   "reqd": 1
+   "options": "Earning Child"
   },
   {
    "default": "ESU-.#",
@@ -108,12 +113,61 @@
    "hidden": 1,
    "label": "Naming Serise",
    "options": "ESU-.#"
+  },
+  {
+   "fetch_from": "employee_id.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department"
+  },
+  {
+   "fetch_from": "employee_id.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "deduction_detail",
+   "fieldtype": "Table",
+   "label": "Deduction Detail",
+   "options": "Salary Detail",
+   "read_only": 1
+  },
+  {
+   "fieldname": "earning_section",
+   "fieldtype": "Section Break",
+   "label": "Earnings"
+  },
+  {
+   "fieldname": "deduction_section",
+   "fieldtype": "Section Break",
+   "label": "Deductions"
+  },
+  {
+   "fieldname": "new_gross_amount",
+   "fieldtype": "Data",
+   "label": "New Gross Amount",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee_id.custom_gross_amount",
+   "fieldname": "old_gorss_amount",
+   "fieldtype": "Data",
+   "label": "Old Gorss Amount"
+  },
+  {
+   "fieldname": "column_break_r922",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_gnpr",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-30 15:44:09.379234",
+ "modified": "2024-09-02 15:15:41.145350",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Employee Salary Update",
