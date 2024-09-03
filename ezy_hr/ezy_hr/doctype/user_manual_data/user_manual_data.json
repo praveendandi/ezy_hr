@@ -1,19 +1,22 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:user_manual_name",
  "creation": "2024-08-22 18:53:51.391771",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "user_manual_name",
   "attachment",
-  "video"
+  "video",
+  "user_manual_module"
  ],
  "fields": [
   {
    "fieldname": "user_manual_name",
    "fieldtype": "Data",
-   "label": "User Manual Name"
+   "label": "User Manual Name",
+   "unique": 1
   },
   {
    "fieldname": "attachment",
@@ -24,14 +27,21 @@
    "fieldname": "video",
    "fieldtype": "Data",
    "label": "Video"
+  },
+  {
+   "fieldname": "user_manual_module",
+   "fieldtype": "Link",
+   "label": "User Manual Module",
+   "options": "Module"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-23 18:34:55.517885",
+ "modified": "2024-09-03 15:25:58.304334",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "User Manual Data",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
