@@ -33,6 +33,17 @@ frappe.ui.form.on("Employee Salary Update", {
             frm.refresh_field('deduction_detail');
         }
     },
+    validate: function (frm) {
+        var total_price_list_rate = 0;
+
+        $.each(frm.doc.component_detail, function (i, d) {
+            total_price_list_rate += flt(d.new_amount)
+        });
+        frm.set_value("new_gross_amount", total_price_list_rate);
+        frm.refresh_field('new_gross_amount');
+    }
+
+
 });
 
 frappe.ui.form.on("Earning Child",{
@@ -56,6 +67,17 @@ function update_child(frm) {
         }
 }
 
+function earning_child(cur_frm, data) {
+
+   cur_frm.doc.component_detail = [];
+   let earnings = data;
+   for (let index = 0; index < earnings.length; index++) {
+       let child = cur_frm.add_child('component_detail');
+       child.salary_component = earnings[index]['salary_component'];
+       child.amount = earnings[index]['amount'];
+   }
+   cur_frm.refresh_fields('component_detail');
+}
 
 function deduction_child(cur_frm, data) {
     cur_frm.doc.deduction_detail = [];

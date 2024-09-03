@@ -2,6 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "field:unit",
  "creation": "2024-08-30 15:56:31.465432",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -13,8 +14,9 @@
   {
    "fieldname": "unit",
    "fieldtype": "Link",
-   "label": "unit",
-   "options": "Company"
+   "label": "Unit",
+   "options": "Company",
+   "unique": 1
   },
   {
    "fieldname": "deductions",
@@ -25,10 +27,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-02 12:00:40.937261",
+ "modified": "2024-09-03 10:40:10.509639",
  "modified_by": "Administrator",
  "module": "Ezy HR",
  "name": "Ezy Deductions Formula",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

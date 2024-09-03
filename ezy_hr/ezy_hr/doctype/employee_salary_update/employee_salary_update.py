@@ -12,6 +12,10 @@ from frappe.utils import getdate
 
 class EmployeeSalaryUpdate(Document):
 
+    def validate(self):
+        
+        self.check_effective_date()
+    
     def on_submit(self):
         
         self.update_and_create_salary()
@@ -22,6 +26,7 @@ class EmployeeSalaryUpdate(Document):
                 employee_details = frappe.get_doc("Employee", self.employee_id)
             
                 employee_details.set('custom_earnings', [])
+                employee_details.set('custom_deductions', [])
             
                 for each in self.component_detail:
                     employee_details.append("custom_earnings", {
@@ -29,17 +34,16 @@ class EmployeeSalaryUpdate(Document):
                         "amount": each.get("new_amount"),
                     })
                 
-                if len(employee_details.get("custom_deductions",[])) <= 0:
-                    for each_ded in self.deductions_detail:
-                        employee_details.append("custom_deductions", {
-                            "salary_component": each_ded.get("salary_component"),
-                            "amount": each_ded.get("new_amount"),
-                            "custom_employee_condition":each_ded.get("custom_employee_condition"),
-                            "condition": each_ded.get("custom_employee_condition"),
-                            "amount_based_on_formula": 1 if each_ded.get("amount_based_on_formula") else 0,
-                            "formula": each_ded.get("formula"),
-                            "do_not_include_in_total": 1 if each_ded.get("do_not_include_in_total") else 0
-                        })
+                for each_ded in self.deduction_detail:
+                    employee_details.append("custom_deductions", {
+                        "salary_component": each_ded.get("salary_component"),
+                        "amount": each_ded.get("amount"),
+                        "custom_employee_condition":each_ded.get("custom_employee_condition"),
+                        "condition": each_ded.get("condition"),
+                        "amount_based_on_formula": 1 if each_ded.get("amount_based_on_formula") else 0,
+                        "formula": each_ded.get("formula"),
+                        "do_not_include_in_total": 1 if each_ded.get("do_not_include_in_total") else 0
+                    })
                     
                 employee_details.custom_effective_date = self.new_effective_date
                 # employee_details.custom_gross_amount = self.custom_new_gross_amount
@@ -49,6 +53,24 @@ class EmployeeSalaryUpdate(Document):
 
         except Exception as e:
             frappe.log_error(f"Update And Create Salary: {str(e)}")
+            
+    def check_effective_date(self):
+        # Old Employee validatation
+        if self.new_effective_date and self.previous_review_date:
+            effective_date = getdate(self.new_effective_date)
+            previous_effective_date = getdate(self.previous_review_date)
+            date_of_joining = getdate(self.date_of_joining)
+            
+            if effective_date <= previous_effective_date:
+                frappe.throw("Please check the Effective Date. It should not be earlier than the previous effective date....")
+                
+        # New Employee validatation
+        if self.new_effective_date and self.date_of_joining:
+            effective_date = getdate(self.new_effective_date)
+            date_of_joining = getdate(self.date_of_joining)
+            
+            if effective_date < date_of_joining:
+                frappe.throw("You Assign Before Joining Date of Employee.....")
 
 
 @frappe.whitelist()
