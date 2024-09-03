@@ -62,18 +62,26 @@ def my_team():
         return []
 
 
-
-
 import frappe
+from collections import defaultdict
+
 @frappe.whitelist()
 def user_manual():
     try:
-        team_list = []
+ 
+        team_dict = defaultdict(list)
 
-        my_team_data = frappe.get_all("User Manual Data", fields=['user_manual_name', 'attachment', "video","name"])
-        for i in my_team_data:
-            team_list.append(i)    
-        return team_list
+
+        my_team_data = frappe.get_all("User Manual Data", fields=['user_manual_name', 'attachment', 'video', 'name', 'user_manual_module'])
+        
+
+        for record in my_team_data:
+            team_dict[record['user_manual_module']].append(record)
+        
+
+        return dict(team_dict)
+
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Error in fetching team")
-        return []
+        return {}
+

@@ -1,245 +1,205 @@
-frappe.pages['user-manual'].on_page_load = function(wrapper) {
-    var page = frappe.ui.make_app_page({
+frappe.pages['user-manual'].on_page_load = function (wrapper) {
+    const page = frappe.ui.make_app_page({
         parent: wrapper,
         title: 'User Manual',
         single_column: true
     });
-
-		
-    let parentDiv = $('<div class="card-container"></div>').appendTo(page.body);
-
-
-    $('<style>')
-        .prop('type', 'text/css')
-        .html(
-            `.card {
-                width: 300px;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                text-decoration: none;
-                color: inherit;
-                transition: box-shadow 0.3s ease;
-                margin: 10px; 
-                display: flex;
-                align-items: center;
-                background-color: #fff;
-            }
-
-            .card-content {
-                display: flex;
-                width: 100%;
-            }
-
-            .card-image {
-                width: 90px;
-                height: 90px;
-                padding:10px;
-                margin-right: 10px;
-            }
-
-            .card-text {
-                flex: 1;
-                padding: 16px;
-            }
-
-            .card_header {
-                padding: 16px;
-                text-align: center;
-                font-size: 1.5em;
-                font-weight: bold;
-                background-color:none !important;
-                border-bottom:none;
-            }
-
-            .card-body {
-                padding: 16px;
-            }
-
-            .card:hover {
-                box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-                text-decoration: none;
-            }
-
-            .pdf-viewer {
-                width: 1240px; 
-                height: 90vh;
-                top: 50px;
-                position: relative;
-                background: white;
-                border: 1px solid #ccc;
-                box-sizing: border-box;
-            }
-
-            .pdf-viewer iframe {
-                width: 100%;
-                height: calc(100% - 50px); 
-                border: none; 
-            }
-
-            .button-container {
-                position: absolute;
-                width: 97%; 
-                display: flex;
-                align-items: center;
-                top: 0; 
-                background: rgba(255, 255, 255, 0.9); 
-                z-index: 10; 
-                padding: 10px;/
-                box-sizing: border-box; 
-            }
-
-            .button-container .button {
-                background-color: #000;
-                color: white;
-                margin-top: 0; 
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                box-sizing: border-box; 
-            }
-
-            .button-container .button:hover {
-                background-color: #333;
-            }
-
-            .button-container .download-button {
-                margin-right: auto; 
-            }
-
-            /* Flexbox layout for card container */
-            .card-container {
-                width: 92%;
-                display: flex;
-                flex-wrap: wrap; 
-                justify-content: flex-start; 
-                gap: 10px
-                padding: 10px;
-            }
-
-            /* Back button styling */
-            .back-button {
-                width: 30px; 
-                height: 30px;
-                margin-right: 10px;
-            }
-
-            /* Back text styling */
-            .back-text {
-                font-size: 1.2em; /* Adjust text size as needed */
-                cursor: pointer;
-            }
-        `)
-        .appendTo('head');
-
+    const mainContainer = $('<div class="main-container"></div>').appendTo(page.body);
+    const leftSection = $('<div class="left-section"></div>').appendTo(mainContainer);
+    const rightSection = $('<div class="right-section"></div>').appendTo(mainContainer);
+    const moduleList = $('<div class="module-list"></div>').appendTo(leftSection);
+    const cardContainer = $('<div class="card-container"></div>').appendTo(rightSection);
+    appendStyles();
+    let collapsedState = {};
+    function appendStyles() {
+        $('<style>')
+            .prop('type', 'text/css')
+            .html(`
+                .main-container {
+                    display: flex;
+                    gap: 10px;
+                }
+                .left-section {
+                    flex: 1;
+                    max-width: 320px;
+                }
+                .right-section {
+                    flex: 3;
+                    padding: 10px;
+                    margin-left: 75px;
+                    position: relative;
+                }
+                .module-list {
+                    width: 300px;
+                    padding: 10px;
+                    background-color: #ffffff;
+                    box-sizing: border-box;
+                    margin-left: -20px;
+                }
+                .module-header {
+                    font-size: 20px;
+                    font-weight: bold;
+                    margin-top: 20px;
+                    cursor: pointer;
+                    background-color: #95959526;
+                    padding: 10px;
+                    border-radius: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+                .module-header img {
+                    width: 24px;
+                    height: 24px;
+                    margin-left: 20px;
+                    transition: transform 0.3s ease;
+                    padding: 4px;
+                }
+                .module-content {
+                    display: none;
+                    padding-left: 10px;
+                }
+                .card {
+                    width:  280px;
+                    border: 1px solid #ccc;
+                    border-radius: 15px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    margin: 10px;
+                    display: flex;
+                    align-items: center;
+                    background-color: #fff;
+                    transition: box-shadow 0.3s ease;
+                    margin-left: -9px;
+                }
+                .card:hover {
+                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+                    text-decoration: none;
+                }
+                .card-content {
+                    display: flex;
+                    width: 100%;
+                    height: 60px;
+                    align-items: center;
+                }
+                .card-image {
+                    width: 55px;
+                    height: 55px;
+                    padding: 5px;
+                }
+                .card-text {
+                    flex: 1;
+                    padding: 3px;
+                    overflow-y: visible ! important ;
+                }
+                .card_header {
+                    font-size: 13px;
+                    font-weight: bold;
+                    margin: auto;
+                    margin-left: 0px;
+                }
+                .pdf-viewer {
+                    width: 100%;
+                    height: 90vh;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    background: white;
+                    border: 1px solid #ccc;
+                    z-index: 1000;
+                }
+                .pdf-viewer iframe {
+                    width: 100%;
+                    height: calc(100% - 50px);
+                    border: none;
+                }
+                .module-header img.rotate-180 {
+                    transform: rotate(180deg);
+                }
+                .card.selected {
+                    border: 2px solid #0000005c;
+                }
+            `)
+            .appendTo('head');
+    }
     function createCard(employee) {
-        let employeeName = employee.user_manual_name;
-        let card = document.createElement('a');
-        card.href = '#'; 
-        card.className = 'card';
-        card.setAttribute('data-pdf-url', employee.attachment); 
-        
-        let cardContent = document.createElement('div');
-        cardContent.className = 'card-content';
-
-       
-        let img = document.createElement('img');
-        img.src = '/files/user-guide.png'; 
-        img.className = 'card-image';
-        
-        
-        let textContainer = document.createElement('div');
-        textContainer.className = 'card-text';
-        
-        let cardHeader = document.createElement('div');
-        cardHeader.className = 'card_header';
-        cardHeader.textContent = employeeName;
-        
-        textContainer.appendChild(cardHeader);
-
-        cardContent.appendChild(img);
-        cardContent.appendChild(textContainer);
-
-        card.appendChild(cardContent);
-
+        const { user_manual_name: name, attachment: pdfUrl } = employee;
+        const card = $('<a class="card"></a>')
+            .attr('href', '#')
+            .data('pdf-url', pdfUrl);
+        const cardContent = $('<div class="card-content"></div>');
+        const img = $('<img class="card-image" src="/files/user-guide.png">');
+        const textContainer = $('<div class="card-text"></div>');
+        const cardHeader = $('<div class="card_header"></div>').text(name);
+        textContainer.append(cardHeader);
+        cardContent.append(img).append(textContainer);
+        card.append(cardContent);
         return card;
     }
-
-    function createPdfViewer(pdfUrl, pdfName) {
-        let pdfViewer = document.createElement('div');
-        pdfViewer.id = 'pdf-viewer';
-
-        let buttonContainer = document.createElement('div');
-        buttonContainer.className = 'button-container';
-
-        
-        let backButton = document.createElement('img');
-        backButton.src = '/files/back-button.png'; 
-        backButton.className = 'back-button'; 
-        backButton.style.cursor = 'pointer';
-        backButton.onclick = () => {
-            $('#pdf-viewer').hide();
-            $('.card').show();
-        };
-
-        
-        let backText = document.createElement('span');
-        backText.className = 'back-text';
-        backText.textContent = 'Back';
-        backText.onclick = () => {
-            $('#pdf-viewer').hide();
-            $('.card').show();
-        };
-
-       
-        buttonContainer.appendChild(backButton);
-        buttonContainer.appendChild(backText);
-
-        pdfViewer.appendChild(buttonContainer);
-
-        let container = document.createElement('div');
-        container.className = 'container';
-
-        let iframe = document.createElement('iframe');
-        iframe.src = pdfUrl;
-        iframe.className = 'pdf-viewer';
-        container.appendChild(iframe);
-
-        pdfViewer.appendChild(container);
+    function createModuleSection(moduleName) {
+        const moduleSection = $('<div class="module-section"></div>');
+        const moduleHeader = $(`<div class="module-header">${moduleName}<img src="/assets/ezy_hr/images/down-arrow.png" class="module-toggle-image"/></div>`);
+        const moduleContent = $('<div class="module-content"></div>');
+        const toggleImage = moduleHeader.find('.module-toggle-image');
+        collapsedState[moduleName] = true;
+        moduleHeader.on('click', function () {
+            const isCollapsed = moduleContent.is(':hidden');
+            const currentlyExpanded = Object.keys(collapsedState).find(name => !collapsedState[name]);
+            if (currentlyExpanded && currentlyExpanded !== moduleName) {
+                $(`.module-content`).slideUp(100);
+                $('.module-header img').removeClass('rotate-180');
+                collapsedState[currentlyExpanded] = true;
+            }
+            if (isCollapsed) {
+                moduleContent.slideDown(100);
+                toggleImage.addClass('rotate-180');
+                collapsedState[moduleName] = false;
+                $('#pdf-viewer').remove();
+            } else {
+                moduleContent.slideUp(100);
+                toggleImage.removeClass('rotate-180');
+                collapsedState[moduleName] = true;
+                $('#pdf-viewer').remove();
+            }
+        });
+        moduleSection.append(moduleHeader).append(moduleContent);
+        moduleList.append(moduleSection);
+        return moduleContent;
+    }
+    function createPdfViewer(pdfUrl) {
+        const pdfViewer = $('<div id="pdf-viewer"></div>');
+        const iframe = $('<iframe></iframe>')
+            .attr('src', pdfUrl)
+            .addClass('pdf-viewer');
+        pdfViewer.append(iframe);
         return pdfViewer;
     }
-
     function fetchDataAndCreateCards() {
         frappe.call({
             method: 'ezy_hr.ezy_hr.page.profile_id.profile_id.user_manual',
             callback: function (response) {
-                if (response.message && response.message.length > 0) {
-                    response.message.forEach(function(employee) {
-                        let card = createCard(employee);
-                        parentDiv.append(card);
-                    });
-                } else {
-                    frappe.msgprint(__('No data found.'));
+                if (response.message) {
+                    for (const [moduleName, items] of Object.entries(response.message)) {
+                        const moduleContent = createModuleSection(moduleName);
+                        items.forEach(item => {
+                            const card = createCard(item);
+                            moduleContent.append(card);
+                            card.on('click', function (e) {
+                                e.preventDefault();
+                                $('.card').removeClass('selected');
+                                $(this).addClass('selected');
+                                const pdfViewer = createPdfViewer($(this).data('pdf-url'));
+                                $('#pdf-viewer').remove();
+                                rightSection.append(pdfViewer);
+                            });
+                        });
+                    }
                 }
             },
-            error: function() {
-                frappe.msgprint(__('Error fetching data.'));
+            error: function (error) {
+                console.error('Error fetching data:', error);
             }
         });
     }
-
     fetchDataAndCreateCards();
-
-    parentDiv.on('click', '.card', function() {
-        let pdfUrl = $(this).data('pdf-url'); 
-        let pdfName = pdfUrl.split('/').pop(); 
-        $('#pdf-viewer').remove();
-        let pdfViewer = createPdfViewer(pdfUrl, pdfName);
-        parentDiv.append(pdfViewer);
-        $('.card').hide();
-        $('#pdf-viewer').show();
-    });
 };
-	
-	
