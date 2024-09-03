@@ -242,6 +242,7 @@ fixtures = [
                     "Employee-custom_responsible_unit",
                     "Leave Type-custom_flexi_off_detail",
                     "Leave Type-custom_flexi_saturday_off",
+                    "Leave Type-custom_allocated_count",
                 },
                 
             ]]
@@ -398,11 +399,13 @@ scheduler_events = {
             "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
         ],
         "0 10 * * *": [
-            "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification"
+            "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification",
+            
         ]
     },
     "daily": [
-		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff"
+		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff",
+        "ezy_hr.ezy_hr.doctype.employee_leave_balance.employee_leave_balance.update_all_leave_balances"
 	],
 
     "hourly": [

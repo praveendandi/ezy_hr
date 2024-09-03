@@ -1,0 +1,127 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{employee_name}-{leave_type}",
+ "creation": "2024-09-02 11:45:59.345877",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "unit",
+  "employee",
+  "employee_name",
+  "column_break_jq7e",
+  "leave_type",
+  "allocate_frequency",
+  "allocated_count",
+  "column_break_o3ey",
+  "leave_balance_on",
+  "leave_balance",
+  "leave_balance_updated",
+  "current_leave_balance"
+ ],
+ "fields": [
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Unit",
+   "options": "Company"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_jq7e",
+   "fieldtype": "Section Break",
+   "label": "Leave Balance Details"
+  },
+  {
+   "fieldname": "leave_balance",
+   "fieldtype": "Float",
+   "label": "Previous Leave Balance"
+  },
+  {
+   "fieldname": "leave_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Leave Type",
+   "options": "Leave Type"
+  },
+  {
+   "fieldname": "leave_balance_on",
+   "fieldtype": "Date",
+   "label": "Leave Balance Given On"
+  },
+  {
+   "fieldname": "current_leave_balance",
+   "fieldtype": "Float",
+   "label": "Current Leave Balance"
+  },
+  {
+   "default": "Today",
+   "fieldname": "leave_balance_updated",
+   "fieldtype": "Date",
+   "label": "Leave Balance Upto Today"
+  },
+  {
+   "depends_on": "eval:doc.leave_type",
+   "description": "Need to allocate for Monthly/Quarterly/Half Yearly/Yearly",
+   "fetch_from": "leave_type.custom_allocated_count",
+   "fieldname": "allocated_count",
+   "fieldtype": "Float",
+   "label": "Allocated Count",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "leave_type.earned_leave_frequency",
+   "fieldname": "allocate_frequency",
+   "fieldtype": "Select",
+   "label": "Allocated Frequency",
+   "options": "Monthly\nQuarterly\nHalf-Yearly\nYearly",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_o3ey",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-03 14:43:05.856264",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Employee Leave Balance",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
