@@ -61,7 +61,7 @@ class EmployeeSalaryUpdate(Document):
             previous_effective_date = getdate(self.previous_review_date)
             date_of_joining = getdate(self.date_of_joining)
             
-            if effective_date <= previous_effective_date:
+            if effective_date < previous_effective_date:
                 frappe.throw("Please check the Effective Date. It should not be earlier than the previous effective date....")
                 
         # New Employee validatation

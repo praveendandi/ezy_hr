@@ -33,7 +33,8 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Employee":"ezy_hr/custom_script/employee/employee.js",
               "Employee Promotion":"public/js/employee_promotion.js",
               "Compensatory Leave Request":"public/js/compensatory_leave.js",
-              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
+              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js",
+              "Job Offer":"ezy_hr/custom_script/job_offer/job_offer.js"
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -243,6 +244,10 @@ fixtures = [
                     "Leave Type-custom_flexi_off_detail",
                     "Leave Type-custom_flexi_saturday_off",
                     "Leave Type-custom_allocated_count",
+                    "Job Offer-custom_first_name",
+                    "Job Offer-custom_last_name",
+                    "Job Offer-custom_date_of_joining",
+                    "Job Offer-custom_applicant_type",
                 },
                 
             ]]
