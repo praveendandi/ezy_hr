@@ -40,18 +40,16 @@ def execute(filters=None):
     else:
         leave_type_filters = [leave['leave_type'] for leave in leave_types]
 
-    # Set to keep track of already added columns for leave types
     added_leave_types = set()
 
     for leave_type in leave_type_filters:
         abbr = leave_type_abbr.get(leave_type, leave_type[:2])
         if abbr not in added_leave_types:
-            # Add columns only if they haven't been added already
             columns.append({"label": f"{abbr} Opening Balance", "fieldname": f"{abbr.lower()}_leave_balance", "fieldtype": "Float", "width": 180})
             columns.append({"label": f"{abbr} Total Balance", "fieldname": f"{abbr.lower()}_current_balance", "fieldtype": "Float", "width": 180})
             columns.append({"label": f"{abbr} Used Leaves", "fieldname": f"{abbr.lower()}_used_leaves", "fieldtype": "Float", "width": 180})
             columns.append({"label": f"{abbr} Current Balance", "fieldname": f"{abbr.lower()}_adjusted_balance", "fieldtype": "Float", "width": 180})
-            added_leave_types.add(abbr)  # Mark this leave type as added
+            added_leave_types.add(abbr)  
 
     conditions = {}
     if filters.get("unit"):
