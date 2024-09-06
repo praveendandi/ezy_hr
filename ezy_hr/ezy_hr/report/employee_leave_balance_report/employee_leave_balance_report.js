@@ -1,6 +1,7 @@
 // Copyright (c) 2024, Ganu Reddy and contributors
 // For license information, please see license.txt
 
+
 frappe.query_reports["Employee Leave Balance Report"] = {
     "filters": [
         {
@@ -26,3 +27,4 @@ frappe.query_reports["Employee Leave Balance Report"] = {
         }
     ]
 };
+
