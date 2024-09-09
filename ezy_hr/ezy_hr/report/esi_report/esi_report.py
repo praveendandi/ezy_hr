@@ -54,11 +54,15 @@ def execute(filters=None):
             "custom_reason_for_esi": ss.custom_reason_for_esi
         }
         incentive_amount = 0
-
+        nfh_amount = 0
         for e in earning_types:
             if e == "Incentive":
                 if ss_earning_map.get(ss.name,{}).get(e):
                     incentive_amount = ss_earning_map.get(ss.name).get(e, 0)
+            if e == "NFH Wages":
+                if ss_earning_map.get(ss.name,{}).get(e):
+                    nfh_amount = ss_earning_map.get(ss.name).get(e, 0)
+
 
         for d in ded_types:
             if ss_ded_map.get(ss.name, {}).get(d):
@@ -67,14 +71,14 @@ def execute(filters=None):
         if currency == company_currency:
             row.update(
                 {
-                    "gross_pay": flt(ss.gross_pay-incentive_amount) * flt(ss.exchange_rate),
+                    "gross_pay": flt(ss.gross_pay-(incentive_amount+nfh_amount)) * flt(ss.exchange_rate),
                     "total_deduction": flt(ss.total_deduction) * flt(ss.exchange_rate),
                     "net_pay": flt(ss.net_pay) * flt(ss.exchange_rate),
                 }
             )
         else:
             row.update(
-                {"gross_pay": ss.gross_pay-incentive_amount, "total_deduction": ss.total_deduction, "net_pay": ss.net_pay}
+                {"gross_pay": ss.gross_pay-(incentive_amount+nfh_amount), "total_deduction": ss.total_deduction, "net_pay": ss.net_pay}
             )
 
         data.append(row)
