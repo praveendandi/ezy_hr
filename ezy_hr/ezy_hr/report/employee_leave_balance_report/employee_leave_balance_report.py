@@ -2,19 +2,19 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 
 def execute(filters=None):
-    # Define report columns
+    if filters is None:
+        filters = {}
+
     columns = [
         {"label": "Employee", "fieldname": "employee", "fieldtype": "Data", "options": "Employee", "width": 150},
         {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
         {"label": "Leave Balance Given On", "fieldname": "leave_balance_on", "fieldtype": "Date", "width": 200},
-        {"label": "Allocate Frequency", "fieldname": "allocate_frequency", "fieldtype": "Data", "width": 150},
-        {"label": "Allocated Count", "fieldname": "allocated_count", "fieldtype": "Float", "width": 150},
-        {"label": "Leaves Updated On", "fieldname": "leave_balance_updated", "fieldtype": "Date", "width": 180}
+        {"label": "Leave Balance Updated On", "fieldname": "leave_balance_updated", "fieldtype": "Date", "width": 210},
     ]
 
-    # Mapping leave types to abbreviations
     leave_type_abbr = {
         "Casual Leave": "CL",
         "Privilege Leave": "PL",
@@ -28,48 +28,77 @@ def execute(filters=None):
         "Week Off": "WO",
         "Maternity Leave": "ML",
         "Accident Leave on shift": "ALS",
-        "ESI Leave" : "ESI",
-        "Unpaid Leave" : "UL",
-        "Leave Without Pay" : "LWP",
-        "Compensatory Off" : "CO"
+        "ESI Leave": "ESI",
+        "Unpaid Leave": "UL",
+        "Leave Without Pay": "LWP",
+        "Compensatory Off": "CO"
     }
 
-    if filters.get("unit"):
-        active_employees = frappe.get_all(
-            "Employee",
-            filters={"status": "Active", "company": filters.get("unit")},
-            fields=["name"]
-        )
-        active_employee_list = [emp['name'] for emp in active_employees]
+    leave_types = []
+    if filters.get("leave_type"):
+        leave_types = [{"leave_type": filters.get("leave_type")}]
     else:
-        active_employees = frappe.get_all(
-            "Employee",
-            filters={"status": "Active"},
-            fields=["name"]
-        )
-        active_employee_list = [emp['name'] for emp in active_employees]
+        leave_types = frappe.get_all("Employee Leave Balance", fields=["distinct leave_type"])
+    
+    leave_types_list = [lt['leave_type'] for lt in leave_types]
+    
+    employee_filters = {"status": "Active"}
+    if filters.get("unit"):
+        employee_filters["company"] = filters.get("unit")
+    if filters.get("employee"):
+        employee_filters["name"] = ["in", filters.get("employee")]
 
+    active_employees = frappe.get_all(
+        "Employee",
+        filters=employee_filters,
+        fields=["name"]
+    )
+    active_employee_list = [emp['name'] for emp in active_employees]
+    
     if not active_employee_list:
         frappe.throw(_("No active employees found for the selected unit (company)"))
 
-    # Fetch leave balances for active employees
+    for leave_type in leave_types_list:
+        abbr = leave_type_abbr.get(leave_type, leave_type[:2])
+        columns.extend([
+            {"label": f"{abbr} Opening Balance", "fieldname": f"{abbr.lower()}_leave_balance", "fieldtype": "Float", "width": 180},
+            {"label": f"{abbr} Allocated Frequency", "fieldname": f"{abbr.lower()}_allocate_frequency", "fieldtype": "Data", "width": 200},
+            {"label": f"{abbr} Allocated Count", "fieldname": f"{abbr.lower()}_allocated_count", "fieldtype": "Float", "width": 180},
+            {"label": f"{abbr} Updated Balance", "fieldname": f"{abbr.lower()}_current_leave_balance", "fieldtype": "Float", "width": 180},
+            {"label": f"{abbr} Used Leaves", "fieldname": f"{abbr.lower()}_used_leaves", "fieldtype": "Float", "width": 180},
+            {"label": f"{abbr} Current Balance", "fieldname": f"{abbr.lower()}_adjusted_balance", "fieldtype": "Float", "width": 180}
+        ])
+
+    leave_balances_filters = {
+        "employee": ["in", active_employee_list],
+    }
+    if filters.get("leave_type"):
+        leave_balances_filters["leave_type"] = filters.get("leave_type")
+
     leave_balances = frappe.get_all(
         "Employee Leave Balance",
-        filters={"employee": ["in", active_employee_list]},
+        filters=leave_balances_filters,
         fields=["employee", "employee_name", "leave_type", "leave_balance_on", "allocate_frequency", "allocated_count", "leave_balance_updated", "leave_balance", "current_leave_balance"],
         order_by="employee, leave_balance_on"
     )
 
-    # Fetch approved leave applications (used leaves)
+    used_leaves_filters = {
+        "status": "Approved",
+    }
+    if filters.get("leave_type"):
+        used_leaves_filters["leave_type"] = filters.get("leave_type")
+    if filters.get("employee"):
+        used_leaves_filters["employee"] = ["in", filters.get("employee")]
+    
     used_leaves_data = frappe.get_all(
         "Leave Application",
-        filters={"status": "Approved"},
+        filters=used_leaves_filters,
         fields=["employee", "leave_type", "sum(total_leave_days) as used_leaves"],
         group_by="employee, leave_type"
     )
-
+    
     used_leaves_map = {(row['employee'], row['leave_type']): row['used_leaves'] for row in used_leaves_data}
-
+    
     employee_data = {}
 
     for leave in leave_balances:
@@ -81,17 +110,18 @@ def execute(filters=None):
             employee_data[emp_key] = {
                 "employee": leave["employee"],
                 "employee_name": leave["employee_name"],
-                "leave_type": leave["leave_type"], 
                 "leave_balance_on": leave["leave_balance_on"],
                 "allocate_frequency": leave["allocate_frequency"],
                 "allocated_count": leave["allocated_count"],
                 "leave_balance_updated": leave["leave_balance_updated"],
             }
 
-        employee_data[emp_key][f"{abbr}_leave_balance"] = leave["leave_balance"]
-        employee_data[emp_key][f"{abbr}_current_balance"] = leave["current_leave_balance"]
+        employee_data[emp_key][f"{abbr}_leave_balance"] = leave.get("leave_balance", 0)
+        employee_data[emp_key][f"{abbr}_allocate_frequency"] = leave.get("allocate_frequency", "N/A")  # Default value if not available
+        employee_data[emp_key][f"{abbr}_allocated_count"] = leave.get("allocated_count", 0)
+        employee_data[emp_key][f"{abbr}_current_leave_balance"] = leave.get("current_leave_balance", 0)
         employee_data[emp_key][f"{abbr}_used_leaves"] = used_leaves_map.get((leave["employee"], leave["leave_type"]), 0)
-        adjusted_balance = leave["current_leave_balance"] - employee_data[emp_key][f"{abbr}_used_leaves"]
+        adjusted_balance = employee_data[emp_key][f"{abbr}_current_leave_balance"] - employee_data[emp_key][f"{abbr}_used_leaves"]
         employee_data[emp_key][f"{abbr}_adjusted_balance"] = adjusted_balance
 
     data = list(employee_data.values())
