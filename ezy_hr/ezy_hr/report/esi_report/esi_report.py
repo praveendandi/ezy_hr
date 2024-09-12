@@ -2,12 +2,11 @@
 # For license information, please see license.txt
 
 
-
-
 import frappe
 from frappe import _
 from frappe.utils import flt
-
+from datetime import datetime,date
+from erpnext.accounts.utils import get_fiscal_year
 import erpnext
 
 salary_slip = frappe.qb.DocType("Salary Slip")
@@ -39,47 +38,93 @@ def execute(filters=None):
     data = []
     for ss in salary_slips:
         gross_amount = gross_amount_map.get(ss.employee, 0)
+        
+        esi_condit = esi_conditions(ss)
+        _, start_date, end_date = get_fiscal_year(ss.start_date)
+        is_applicable = process_esi(ss, esi_condit, start_date, end_date)
+        
+        if is_applicable:
 
-        if gross_amount > 21000:
-            continue
+            row = {
+                "salary_slip_id": ss.name,
+                "employee": ss.employee,
+                "employee_name": ss.employee_name,
+                "custom_esic_no": esic_no_map.get(ss.employee),
+                "payment_days": ss.payment_days,
+                "total_loan_repayment": ss.total_loan_repayment,
+                "relieving_date": relieving_date_map.get(ss.employee),
+                "custom_reason_for_esi": ss.custom_reason_for_esi
+            }
+            incentive_amount = 0
+            nfh_amount = 0
+            earn_gross = 0
 
-        row = {
-            "salary_slip_id": ss.name,
-            "employee": ss.employee,
-            "employee_name": ss.employee_name,
-            "custom_esic_no": esic_no_map.get(ss.employee),
-            "payment_days": ss.payment_days,
-            "total_loan_repayment": ss.total_loan_repayment,
-            "relieving_date": relieving_date_map.get(ss.employee),
-            "custom_reason_for_esi": ss.custom_reason_for_esi
-        }
-        incentive_amount = 0
+            for e in earning_types:
+                if e == "Incentive":
+                    if ss_earning_map.get(ss.name,{}).get(e):
+                        incentive_amount = ss_earning_map.get(ss.name).get(e, 0)
+                if e == "NFH Wages":
+                    if ss_earning_map.get(ss.name,{}).get(e):
+                        nfh_amount = ss_earning_map.get(ss.name).get(e, 0)
 
-        for e in earning_types:
-            if e == "Incentive":
-                if ss_earning_map.get(ss.name,{}).get(e):
-                    incentive_amount = ss_earning_map.get(ss.name).get(e, 0)
+            for d in ded_types:
+                if ss_ded_map.get(ss.name, {}).get(d):
+                    row[frappe.scrub(d)] = ss_ded_map.get(ss.name).get(d, 0)
 
-        for d in ded_types:
-            if ss_ded_map.get(ss.name, {}).get(d):
-                row[frappe.scrub(d)] = ss_ded_map.get(ss.name).get(d, 0)
+            if flt(ss.gross_pay-(incentive_amount+nfh_amount))>=21000:
+                earn_gross = flt((21000/ss.total_working_days)*ss.payment_days)
+            else:
+                earn_gross = flt(ss.gross_pay-(incentive_amount+nfh_amount))
+                
+            if currency == company_currency:
+                row.update(
+                    {
+                        "gross_pay": earn_gross * flt(ss.exchange_rate),
+                        "total_deduction": flt(ss.total_deduction) * flt(ss.exchange_rate),
+                        "net_pay": flt(ss.net_pay) * flt(ss.exchange_rate),
+                    }
+                )
+            else:
+                row.update(
+                    {"gross_pay": earn_gross, "total_deduction": ss.total_deduction, "net_pay": ss.net_pay}
+                )
 
-        if currency == company_currency:
-            row.update(
-                {
-                    "gross_pay": flt(ss.gross_pay-incentive_amount) * flt(ss.exchange_rate),
-                    "total_deduction": flt(ss.total_deduction) * flt(ss.exchange_rate),
-                    "net_pay": flt(ss.net_pay) * flt(ss.exchange_rate),
-                }
-            )
-        else:
-            row.update(
-                {"gross_pay": ss.gross_pay-incentive_amount, "total_deduction": ss.total_deduction, "net_pay": ss.net_pay}
-            )
-
-        data.append(row)
+            data.append(row)
 
     return columns, data
+
+def process_esi(doc, cycle, start_date, end_date):
+    
+    current_year = start_date.year
+    end_year = end_date.year if not cycle["is_first_cycle"] else current_year
+    date_range = cycle["range_date"].split("-")
+    name = f"{doc.employee}-({date_range[0]} {current_year})-({date_range[1]} {end_year})"
+
+    esi_exists = frappe.get_list("ESI Applicable List", filters={'id': name, "employee": doc.employee}, fields=["name"])
+    if esi_exists:
+       return True
+    else:
+        return False
+   
+def esi_conditions(ss):
+    
+    if isinstance(ss.start_date,str):
+        current_date = datetime.strptime(ss.start_date, "%Y-%m-%d").date()
+    else:
+        current_date = ss.start_date
+        
+    settings = frappe.get_doc("EzyHr Settings")
+    
+    if current_date.month in range(4, 10):
+        return {
+            "range_date": f"{settings.f_start_month}-{settings.f_end_month}",
+            "is_first_cycle": True,
+        }
+    else:
+        return {
+            "range_date": f"{settings.s_start_month}-{settings.s_end_month}",
+            "is_first_cycle": False,
+        }
 
 def get_earning_and_deduction_types(salary_slips):
     earning_types, ded_types = [], []

@@ -1,59 +1,64 @@
 # Copyright (c) 2024, Ganu Reddy and contributors
 # For license information, please see license.txt
 
-# import frappe
-
-
 import frappe
 from frappe.utils import getdate, add_months, formatdate
 from datetime import timedelta
 
 
 def execute(filters=None):
-    if filters is None:
-        filters = {}
+    try:
+        if filters is None:
+            filters = {}
+        
+        report_type = filters.get("report_type", "Summary Report")
+        
+        if report_type not in ["Head Count Working", "New Joinees List", "Left Employees", "Summary Report"]:
+            report_type = "Summary Report"
+        
+        # Update filters with the corrected report_type
+        filters["report_type"] = report_type
+        
+        columns = get_columns(report_type)
+        data = get_data(filters, report_type)
+        
+        return columns, data
     
-    # Ensure default report_type is applied if not selected
-    report_type = filters.get("report_type", "Summary Report")
-    
-    # Validate report_type and default to "Summary Report" if invalid
-    if report_type not in ["Head Count Working", "New Joinees List", "Left Employees", "Summary Report"]:
-        report_type = "Summary Report"  # Default to Summary Report if an invalid type is provided
-    
-    # Update filters with the corrected report_type
-    filters["report_type"] = report_type
-    
-    columns = get_columns(report_type)
-    data = get_data(filters, report_type)
-    
-    return columns, data
+    except Exception as e:
+        frappe.log_error(str(e))
 
 def get_columns(report_type):
     if report_type == "Head Count Working":
         return [
-            {"fieldname": "department", "label": "Department", "fieldtype": "Data", "width": 120},
-            {"fieldname": "staff_count", "label": "Staff Count", "fieldtype": "Int", "width": 100}
+            {"fieldname": "department", "label": "Department", "fieldtype": "Data", "width": 220},
+            {"fieldname": "staff_count", "label": "Staff Count", "fieldtype": "Int", "width": 200}
         ]
     elif report_type == "New Joinees List":
         return [
             {"fieldname": "employee", "label": "Employee", "fieldtype": "Data", "width": 150},
-            {"fieldname": "employee_name", "label": "Employee Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "first_name", "label": "First Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "last_name", "label": "Last Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "middle_name", "label": "Middle Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "full_name", "label": "Full Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "date_of_birth", "label": "Date of Birth", "fieldtype": "Date", "width": 100},
             {"fieldname": "date_of_joining", "label": "Date of Joining", "fieldtype": "Date", "width": 100},
+            {"fieldname": "gender", "label": "Gender", "fieldtype": "Data", "width": 100},
             {"fieldname": "department", "label": "Department", "fieldtype": "Data", "width": 120},
             {"fieldname": "designation", "label": "Designation", "fieldtype": "Data", "width": 150},
-            {"fieldname": "gender", "label": "Gender", "fieldtype": "Data", "width": 100},
-            {"fieldname": "date_of_birth", "label": "Date of Birth", "fieldtype": "Date", "width": 100},
             {"fieldname": "company", "label": "Unit", "fieldtype": "Data", "width": 150}
         ]
     elif report_type == "Left Employees":
         return [
-            {"fieldname": "employee_name", "label": "Employee Name", "fieldtype": "Data", "width": 150},
             {"fieldname": "employee", "label": "Employee", "fieldtype": "Data", "width": 150},
+            {"fieldname": "first_name", "label": "First Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "last_name", "label": "Last Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "middle_name", "label": "Middle Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "full_name", "label": "Full Name", "fieldtype": "Data", "width": 150},
+            {"fieldname": "gender", "label": "Gender", "fieldtype": "Data", "width": 100},
+            {"fieldname": "date_of_birth", "label": "Date of Birth", "fieldtype": "Date", "width": 100},
             {"fieldname": "relieving_date", "label": "Relieving Date", "fieldtype": "Date", "width": 100},
             {"fieldname": "department", "label": "Department", "fieldtype": "Data", "width": 120},
             {"fieldname": "designation", "label": "Designation", "fieldtype": "Data", "width": 150},
-            {"fieldname": "gender", "label": "Gender", "fieldtype": "Data", "width": 100},
-            {"fieldname": "date_of_birth", "label": "Date of Birth", "fieldtype": "Date", "width": 100},
             {"fieldname": "company", "label": "Company", "fieldtype": "Data", "width": 150}
         ]
     elif report_type == "Summary Report":
@@ -66,6 +71,7 @@ def get_columns(report_type):
         ]
 
 def get_data(filters, report_type):
+    
     department = filters.get("department")
     
     if report_type == "Head Count Working":
@@ -77,10 +83,10 @@ def get_data(filters, report_type):
     elif report_type == "Summary Report":
         return get_summary_data(filters, department)
 
-
 def get_head_count_data(filters, department):
+    
     end_date = getdate(filters.get("end_date"))
-
+    
     conditions = ["status = 'Active'"]
     if department:
         conditions.append("department = %(department)s")
@@ -88,18 +94,32 @@ def get_head_count_data(filters, department):
         conditions.append("company = %(company)s")
     
     where_clause = " AND ".join(conditions)
-    
     # Query to get count of all employees including interns
     employee_data = frappe.db.sql(f"""
-        SELECT department, employment_type, COUNT(name) as staff_count
+        SELECT department,COUNT(name) as staff_count
         FROM `tabEmployee`
         WHERE {where_clause} AND date_of_joining <= %(end_date)s
-        GROUP BY department, employment_type
-    """, {
-        "end_date": end_date,
-        "department": department,
-        "company": filters.get("company")
-    }, as_dict=True)
+        AND name NOT LIKE %(name_pattern)s
+        GROUP BY department
+        """, {
+            "end_date": end_date,
+            "company": filters.get("company"),
+            "name_pattern": "%-T%"
+            }, as_dict=True
+    )
+    
+    interns_data = frappe.db.sql(f"""
+        SELECT department,COUNT(name) as staff_count
+        FROM `tabEmployee`
+        WHERE {where_clause} AND date_of_joining <= %(end_date)s
+        AND name LIKE %(name_pattern)s
+        GROUP BY department
+        """, {
+            "end_date": end_date,
+            "company": filters.get("company"),
+            "name_pattern": "%-T%"
+            }, as_dict=True
+    )
     
     # Initialize variables for total count and intern count
     total_count = 0
@@ -108,26 +128,30 @@ def get_head_count_data(filters, department):
     # Process data to separate interns and calculate total count
     result = []
     for row in employee_data:
-        if row['employment_type'] == 'Intern':
-            intern_count += row['staff_count']
-        else:
-            total_count += row['staff_count']
-            if not row.get('department'):
-                row['department'] = "Not Defined"
-            result.append({"department": row["department"], "staff_count": row["staff_count"]})
-    
+        total_count += row['staff_count']
+        if not row.get('department'):
+            row['department'] = "Not Defined"
+        result.append({"department": row["department"], "staff_count": row["staff_count"]})
+         
+    for row in interns_data:
+        intern_count += row['staff_count']
+        if not row.get('department'):
+            row['department'] = "Not Defined"
+        result.append({"department": row["department"], "staff_count": row["staff_count"]})
+        
     # Add total count excluding interns to the result
     result.append({"department": "Total (Excluding Interns)", "staff_count": total_count})
     result.append({"department": "Interns", "staff_count": intern_count})
     total_employee = total_count + intern_count
-    result.append({"department": "total_employee", "Total_employess": total_employee})
+    result.append({"department": "Total Employees", "staff_count": total_employee})
 
     return result
 
-
 def get_new_joinees_data(filters, department):
+    
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
+    
     conditions = {"status": "Active", "date_of_joining": ["between", [start_date, end_date]]}
     if department:
         conditions["department"] = department
@@ -135,19 +159,23 @@ def get_new_joinees_data(filters, department):
         conditions["company"] = filters["company"]
     
     employees = frappe.get_all("Employee", filters=conditions, fields=[
-        "employee_name", "employee", "date_of_joining", "department", 
-        "gender", "date_of_birth", "company", "designation"
+        "employee","first_name","last_name","middle_name","employee_name as full_name" ,
+        "date_of_birth","date_of_joining","gender","department","designation",
+        "company"
     ])
     
     total_count = len(employees)
-    employees.append({"employee_name": "Total", "employee": "", "date_of_joining": "", "department": "", 
-                      "gender": "", "date_of_birth": "", "company": "", "designation": "", 
-                      "total_count": total_count})
+    employees.append({"employee": "Total","first_name":"","last_name":"","middle_name":"","full_name": "",
+                      "date_of_birth": "", "date_of_joining": "","gender": "","department": "", "designation": "", "company": total_count
+                      })
 
     return employees
+
 def get_left_employees_data(filters, department):
+    
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
+    
     conditions = {"status": "Left", "relieving_date": ["between", [start_date, end_date]]}
     if department:
         conditions["department"] = department
@@ -155,14 +183,15 @@ def get_left_employees_data(filters, department):
         conditions["company"] = filters["company"]
     
     employees = frappe.get_all("Employee", filters=conditions, fields=[
-        "employee_name", "employee", "relieving_date", "department",
-        "gender", "date_of_birth", "company", "designation"
+        "employee","first_name","last_name","middle_name","employee_name as full_name", 
+        "gender","date_of_birth","relieving_date", "department","designation","company"
     ])
     
     total_count = len(employees)
-    employees.append({"employee_name": "Total", "employee": "", "relieving_date": "", "department": "", 
-                      "gender": "", "date_of_birth": "", "company": "", "designation": "", 
-                      "total_count": total_count})
+    employees.append({"employee": "Total","first_name":"","last_name":"","middle_name":"","full_name": "", 
+                      "gender": "", "date_of_birth": "","relieving_date": "", "department": "","designation": "",
+                      "company": total_count
+                    })
 
     return employees
 
@@ -199,14 +228,14 @@ def get_summary_data(filters, department):
     return data
 
 def get_opening_balance(date, department, company):
-    conditions = {"status": "Active", "date_of_joining": ["<=", date]}
+    conditions = {"status": "Active", "date_of_joining": ["<", date]}
     if department:
         conditions["department"] = department
     if company:
         conditions["company"] = company
     active_count = frappe.db.count("Employee", conditions)
     
-    conditions_left = {"status": "Left", "relieving_date": ["<=", date]}
+    conditions_left = {"status": "Left", "relieving_date": ["<", date]}
     if department:
         conditions_left["department"] = department
     if company:

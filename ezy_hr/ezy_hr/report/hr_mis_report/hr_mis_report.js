@@ -40,7 +40,7 @@ frappe.query_reports["HR MIS Report"] = {
 		let filters = report.get_values();
 		if (!filters) return;
 		frappe.call({
-			method: "ezy_hr.downloading.download_all_hr_mis_reports",
+			method: "ezy_hr.ezy_hr.report.hr_mis_report.downloading.download_all_hr_mis_reports",
 			args: {
 				"company": filters.company,
 				"start_date": filters.start_date,
