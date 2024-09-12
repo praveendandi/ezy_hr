@@ -4,7 +4,7 @@
 import frappe
 from frappe import _
 from frappe.utils import getdate
-from datetime import datetime
+from datetime import datetime,date
 
 def execute(filters=None):
 	data = get_data(filters)
@@ -167,7 +167,7 @@ def get_data(filters):
 
 	salary_slips = frappe.db.sql(
 		f"""SELECT sal.name FROM `tabSalary Slip` sal
-		WHERE docstatus = 1 AND {conditions}""",
+		WHERE {conditions}""",
 		as_dict=1,
 	)
 
@@ -187,7 +187,6 @@ def get_data(filters):
 		WHERE sal.name = ded.parent
 		AND ded.parentfield = 'deductions'
 		AND ded.parenttype = 'Salary Slip'
-		AND sal.docstatus = 1
 		AND {conditions}
 		AND ded.salary_component IN ({", ".join(["%s"] * len(component_type_dict))})""",
 		tuple(component_type_dict.keys()),
@@ -206,7 +205,6 @@ def get_data(filters):
 				WHERE sal.name = ear.parent
 				AND ear.parentfield = 'earnings'
 				AND ear.parenttype = 'Salary Slip'
-				AND sal.docstatus = 1
 				AND ear.parent=%s""", (d.name,),
 				as_dict=1,
 			)
@@ -254,15 +252,15 @@ def get_data(filters):
 			
 			# eps_wages = epf_wages
 			# edli_wages = epf_wages
-			def calculate_birth_year(age):
-				current_year = datetime.now().year
-				birth_year = current_year - age
-				return birth_year
+			def calculate_birth_year(birthDate):
+				today = date.today()
+				age = today.year - birthDate.year - ((today.month, today.day) < (birthDate.month, birthDate.day))
+				return age
 
 			epf_contri_remitted = round((epf_wages * 12.0) / 100)
 			eps_contri_remitted = None
    
-			if calculate_birth_year(employee["date_of_birth"].year) >= 58:
+			if calculate_birth_year(employee["date_of_birth"]) >= 58:
 				eps_contri_remitted = 0
 			else:
 				eps_contri_remitted = round((eps_wages * 8.33) / 100)
