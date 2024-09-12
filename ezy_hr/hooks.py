@@ -33,7 +33,8 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
               "Employee":"ezy_hr/custom_script/employee/employee.js",
               "Employee Promotion":"public/js/employee_promotion.js",
               "Compensatory Leave Request":"public/js/compensatory_leave.js",
-              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js"
+              "Appointment Letter":"ezy_hr/custom_script/appointment_letter/appointment_letter.js",
+              "Job Offer":"ezy_hr/custom_script/job_offer/job_offer.js"
               }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -242,6 +243,11 @@ fixtures = [
                     "Employee-custom_responsible_unit",
                     "Leave Type-custom_flexi_off_detail",
                     "Leave Type-custom_flexi_saturday_off",
+                    "Leave Type-custom_allocated_count",
+                    "Job Offer-custom_first_name",
+                    "Job Offer-custom_last_name",
+                    "Job Offer-custom_date_of_joining",
+                    "Job Offer-custom_applicant_type",
                 },
                 
             ]]
@@ -395,14 +401,17 @@ scheduler_events = {
     "cron": {
         "0 0 * * *": [
             "ezy_hr.employee_checkins.get_employee_checkins",
-            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
+            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving",
+            "ezy_hr.ezy_hr.doctype.employee_leave_balance.employee_leave_balance.update_all_leave_balances"
         ],
         "0 10 * * *": [
-            "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification"
+            "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification",
+            
         ]
     },
     "daily": [
 		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff"
+        
 	],
 
     "hourly": [
