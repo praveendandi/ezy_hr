@@ -37,16 +37,28 @@ def create_esi_application(row_date, name, employee, company, start_date, end_da
         return True
     return False
 
-def update_esi(name, employee,end_convert_date):
-    latest_doc = frappe.get_all("Salary Structure Assignment", filters={"employee": employee, "docstatus": 1,"from_date": ("<=",end_convert_date)}, fields=["from_date", "name", "salary_structure", "base"], order_by="from_date desc", limit=1)
-    esi_data = frappe.get_list("ESI Applicable List", filters={'id': name, "employee": employee}, fields=["esi", "esie"])
+def update_esi(row_date,name, employee,end_convert_date):
+    esi_values = {"custom_esi":0,"custom_esie":0}
+    ssa_id = None
+    esi_detail = frappe.get_list("ESI Applicable List", filters={'id': name, "employee": employee}, fields=["name"])
     
-    if esi_data:
-        esi_values = {"custom_esi": esi_data[0].get("esi"), "custom_esie": esi_data[0].get("esie")}
+    if esi_detail:
+        if row_date.get('base') > 21000:
+            existing_entries = frappe.get_all("Salary Structure Assignment", filters={"employee": employee, "docstatus": 1,"from_date": ("<=",end_convert_date)}, fields=["from_date", "name", "salary_structure", "base"], order_by="from_date desc", limit=1)
+            esi = 21000 * 0.0075
+            esie = 21000 * 0.0325
+            esi_values = {"custom_esi": esi, "custom_esie": esie}
+            ssa_id = existing_entries[0].get("name")  
+        else:
+            existing_entries = frappe.get_all("Salary Structure Assignment", filters={"employee": employee, "docstatus": 1,"from_date": ("<=",end_convert_date)}, fields=["from_date", "name", "salary_structure", "base"], order_by="from_date desc", limit=1)
+            esi = existing_entries[0].get("base") * 0.0075
+            esie = existing_entries[0].get("base") * 0.0325
+            esi_values = {"custom_esi": esi, "custom_esie": esie}
+            ssa_id = existing_entries[0].get("name")
     else:
-        esi_values = {"custom_esi": 0, "custom_esie": 0}
-        
-    frappe.db.set_value("Salary Structure Assignment", {"name": latest_doc[0].get("name"), "employee": employee}, esi_values)
+        ssa_id = row_date.get("name")
+            
+    frappe.db.set_value("Salary Structure Assignment", {"name": ssa_id, "employee": employee}, esi_values)
     frappe.db.commit()
 
 def process_esic_for_employee(doc, employee):
@@ -78,13 +90,16 @@ def process_esic_for_employee(doc, employee):
         name = f"{employee.employee}-({range_month[0]} {current_year})-({range_month[1]} {end_date.year if not salary_cycle['is_first_cycle'] else current_year})"
                 
         esi_detail = frappe.get_list("ESI Applicable List", filters={'id': name, "employee": employee.employee}, fields=["name"])
-
+        row_date = existing_entries[0]
+        
         if not esi_detail:
-            row_date = existing_entries[0]
             is_created = create_esi_application(row_date, name, employee.employee, company, start_date=range_month[0], end_date=range_month[1], start_year=current_year, end_year=end_date.year if not salary_cycle['is_first_cycle'] else current_year)
-            update_esi(name, employee.employee,end_convert_date)
+            if is_created:
+                update_esi(row_date,name, employee.employee,end_convert_date)
+            else:
+                update_esi(row_date,name, employee.employee,end_convert_date)
         else:
-            update_esi(name, employee.employee,end_convert_date)
+            update_esi(row_date,name, employee.employee,end_convert_date)
 
 @frappe.whitelist()
 def esi_conditions(doc, method=None):
