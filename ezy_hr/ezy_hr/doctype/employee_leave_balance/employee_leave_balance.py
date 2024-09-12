@@ -10,6 +10,9 @@ class EmployeeLeaveBalance(Document):
     def after_insert(self):
         self.update_current_leave_balance()
 
+    def on_update(self):
+        self.update_current_leave_balance()
+
     def update_current_leave_balance(self):
         leave_balance_on = self.leave_balance_on
         leave_balance_updated = self.leave_balance_updated
@@ -20,7 +23,6 @@ class EmployeeLeaveBalance(Document):
             frappe.throw("Both 'Leave Balance Given On' and 'Leave Balance Upto Today' fields must be set.")
             return
 
-        # Check if leave_balance_on and leave_balance_updated are strings or date objects
         if isinstance(leave_balance_on, str):
             start_date = datetime.strptime(leave_balance_on, '%Y-%m-%d')
         else:
@@ -46,10 +48,8 @@ class EmployeeLeaveBalance(Document):
         
         leave_count = (delta_days // frequency_days) * allocated_count
 
-        self.leave_balance_updated = datetime.today().strftime('%Y-%m-%d')
-        self.current_leave_balance = self.leave_balance + leave_count
-
-        self.save()
+        self.db_set('leave_balance_updated', datetime.today().strftime('%Y-%m-%d'))
+        self.db_set('current_leave_balance', self.leave_balance + leave_count)
 
 def update_all_leave_balances():
     leave_balances = frappe.get_all("Employee Leave Balance", fields=["name"])

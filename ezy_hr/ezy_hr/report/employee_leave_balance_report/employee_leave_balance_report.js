@@ -1,14 +1,17 @@
 // Copyright (c) 2024, Ganu Reddy and contributors
 // For license information, please see license.txt
 
+
+
 frappe.query_reports["Employee Leave Balance Report"] = {
     "filters": [
         {
             "fieldname": "unit",
             "label": __("Unit"),
             "fieldtype": "Link",
-            "options": "Company",
-            "default": frappe.defaults.get_default("company")
+            "options": "Company",  
+            "default": frappe.defaults.get_default("company"), 
+            "reqd": 1  
         },
         {
             "fieldname": "employee",
@@ -26,3 +29,4 @@ frappe.query_reports["Employee Leave Balance Report"] = {
         }
     ]
 };
+

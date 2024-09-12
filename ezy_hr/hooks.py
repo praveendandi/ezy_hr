@@ -401,7 +401,8 @@ scheduler_events = {
     "cron": {
         "0 0 * * *": [
             "ezy_hr.employee_checkins.get_employee_checkins",
-            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving"
+            "ezy_hr.employee_seperation_details.fetch_employees_with_upcoming_relieving",
+            "ezy_hr.ezy_hr.doctype.employee_leave_balance.employee_leave_balance.update_all_leave_balances"
         ],
         "0 10 * * *": [
             "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification",
@@ -409,8 +410,8 @@ scheduler_events = {
         ]
     },
     "daily": [
-		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff",
-        "ezy_hr.ezy_hr.doctype.employee_leave_balance.employee_leave_balance.update_all_leave_balances"
+		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff"
+        
 	],
 
     "hourly": [
