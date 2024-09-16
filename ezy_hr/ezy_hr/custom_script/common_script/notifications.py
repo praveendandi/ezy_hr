@@ -1,9 +1,11 @@
-
 import frappe
 from frappe.utils import today, add_days, getdate, time_diff_in_hours
 from frappe.utils.background_jobs import enqueue
 from collections import defaultdict
 
+def get_email_footer():
+    default_email_account = frappe.get_doc("Email Account", {"default_outgoing": 1})
+    return default_email_account.footer
 
 def send_checkins_notification():
     yesterday = add_days(today(), -1)
@@ -14,7 +16,6 @@ def send_checkins_notification():
     attendance_issues = defaultdict(list)
  
     for employee in employees:
-        # Skip if it's a holiday or a weekly off
         if is_holiday_or_weekly_off(employee, yesterday):
             continue
         
@@ -22,7 +23,7 @@ def send_checkins_notification():
                                     filters={
                                         "employee": employee.name,
                                         "attendance_date": yesterday,
-                                        "docstatus": ["in", [0, 1]]  # Include draft (0) and submitted (1)
+                                        "docstatus": ["in", [0, 1]]  
                                     },
                                     fields=["name", "docstatus", "in_time", "out_time"])
     
@@ -36,15 +37,16 @@ def send_checkins_notification():
                 })
         else:
             att = attendance[0]
-            if att.docstatus == 0:  # Draft
+            if att.docstatus == 0:
                 work_hours = calculate_work_hours(att.in_time, att.out_time)
-                if work_hours < 6:  # Assuming 8 hours is full day
-                    attendance_issues[employee.reports_to].append({
-                        "employee_id": employee.name,
-                        "employee_name": employee.employee_name,
-                        "status": "MO",
-                        "work_hours": work_hours
-                    })
+                if work_hours < 6:
+                    if employee.reports_to:
+                        attendance_issues[employee.reports_to].append({
+                            "employee_id": employee.name,
+                            "employee_name": employee.employee_name,
+                            "status": "MO",
+                            "work_hours": work_hours
+                        })
     
     for manager, employees in attendance_issues.items():
         send_consolidated_notification(manager, employees, yesterday)
@@ -52,19 +54,16 @@ def send_checkins_notification():
             send_employee_notification(employee, yesterday)
 
 def is_holiday_or_weekly_off(employee, date):
-    """Check if the given date is a holiday or weekly off for the employee."""
-    # Check if the date is a holiday
     if employee.holiday_list:
         holidays = frappe.get_all("Holiday", 
                                   filters={
                                       "holiday_date": date,
-                                      "parent": employee.holiday_list  # Assuming "Holiday List" is stored in the "parent" field
+                                      "parent": employee.holiday_list
                                   }, 
                                   fields=["name"])
         if holidays:
             return True
 
-    # Check if the date is the employee's weekly off
     if employee.weekly_off and getdate(date).strftime("%A") == employee.weekly_off:
         return True
 
@@ -85,7 +84,6 @@ def send_consolidated_notification(manager, employees, date):
     
     subject = f"Missing Attendance Report for {date}"
     
-    # HTML message
     message = f"""
     <html>
     <head>
@@ -135,25 +133,20 @@ def send_consolidated_notification(manager, employees, date):
                 <td class='tddata'>{employee['work_hours']:.2f}</td>
             </tr>"""
     
-    message += """
+    message += f"""
         </table>
         <p>Please ensure that these attendance records are reviewed and updated as necessary.</p>
         <p>Thank you for your attention to this matter.</p>
-        <p>Sincerely,</p>
-
-        <i>Paul Resorts & Hotels Pvt. Ltd.</i></p>
     </body>
     </html>"""
     
-    # Send email notification
     frappe.sendmail(
         recipients=[manager_email],
         subject=subject,
         message=message,
-        as_markdown=False
+        as_markdown=False  
     )
     
-    # Create a notification in Frappe
     frappe.get_doc({
         "doctype": "Notification Log",
         "subject": subject,
@@ -183,22 +176,16 @@ def send_employee_notification(employee, date):
             <li>Work Hours: {employee['work_hours']:.2f}</li>
         </ul>
         <p>Please ensure that your attendance record is accurate. If there are any discrepancies, please update your attendance or contact your manager.</p>
-        <p>Thank you.</p>
-        <p>Sincerely,</p>
-
-        <i>Paul Resorts & Hotels Pvt. Ltd.</i></p>
     </body>
     </html>"""
     
-    # Send email notification to the employee
     frappe.sendmail(
         recipients=[employee_email],
         subject=subject,
         message=message,
-        as_markdown=False
+        as_markdown=False  
     )
     
-    # Create a notification in Frappe for the employee
     frappe.get_doc({
         "doctype": "Notification Log",
         "subject": subject,
