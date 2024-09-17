@@ -11,8 +11,8 @@ def execute(filters=None):
     columns = [
         {"label": "Employee", "fieldname": "employee", "fieldtype": "Data", "options": "Employee", "width": 150},
         {"label": "Employee Name", "fieldname": "employee_name", "fieldtype": "Data", "width": 150},
-        {"label": "Leave Balance Given On", "fieldname": "leave_balance_on", "fieldtype": "Date", "width": 200},
-        {"label": "Leave Balance Updated On", "fieldname": "leave_balance_updated", "fieldtype": "Date", "width": 210},
+        # {"label": "Leave Balance Given On", "fieldname": "leave_balance_on", "fieldtype": "Date", "width": 200},
+        # {"label": "Leave Balance Updated On", "fieldname": "leave_balance_updated", "fieldtype": "Date", "width": 210},
     ]
 
     leave_type_abbr = {
@@ -62,8 +62,8 @@ def execute(filters=None):
         abbr = leave_type_abbr.get(leave_type, leave_type[:2])
         columns.extend([
             {"label": f"{abbr} Opening Balance", "fieldname": f"{abbr.lower()}_leave_balance", "fieldtype": "Float", "width": 180},
-            {"label": f"{abbr} Allocated Frequency", "fieldname": f"{abbr.lower()}_allocate_frequency", "fieldtype": "Data", "width": 200},
-            {"label": f"{abbr} Allocated Count", "fieldname": f"{abbr.lower()}_allocated_count", "fieldtype": "Float", "width": 180},
+            # {"label": f"{abbr} Allocated Frequency", "fieldname": f"{abbr.lower()}_allocate_frequency", "fieldtype": "Data", "width": 200},
+            # {"label": f"{abbr} Allocated Count", "fieldname": f"{abbr.lower()}_allocated_count", "fieldtype": "Float", "width": 180},
             {"label": f"{abbr} Updated Balance", "fieldname": f"{abbr.lower()}_current_leave_balance", "fieldtype": "Float", "width": 180},
             {"label": f"{abbr} Used Leaves", "fieldname": f"{abbr.lower()}_used_leaves", "fieldtype": "Float", "width": 180},
             {"label": f"{abbr} Current Balance", "fieldname": f"{abbr.lower()}_adjusted_balance", "fieldtype": "Float", "width": 180}
