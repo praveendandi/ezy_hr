@@ -30,3 +30,4 @@ frappe.query_reports["Employee Leave Balance Report"] = {
     ]
 };
 
+
