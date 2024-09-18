@@ -248,6 +248,8 @@ fixtures = [
                     "Job Offer-custom_last_name",
                     "Job Offer-custom_date_of_joining",
                     "Job Offer-custom_applicant_type",
+                    "Job Offer-custom__follow_via_email",
+                    "Job Applicant-custom_follow_via_email",
                 },
                 
             ]]
