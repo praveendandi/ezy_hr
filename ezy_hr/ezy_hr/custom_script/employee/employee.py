@@ -214,11 +214,9 @@ def create_salary_structure_through_employee(doc, method=None):
 
    elif doc.status == "Left":
        try:
-           user_permissions = frappe.get_all("User Permission", filters={'user': doc.user_id}, fields=['name'],ignore_permissions=True)
-           for perm in user_permissions:
-               frappe.delete_doc("User Permission", perm['name'],ignore_permissions=True)
-           doc.save()
-           frappe.db.commit()
+           if doc.user_id:
+               frappe.db.set_value("User",{"name":doc.user_id},{"enabled":0})
+               frappe.db.commit()
        except Exception as e:
            frappe.log_error(frappe.get_traceback(), 'handle_employee_status_update')
            frappe.db.rollback()

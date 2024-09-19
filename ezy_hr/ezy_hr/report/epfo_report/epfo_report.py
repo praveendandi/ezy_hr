@@ -218,6 +218,7 @@ def get_data(filters):
 			da = 0
 			hra = 0
 			inc = 0
+			nfh = 0
 
 			for i in earning_data:
 				if i.abbr == "B":
@@ -228,27 +229,30 @@ def get_data(filters):
 					hra = i.amount
 				if i.abbr == "INC":
 					inc = i.amount
+				if i.abbr == "NFH":
+					nfh = i.amount
+
 
 			gross_pay = employee["gross_pay"]
 
-			without_inc_gross = gross_pay - inc
+			without_inc_or_nfh_gross = gross_pay - (inc+nfh)
 
 			if is_applicable:
 				epf_wages = round(basic+da)
-			elif without_inc_gross - hra > 15000:
+			elif without_inc_or_nfh_gross - hra > 15000:
 				epf_wages = 15000
 			else:
-				epf_wages = round(without_inc_gross - hra)
+				epf_wages = round(without_inc_or_nfh_gross - hra)
 			
-			if without_inc_gross - hra > 15000:
+			if without_inc_or_nfh_gross - hra > 15000:
 				eps_wages = 15000 
 			else:
-				eps_wages = round(without_inc_gross - hra)
+				eps_wages = round(without_inc_or_nfh_gross - hra)
 		
-			if without_inc_gross - hra > 15000:
+			if without_inc_or_nfh_gross - hra > 15000:
 				edli_wages = 15000
 			else:
-				edli_wages = round(without_inc_gross - hra)
+				edli_wages = round(without_inc_or_nfh_gross - hra)
 			
 			# eps_wages = epf_wages
 			# edli_wages = epf_wages
@@ -279,7 +283,7 @@ def get_data(filters):
 			employee["admin"] = admin
 			employee["edli_admin"] = edli_admin
 			employee["total_contribution"] = total_contribution
-			employee['gross_pay'] = without_inc_gross
+			employee['gross_pay'] = without_inc_or_nfh_gross
 
 			data.append(employee)
 
