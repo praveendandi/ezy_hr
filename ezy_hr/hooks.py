@@ -50,6 +50,8 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
 
 
 fixtures = [
+    "Role",
+    "Role Profile",
     {
         "dt":
             "Custom Field",
@@ -211,7 +213,6 @@ fixtures = [
                     "Leave Type-custom_flexi_saturday_off",
                     "Leave Type-custom_allocated_count",
                 },
-                
             ]]
     }
 ]

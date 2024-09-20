@@ -1,0 +1,54 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"xCebEsgwC6\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Leave Workspace</span>\",\"col\":12}},{\"id\":\"_bNXLKvomH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leave Application\",\"col\":3}}]",
+ "creation": "2024-09-19 14:56:28.260676",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "criticize",
+ "idx": 1,
+ "indicator_color": "gray",
+ "is_hidden": 0,
+ "label": "Leave Workspace",
+ "links": [],
+ "modified": "2024-09-20 12:53:25.667400",
+ "modified_by": "Administrator",
+ "module": "Ezy HR",
+ "name": "Leave Workspace",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Ezy Leave Creation"
+  },
+  {
+   "role": "HR Manager"
+  }
+ ],
+ "sequence_id": 39.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Leave Application",
+   "link_to": "Leave Application",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Attendance Request",
+   "link_to": "Attendance Request",
+   "type": "DocType"
+  }
+ ],
+ "title": "Leave Workspace"
+}

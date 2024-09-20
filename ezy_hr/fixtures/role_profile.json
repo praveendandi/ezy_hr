@@ -1,0 +1,1089 @@
+[
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.806299",
+  "name": "Inventory",
+  "role_profile": "Inventory",
+  "roles": [
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.814259",
+  "name": "Manufacturing",
+  "role_profile": "Manufacturing",
+  "roles": [
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing User"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing Manager"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.828931",
+  "name": "Accounts",
+  "role_profile": "Accounts",
+  "roles": [
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.837080",
+  "name": "Sales",
+  "role_profile": "Sales",
+  "roles": [
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:09:24.859780",
+  "name": "Purchase",
+  "role_profile": "Purchase",
+  "roles": [
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Manager"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-11 18:10:11.036113",
+  "name": "HR",
+  "role_profile": "HR",
+  "roles": [
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR User"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR Manager"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-08 13:11:17.961991",
+  "name": "Ezy_admin",
+  "role_profile": "Ezy admin",
+  "roles": [
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Academics User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Agriculture Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Agriculture User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Analytics"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Auditor"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Blogger"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Customer"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Dashboard Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Delivery Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Delivery User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "EzyHrms"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Fleet Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Fulfillment User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Functional Head"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "GGM (Group General Manager)"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "GM-HR (General Manager- Human Resources)"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Inbox User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Interviewer"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Knowledge Base Contributor"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Knowledge Base Editor"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Newsletter Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Prepared Report User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Projects Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Projects User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Master Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Quality Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Report Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Master Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "sample"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Script Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Supplier"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Support Team"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Translator"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Unit Head"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Unit HR"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Website Manager"
+   },
+   {
+    "parent": "Ezy_admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Workspace Manager"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-08 13:13:05.677817",
+  "name": "Ezy_GM_HR",
+  "role_profile": "Ezy GM HR",
+  "roles": [
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Academics User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Agriculture Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Agriculture User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Analytics"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Auditor"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Blogger"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Customer"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Dashboard Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Delivery Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Delivery User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "EzyHrms"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Fleet Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Fulfillment User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Functional Head"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "GGM (Group General Manager)"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "GM-HR (General Manager- Human Resources)"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Inbox User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Interviewer"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Knowledge Base Contributor"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Knowledge Base Editor"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Newsletter Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Prepared Report User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Projects Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Projects User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Master Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Quality Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Report Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Master Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "sample"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Script Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Supplier"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Support Team"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Translator"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Unit Head"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Unit HR"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Website Manager"
+   },
+   {
+    "parent": "Ezy_GM_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Workspace Manager"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-08 12:41:07.897410",
+  "name": "Ezy_It_admin",
+  "role_profile": "Ezy It admin",
+  "roles": []
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-08 13:00:06.167648",
+  "name": "Ezy_HR_Manager",
+  "role_profile": "Ezy HR Manager",
+  "roles": [
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR User"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR Manager"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Report Manager"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Unit HR"
+   },
+   {
+    "parent": "Ezy_HR_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Functional Head"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-07-08 12:53:17.253007",
+  "name": "Ezy_Unit_HR",
+  "role_profile": "Ezy Unit HR",
+  "roles": [
+   {
+    "parent": "Ezy_Unit_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Unit HR"
+   },
+   {
+    "parent": "Ezy_Unit_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR User"
+   },
+   {
+    "parent": "Ezy_Unit_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Ezy_Unit_HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 0,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-09-20 12:44:26.664824",
+  "name": "Ezy Leave",
+  "role_profile": "Ezy Leave Approval",
+  "roles": [
+   {
+    "parent": "Ezy Leave",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Ezy Leave Creation"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 1,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-08-19 17:16:50.142875",
+  "name": "Ezy_Manager",
+  "role_profile": "Ezy Manager",
+  "roles": [
+   {
+    "parent": "Ezy_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Ezy_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Ezy_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   },
+   {
+    "parent": "Ezy_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Report Manager"
+   },
+   {
+    "parent": "Ezy_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "Ezy_Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Report Manager Workspace"
+   }
+  ]
+ },
+ {
+  "custom_create_user_permission": 1,
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-08-19 12:35:11.767360",
+  "name": "Ezy_Employee",
+  "role_profile": "Ezy Employee",
+  "roles": [
+   {
+    "parent": "Ezy_Employee",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Ezy_Employee",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Ezy_Employee",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Workspace"
+   }
+  ]
+ }
+]
