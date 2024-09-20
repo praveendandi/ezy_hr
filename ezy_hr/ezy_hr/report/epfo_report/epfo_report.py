@@ -244,12 +244,16 @@ def get_data(filters):
 			else:
 				epf_wages = round(without_inc_or_nfh_gross - hra)
 			
-			if without_inc_or_nfh_gross - hra > 15000:
+			if is_applicable:
+				eps_wages = round(basic+da)
+			elif without_inc_or_nfh_gross - hra > 15000:
 				eps_wages = 15000 
 			else:
 				eps_wages = round(without_inc_or_nfh_gross - hra)
-		
-			if without_inc_or_nfh_gross - hra > 15000:
+    
+			if is_applicable:
+				edli_wages = round(basic+da)
+			elif without_inc_or_nfh_gross - hra > 15000:
 				edli_wages = 15000
 			else:
 				edli_wages = round(without_inc_or_nfh_gross - hra)
