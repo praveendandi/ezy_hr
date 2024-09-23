@@ -52,6 +52,7 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
 fixtures = [
     "Role",
     "Role Profile",
+    "Custom DocPerm",
     {
         "dt":
             "Custom Field",
@@ -243,7 +244,7 @@ fixtures = [
 # Installation
 # ------------
 
-# before_install = "ezy_hr.ezy_hr.custom_role_permission.role_permission.update_permissions"
+# before_install = "ezy_hr.install.after_install"
 # after_install = "ezy_hr.install.after_install"
 after_install = "ezy_hr.setup.setup_fixtures"
 
@@ -387,7 +388,6 @@ scheduler_events = {
     ]
 }
 
-after_migrate = ["ezy_hr.ezy_hr.custom_role_permission.role_permission.update_permissions"]
 # Testing
 # -------
 
