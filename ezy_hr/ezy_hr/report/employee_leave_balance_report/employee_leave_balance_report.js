@@ -4,9 +4,9 @@
 
 
 frappe.query_reports["Employee Leave Balance Report"] = {
-   "filters": [
+    "filters": [
         {
-            fieldname: "unit",
+            fieldname: "company",
             label: __("Unit"),
             fieldtype: "Link",
             options: "Company",  

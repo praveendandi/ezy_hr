@@ -36,7 +36,7 @@ def get_columns(filters):
         {"label": "Date of Joining", "fieldname": "date_of_joining", "fieldtype": "Date", "width": 120},
         {"label": "Leave Type", "fieldname": "leave_type", "fieldtype": "Data", "width": 120},
         {"label": f"Leave Opening Balance as on {from_date_label}", "fieldname": "leave_opening_balance", "fieldtype": "Float", "width": 320},
-        {"label": f"Leave Earned from {from_date_label} to {to_date_label}", "fieldname": "leave_earned", "fieldtype": "Float", "width": 280},
+        {"label": f"Total Leaves Earned from {from_date_label} to {to_date_label}", "fieldname": "leave_earned", "fieldtype": "Float", "width": 280},
         {"label": f"Leave Availed from {from_date_label} to {to_date_label}", "fieldname": "leave_availed", "fieldtype": "Float", "width": 280},
         {"label": f"Closing Balance as on {to_date_label}", "fieldname": "closing_balance", "fieldtype": "Float", "width": 280},
         {"label": f"Total Present Days B/W {from_date_label} to {to_date_label}", "fieldname": "present_days", "fieldtype": "Int", "width": 300},
@@ -58,7 +58,7 @@ def get_data(filters):
         filter_conditions["leave_type"] = leave_type
         
     if filters.get("company"):
-        filter_conditions["company"] = filters.get("company")
+        filter_conditions["unit"] = filters.get("company")
 
     results = frappe.get_all(
         "Employee Leave Balance",
