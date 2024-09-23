@@ -6,28 +6,38 @@
 frappe.query_reports["Employee Leave Balance Report"] = {
     "filters": [
         {
-            "fieldname": "unit",
-            "label": __("Unit"),
-            "fieldtype": "Link",
-            "options": "Company",  
-            "default": frappe.defaults.get_default("company"), 
+            fieldname: "company",
+            label: __("Unit"),
+            fieldtype: "Link",
+            options: "Company",  
+            default: frappe.defaults.get_default("company"), 
             "reqd": 1  
         },
         {
-            "fieldname": "employee",
-            "label": __("Employee"),
-            "fieldtype": "Link",
-            "options": "Employee",
-            "default": ""
+            fieldname: "from_date",
+            label: __("From Date"),
+            fieldtype: "Date",
+            default: frappe.datetime.month_start(),
         },
         {
-            "fieldname": "leave_type",
-            "label": __("Leave Type"),
-            "fieldtype": "Link",
-            "options": "Leave Type",
-            "default": ""
+            fieldname: "to_date",
+            label: __("To Date"),
+            fieldtype: "Date",
+            default: frappe.datetime.month_end(),
+        },
+        {
+            fieldname: "employee",
+            label: __("Employee"),
+            fieldtype: "Link",
+            options: "Employee",
+            default: ""
+        },
+        {
+            fieldname: "leave_type",
+            label: __("Leave Type"),
+            fieldtype: "Link",
+            options: "Leave Type",
+            default: ""
         }
     ]
 };
-
-
