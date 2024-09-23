@@ -243,9 +243,10 @@ fixtures = [
 # Installation
 # ------------
 
-# before_install = "ezy_hr.install.before_install"
+# before_install = "ezy_hr.ezy_hr.custom_role_permission.role_permission.update_permissions"
 # after_install = "ezy_hr.install.after_install"
 after_install = "ezy_hr.setup.setup_fixtures"
+
 
 
 # Uninstallation
@@ -386,7 +387,7 @@ scheduler_events = {
     ]
 }
 
-
+after_migrate = ["ezy_hr.ezy_hr.custom_role_permission.role_permission.update_permissions"]
 # Testing
 # -------
 
