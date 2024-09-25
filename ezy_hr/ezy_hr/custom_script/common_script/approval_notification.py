@@ -14,9 +14,7 @@ def approval_notifications():
     
     # first_day_of_month = date(today.year, today.month, 1)
     first_date = get_first_day(today)
-    frappe.log_error("first_date",first_date)
-    # Log the first day of the month
-    # frappe.log_error("First day of the month", str(first_day_of_month))
+    
 
     employees = frappe.get_all("Employee", 
                                filters={"status": "Active", "name": ["not in", ["PRH-01", "PRH-12", "PRH-05", "PRH-03", "PRH-04"]]}, 
