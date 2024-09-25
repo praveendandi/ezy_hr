@@ -213,11 +213,10 @@ def get_data(filters):
 			if employee.get("custom_applicable_for_actual_pf"):
 				is_applicable = True
 
-
 			basic = 0
 			da = 0
 			hra = 0
-			inc = 0
+			not_include_gross = 0
 
 			for i in earning_data:
 				if i.abbr == "B":
@@ -226,32 +225,36 @@ def get_data(filters):
 					da = i.amount
 				if i.abbr == "HRA":
 					hra = i.amount
-				if i.abbr == "INC":
-					inc = i.amount
+     
+				get_value = frappe.db.get_value("Salary Component",{"name":i.salary_component},['custom_do_not_include_in_gross_amount'])
+				if get_value:
+					not_include_gross += i.amount
 
 			gross_pay = employee["gross_pay"]
 
-			without_inc_gross = gross_pay - inc
+			without_inc_or_nfh_gross = gross_pay - not_include_gross
 
 			if is_applicable:
 				epf_wages = round(basic+da)
-			elif without_inc_gross - hra > 15000:
+			elif without_inc_or_nfh_gross - hra > 15000:
 				epf_wages = 15000
 			else:
-				epf_wages = round(without_inc_gross - hra)
+				epf_wages = round(without_inc_or_nfh_gross - hra)
 			
-			if without_inc_gross - hra > 15000:
+			if is_applicable:
+				eps_wages = round(basic+da)
+			elif without_inc_or_nfh_gross - hra > 15000:
 				eps_wages = 15000 
 			else:
-				eps_wages = round(without_inc_gross - hra)
-		
-			if without_inc_gross - hra > 15000:
+				eps_wages = round(without_inc_or_nfh_gross - hra)
+    
+			if is_applicable:
+				edli_wages = round(basic+da)
+			elif without_inc_or_nfh_gross - hra > 15000:
 				edli_wages = 15000
 			else:
-				edli_wages = round(without_inc_gross - hra)
+				edli_wages = round(without_inc_or_nfh_gross - hra)
 			
-			# eps_wages = epf_wages
-			# edli_wages = epf_wages
 			def calculate_birth_year(birthDate):
 				today = date.today()
 				age = today.year - birthDate.year - ((today.month, today.day) < (birthDate.month, birthDate.day))
@@ -279,7 +282,7 @@ def get_data(filters):
 			employee["admin"] = admin
 			employee["edli_admin"] = edli_admin
 			employee["total_contribution"] = total_contribution
-			employee['gross_pay'] = without_inc_gross
+			employee['gross_pay'] = without_inc_or_nfh_gross
 
 			data.append(employee)
 

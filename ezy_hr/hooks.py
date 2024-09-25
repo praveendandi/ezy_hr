@@ -50,6 +50,9 @@ doctype_js = {"Travel Request" : "public/js/traval_request_to_claim.js",
 
 
 fixtures = [
+    "Role",
+    "Role Profile",
+    "Custom DocPerm",
     {
         "dt":
             "Custom Field",
@@ -130,37 +133,9 @@ fixtures = [
                     "Employee Health Insurance-custom_child_first",
                     "Employee Health Insurance-custom_child_second",
                     "Employee-custom_employment_status",
-                    "Job Applicant-custom_employee_id",
-                    "Job Applicant-custom_eligibility_criteria",
-                    "Job Applicant-custom_total_overall_work_experience",
-                    "Job Applicant-custom_column_break_dxdne",
-                    "Job Applicant-custom_unit_experience_",
-                    "Job Applicant-custom_current_gross_salary",
-                    "Job Applicant-custom_reference_details",
-                    "Job Applicant-custom_reference_name",
-                    "Job Applicant-custom_mobile_no",
-                    "Job Applicant-custom_column_break_66ika",
-                    "Job Applicant-custom_email_id",
-                    "Job Applicant-custom_previous_company",
-                    "Job Applicant-custom_reference_second_details",
-                    "Job Applicant-custom_reference_second_name",
-                    "Job Applicant-custom_reference_mobile_no",
-                    "Job Applicant-custom_column_break_8bhjh",
-                    "Job Applicant-custom_reference_second_email_id",
-                    "Job Applicant-custom_reference_previous_second_company",
-                    "Job Applicant-custom_reference_check_authorisation_letter",
-                    "Job Applicant-custom_reference_check",
                     "Employee-custom_salary_breakdown",
                     "Employee-custom_earnings",
                     "Employee-custom_deductions",
-                    "Job Applicant-custom_current_unit",
-                    "Job Applicant-custom_receiving_unit",
-                    "Job Opening-custom_internal_job_posting",
-                    "Job Applicant-custom_section_break_yac9f",
-                    "Job Applicant-custom_external_job_posting",
-                    "Job Applicant-custom__internal_job_posting",
-                    "Job Applicant-custom_current_ctc",
-                    "Job Applicant-custom_aadhar_no",
                     "Employee-custom_gross_amount",
                     "Employee-custom_income_tax_slab",
                     "Employee-custom_tax_slabe_and_effective",
@@ -224,16 +199,10 @@ fixtures = [
                     "Employee Promotion-custom_previous_effective_date",
                     "Employee-custom_apply_for_nfh_wages",
                     "Salary Slip-custom_payroll_cost_center_",
-                    "Job Offer-custom_level",
-                    "Job Offer-custom_department",
                     "Salary Slip-custom_ifsc",
                     "Salary Slip-custom_esi_reason",
                     "Salary Slip-custom_reason_for_esi",
                     "Employee-custom_applicable_for_actual_pf",
-                    "Job Offer-custom_salary_breakup",
-                    "Job Offer-custom_earning",
-                    "Job Offer-custom_deducations",
-                    "Job Offer-custom_gross_amount",
                     "Employee-custom_leave_policy",
                     "Payroll Employee Detail-custom_manual_hold",
                     "Payroll Employee Detail-custom_reason_for_salary_hold",
@@ -244,12 +213,7 @@ fixtures = [
                     "Leave Type-custom_flexi_off_detail",
                     "Leave Type-custom_flexi_saturday_off",
                     "Leave Type-custom_allocated_count",
-                    "Job Offer-custom_first_name",
-                    "Job Offer-custom_last_name",
-                    "Job Offer-custom_date_of_joining",
-                    "Job Offer-custom_applicant_type",
                 },
-                
             ]]
     }
 ]
@@ -280,9 +244,10 @@ fixtures = [
 # Installation
 # ------------
 
-# before_install = "ezy_hr.install.before_install"
+# before_install = "ezy_hr.install.after_install"
 # after_install = "ezy_hr.install.after_install"
 after_install = "ezy_hr.setup.setup_fixtures"
+
 
 
 # Uninstallation
@@ -423,7 +388,6 @@ scheduler_events = {
         "ezy_hr.ezy_hr.custom_script.flexi_saturday.flexi_saturday_off.get_flexi_saturday_weekoff"
     ]
 }
-
 
 # Testing
 # -------
