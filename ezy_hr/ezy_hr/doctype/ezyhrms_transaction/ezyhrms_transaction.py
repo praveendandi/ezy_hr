@@ -144,7 +144,6 @@ def sync_transaction_month_wise(list_of_ids):
 
 
 
-
 @frappe.whitelist()
 def get_checkin_alert():
     try:
