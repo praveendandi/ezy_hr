@@ -375,7 +375,8 @@ scheduler_events = {
         ]
     },
     "daily": [
-		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff"
+		"ezy_hr.ezy_hr.custom_script.flexi_weekoff.flexi_weekoff.flexi_weekoff",
+        "ezy_hr.ezy_hr.custom_script.compensatory_leave_request.compensatory_leave_request.background_job_for_compensatory_leave"
         
 	],
 
