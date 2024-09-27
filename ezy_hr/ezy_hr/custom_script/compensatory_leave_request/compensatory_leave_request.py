@@ -17,7 +17,7 @@ def created_compensatory_leave_base_on_holidays_list():
 
 		get_holiday_date,parent,description = get_holiday_details
 		
-		for each_empl in  frappe. frappe.get_all("Employee",{"status":"Active","holiday_list":parent},["name",'holiday_list','company']):
+		for each_empl in  frappe. frappe.get_all("Employee",{"status":"Active","holiday_list":parent},["name",'company']):
 			is_present_that_day = check_attendance_details(each_empl,get_holiday_date)
 			already_comp_leave = check_already_compensatory_leave_is_or_not(each_empl,get_holiday_date)
 
