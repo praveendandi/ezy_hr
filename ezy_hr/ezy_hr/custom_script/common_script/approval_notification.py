@@ -24,11 +24,11 @@ def approval_notifications():
             "workflow_state":"Approval Pending From Reporting Manager"
         })
        
-        leave_application = frappe.get_all(doctype, filters=filter,fields=field)
+        approval_doctypes = frappe.get_all(doctype, filters=filter,fields=field)
         
         
-        if leave_application:
-            for each_record in leave_application:
+        if approval_doctypes:
+            for each_record in approval_doctypes:
                 reports_to_manager = frappe.get_doc("Employee",{"name":each_record.employee},["name","employee_name",'reports_to'])
                 if reports_to_manager.reports_to:
                         final_data_leaves[reports_to_manager.reports_to].append({
@@ -41,15 +41,11 @@ def approval_notifications():
         for manager, employees in final_data_leaves.items():
             send_consolidated_notification(manager, employees, today,doctype)
 
-    return final_data_leaves
 
 def send_consolidated_notification(manager, employees, date,doctype):
-    manager_name = frappe.db.get_value("Employee", manager, "employee_name")
-    manager_email = frappe.db.get_value("Employee", manager, "user_id")
-    salutation = frappe.db.get_value("Employee",manager,"salutation")
-    
+    manager_name,manager_email,salutation = frappe.db.get_value("Employee",manager,["employee_name","user_id","salutation"])
     if not manager_email:
-        frappe.log_error(f"No email found for manager {manager_name}", "Attendance Issues Notification")
+        frappe.log_error(f"No email found for manager ",manager_name, "Attendance Issues Notification")
         return
     subject = f"Reminder: Pending Approval in HRMS"
     
