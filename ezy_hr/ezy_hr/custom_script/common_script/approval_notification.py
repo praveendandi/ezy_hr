@@ -7,50 +7,60 @@ from frappe.utils.data import (
     get_first_day
 )
 
-
+@frappe.whitelist()
 def approval_notifications():
     # yesterday = add_days(today(), -1)
     today = date.today()
     
     # first_day_of_month = date(today.year, today.month, 1)
-    first_date = get_first_day(today)
+    # first_date = get_first_day(today)
     
 
-    employees = frappe.get_all("Employee", 
-                               filters={"status": "Active", "name": ["not in", ["PRH-01", "PRH-12", "PRH-05", "PRH-03", "PRH-04"]]}, 
-                               fields=["name", "employee_name", "user_id", "reports_to", "holiday_list"])
+    # employees = frappe.get_all("Employee", 
+    #                            filters={"status": "Active", "name": ["not in", ["PRH-01", "PRH-12", "PRH-05", "PRH-03", "PRH-04"]]}, 
+    #                            fields=["name", "employee_name", "user_id", "reports_to", "holiday_list","salutation"])
     
-    attendance_issues = defaultdict(list)
-    for employee in employees:
-        leave_application = frappe.get_all("Leave Application", 
-                                    filters={
-                                        "employee": employee.name,
-                                        # "posting_date": first_day_of_month,
-                                        "posting_date": ["between", [first_date, today]],
-                                        "docstatus": ["in", [0]],
-                                        "workflow_state":"Approval Pending From Reporting Manager"
-                                    },
-                                    fields=["name", "docstatus","from_date"])
+    final_data_leaves = defaultdict(list)
+    approval_doctypes = frappe.db.get_list("Ezyhr Notification",['approval_doctype','fields','filters'])
+    
+    for doctype_details in approval_doctypes:
+        doctype = doctype_details.get("approval_doctype")
+        field = doctype_details.get("fields").split()
+        filter = {key :["Between",["2024-08-25",today]] for key in doctype_details.get("filters").split()}
+       
+        filter.update({
+            "workflow_state":"Approval Pending From Reporting Manager"
+        })
+       
+        leave_application = frappe.get_all(doctype, filters=filter,fields=field)
+        
+        
         if leave_application:
-            if employee.reports_to:
-                    attendance_issues[employee.reports_to].append({
-                        "employee_id": employee.name,
-                        "employee_name": employee.employee_name,
-                        "status": "Pending",
-                    })
+            for each_record in leave_application:
+                reports_to_manager = frappe.get_doc("Employee",{"name":each_record.employee},["name","employee_name",'reports_to'])
+                if reports_to_manager.reports_to:
+                        final_data_leaves[reports_to_manager.reports_to].append({
+                            "employee_id": reports_to_manager.name,
+                            "employee_name": reports_to_manager.employee_name,
+                            "status": "Pending",
+                        })
+       
 
-    for manager, employees in attendance_issues.items():
-        send_consolidated_notification(manager, employees, today)
+        for manager, employees in final_data_leaves.items():
+            send_consolidated_notification(manager, employees, today,doctype)
 
-def send_consolidated_notification(manager, employees, date):
+    return final_data_leaves
+
+def send_consolidated_notification(manager, employees, date,doctype):
     manager_name = frappe.db.get_value("Employee", manager, "employee_name")
     manager_email = frappe.db.get_value("Employee", manager, "user_id")
+    salutation = frappe.db.get_value("Employee",manager,"salutation")
     
     if not manager_email:
         frappe.log_error(f"No email found for manager {manager_name}", "Attendance Issues Notification")
         return
-    
-    subject = f"Leave Application Pending"
+    frappe.log_error("final_data_leaves",manager_email)
+    subject = f"Reminder: Pending Approval in HRMS"
     
     # HTML message
     message = f"""
@@ -82,8 +92,9 @@ def send_consolidated_notification(manager, employees, date):
         </style>
     </head>
     <body>
-        <p>Dear {manager_name},</p>
-        <p>Please Approve the Leave applications  for the following employees who reported to you</p>
+        <p>Dear {salutation if salutation else ""} {manager_name},</p>
+        <p>Kindly note, this is a gentle reminder that your approval is still pending in the HRMS approval section for {doctype}.
+        We appreciate your prompt attention to this matter.</p>
         <table class='tableborder'>
             <tr>
                 <th class='tddata'>Employee ID</th>
@@ -93,22 +104,23 @@ def send_consolidated_notification(manager, employees, date):
             </tr>"""
     
     for employee in employees:
-        status_class = "missing" if employee['status'] == "Absent" else "MO"
         message += f"""
             <tr>
                 <td class='tddata'>{employee['employee_id']}</td>
                 <td class='tddata'>{employee['employee_name']}</td>
-                <td class='tddata {status_class}'>{employee['status']}</td>
+                <td class='tddata'>{employee['status']}</td>
                 
             </tr>"""
     
     message += """
         </table>
-        <p>Please ensure that these leave records are reviewed and updated as necessary for Payroll processing.</p>
+        <p>Kindly log into the HRMS portal [include link if necessary] and review the request as soon as possible to ensure timely processing.
+        Your prompt attention to this matter is appreciated.</p>
         <p>Thank you for your attention to this matter.</p>
     </body>
     </html>"""
-    
+
+    frappe.log_error("message",message)
     # Send email notification
     frappe.sendmail(
         recipients=[manager_email],
