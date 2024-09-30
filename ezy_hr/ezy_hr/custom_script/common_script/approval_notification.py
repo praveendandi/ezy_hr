@@ -9,16 +9,8 @@ from frappe.utils.data import (
 
 @frappe.whitelist()
 def approval_notifications():
-    # yesterday = add_days(today(), -1)
+   
     today = date.today()
-    
-    # first_day_of_month = date(today.year, today.month, 1)
-    # first_date = get_first_day(today)
-    
-
-    # employees = frappe.get_all("Employee", 
-    #                            filters={"status": "Active", "name": ["not in", ["PRH-01", "PRH-12", "PRH-05", "PRH-03", "PRH-04"]]}, 
-    #                            fields=["name", "employee_name", "user_id", "reports_to", "holiday_list","salutation"])
     
     final_data_leaves = defaultdict(list)
     approval_doctypes = frappe.db.get_list("Ezyhr Notification",['approval_doctype','fields','filters'])
@@ -59,7 +51,6 @@ def send_consolidated_notification(manager, employees, date,doctype):
     if not manager_email:
         frappe.log_error(f"No email found for manager {manager_name}", "Attendance Issues Notification")
         return
-    frappe.log_error("final_data_leaves",manager_email)
     subject = f"Reminder: Pending Approval in HRMS"
     
     # HTML message
@@ -120,7 +111,6 @@ def send_consolidated_notification(manager, employees, date,doctype):
     </body>
     </html>"""
 
-    frappe.log_error("message",message)
     # Send email notification
     frappe.sendmail(
         recipients=[manager_email],
@@ -128,14 +118,3 @@ def send_consolidated_notification(manager, employees, date,doctype):
         message=message,
         as_markdown=False
     )
-    
-    # Create a notification in Frappe
-    frappe.get_doc({
-        "doctype": "Notification Log",
-        "subject": subject,
-        "for_user": manager_email,
-        "type": "Alert",
-        "document_type": "Attendance",
-        "document_name": f"Attendance_Issues_{date}",
-        "email_content": message
-    }).insert(ignore_permissions=True)
