@@ -371,7 +371,8 @@ scheduler_events = {
         ],
         "0 10 * * *": [
             "ezy_hr.ezy_hr.custom_script.common_script.notifications.send_checkins_notification",
-            "ezy_hr.ezy_hr.custom_script.compensatory_leave_request.compensatory_leave_request.background_job_for_compensatory_leave"
+            "ezy_hr.ezy_hr.custom_script.compensatory_leave_request.compensatory_leave_request.background_job_for_compensatory_leave",
+            "ezy_hr.ezy_hr.custom_script.common_script.approval_notification.approval_notifications"
         ]
     },
     "daily": [
