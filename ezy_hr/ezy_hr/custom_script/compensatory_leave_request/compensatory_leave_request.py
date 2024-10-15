@@ -31,7 +31,7 @@ def created_compensatory_leave_base_on_holidays_list():
 						"reason":description,
 						"leave_type":"Compensatory Off"
 					})
-					new_doc.save(ignore_permissions=False)
+					new_doc.save(ignore_permissions=True)
 					frappe.db.commit()
 	
 	except Exception as e:
