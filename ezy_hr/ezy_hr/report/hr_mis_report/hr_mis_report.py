@@ -83,10 +83,11 @@ def get_data(filters, report_type):
     elif report_type == "Summary Report":
         return get_summary_data(filters, department)
 
+
 def get_head_count_data(filters, department):
-    
+    start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
-    
+
     conditions = ["status = 'Active'"]
     if department:
         conditions.append("department = %(department)s")
@@ -94,9 +95,10 @@ def get_head_count_data(filters, department):
         conditions.append("company = %(company)s")
     
     where_clause = " AND ".join(conditions)
-    # Query to get count of all employees including interns
+
+    # Query to get count of all active employees including interns
     employee_data = frappe.db.sql(f"""
-        SELECT department,COUNT(name) as staff_count
+        SELECT department, COUNT(name) as staff_count
         FROM `tabEmployee`
         WHERE {where_clause} AND date_of_joining <= %(end_date)s
         AND name NOT LIKE %(name_pattern)s
@@ -108,8 +110,9 @@ def get_head_count_data(filters, department):
             }, as_dict=True
     )
     
+    # Query to get count of interns
     interns_data = frappe.db.sql(f"""
-        SELECT department,COUNT(name) as staff_count
+        SELECT department, COUNT(name) as staff_count
         FROM `tabEmployee`
         WHERE {where_clause} AND date_of_joining <= %(end_date)s
         AND name LIKE %(name_pattern)s
@@ -121,31 +124,60 @@ def get_head_count_data(filters, department):
             }, as_dict=True
     )
     
-    # Initialize variables for total count and intern count
+    # Query to get count of left employees
+    left_conditions = ["status = 'Left'", "relieving_date BETWEEN %(start_date)s AND %(end_date)s"]
+    if department:
+        left_conditions.append("department = %(department)s")
+    if filters.get("company"):
+        left_conditions.append("company = %(company)s")
+    
+    left_where_clause = " AND ".join(left_conditions)
+    left_employees_data = frappe.db.sql(f"""
+        SELECT department, COUNT(name) as staff_count
+        FROM `tabEmployee`
+        WHERE {left_where_clause}
+        GROUP BY department
+        """, {
+            "start_date": start_date,
+            "end_date": end_date,
+            "company": filters.get("company")
+        }, as_dict=True
+    )
+
+    # Initialize variables for total counts
     total_count = 0
     intern_count = 0
-    
-    # Process data to separate interns and calculate total count
+    left_count = 0
+
     result = []
+
     for row in employee_data:
         total_count += row['staff_count']
         if not row.get('department'):
             row['department'] = "Not Defined"
         result.append({"department": row["department"], "staff_count": row["staff_count"]})
-         
+
     for row in interns_data:
         intern_count += row['staff_count']
         if not row.get('department'):
             row['department'] = "Not Defined"
         result.append({"department": row["department"], "staff_count": row["staff_count"]})
-        
-    # Add total count excluding interns to the result
+
+    for row in left_employees_data:
+        left_count += row['staff_count']
+        if not row.get('department'):
+            row['department'] = "Not Defined"
+        result.append({"department": row["department"], "staff_count": row["staff_count"]})
+
+    # Add total counts to the result
     result.append({"department": "Total (Excluding Interns)", "staff_count": total_count})
     result.append({"department": "Interns", "staff_count": intern_count})
-    total_employee = total_count + intern_count
+    result.append({"department": "Left Employees", "staff_count": left_count})
+    total_employee = (total_count + intern_count) - left_count
     result.append({"department": "Total Employees", "staff_count": total_employee})
 
     return result
+
 
 def get_new_joinees_data(filters, department):
     
