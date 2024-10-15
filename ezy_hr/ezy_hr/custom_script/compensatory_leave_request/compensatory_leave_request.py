@@ -9,8 +9,7 @@ def created_compensatory_leave_base_on_holidays_list():
 		check_date = add_days(getdate(), -1)
 		# get first day of current month
 		holiday_filters = [
-			["holiday_date", ">=", check_date],
-			["holiday_date", "<=", check_date]
+			["holiday_date", "=", check_date]
 		]
 		get_holiday_details = frappe.db.get_value("Holiday",holiday_filters,["holiday_date",'parent', "description"])
 		
@@ -43,7 +42,7 @@ def check_attendance_details(each_empl,get_holiday_date):
 
 	get_result = frappe.db.get_all("Attendance",
 				   {
-						"attendance_date":["Between",[get_holiday_date,get_holiday_date]],
+						"attendance_date":["=",get_holiday_date],
 						"employee":each_empl.get("name"),
 						"docstatus":1,
 						"status":"Present"
@@ -60,7 +59,7 @@ def check_already_compensatory_leave_is_or_not(each_empl,get_holiday_date):
 
 	get_result = frappe.db.get_value("Compensatory Leave Request",
 				   {
-						"work_from_date":["Between",[get_holiday_date,get_holiday_date]],
+						"work_from_date":["=",get_holiday_date],
 						"employee":each_empl.get("name")
 					},
 					["name"]
@@ -70,19 +69,3 @@ def check_already_compensatory_leave_is_or_not(each_empl,get_holiday_date):
 		return True
 	else:
 		return False
-	
-# @frappe.whitelist()
-# def background_job_for_compensatory_leave():
-# 	try:
-# 		frappe.enqueue(
-# 			method = "ezy_hr.ezy_hr.custom_script.compensatory_leave_request.compensatory_leave_request.created_compensatory_leave_base_on_holidays_list",
-# 			queue="long",
-# 			timeout="3600",
-# 			is_async=True,
-# 			job_id="Compensatory Leave Creation",
-# 			enqueue_after_commit=True,
-# 		)
-
-# 	except Exception as e:
-# 		exc_type, exc_obj, exc_tb = sys.exc_info()
-# 		frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Compensatory Leave")
