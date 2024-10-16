@@ -72,25 +72,24 @@ def get_columns(report_type):
 
 def get_data(filters, report_type):
     
-    department = filters.get("department")
     
     if report_type == "Head Count Working":
-        return get_head_count_data(filters, department)
+        return get_head_count_data(filters)
     elif report_type == "New Joinees List":
-        return get_new_joinees_data(filters, department)
+        return get_new_joinees_data(filters)
     elif report_type == "Left Employees":
-        return get_left_employees_data(filters, department)
+        return get_left_employees_data(filters)
     elif report_type == "Summary Report":
-        return get_summary_data(filters, department)
+        return get_summary_data(filters)
 
 
-def get_head_count_data(filters, department):
+def get_head_count_data(filters):
+    
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
 
     conditions = ["status = 'Active'"]
-    if department:
-        conditions.append("department = %(department)s")
+    
     if filters.get("company"):
         conditions.append("company = %(company)s")
     
@@ -126,8 +125,7 @@ def get_head_count_data(filters, department):
     
     # Query to get count of left employees
     left_conditions = ["status = 'Left'", "relieving_date BETWEEN %(start_date)s AND %(end_date)s"]
-    if department:
-        left_conditions.append("department = %(department)s")
+   
     if filters.get("company"):
         left_conditions.append("company = %(company)s")
     
@@ -179,14 +177,13 @@ def get_head_count_data(filters, department):
     return result
 
 
-def get_new_joinees_data(filters, department):
+def get_new_joinees_data(filters):
     
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
     
     conditions = {"status": "Active", "date_of_joining": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
+   
     if filters.get("company"):
         conditions["company"] = filters["company"]
     
@@ -203,14 +200,13 @@ def get_new_joinees_data(filters, department):
 
     return employees
 
-def get_left_employees_data(filters, department):
+def get_left_employees_data(filters):
     
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
     
     conditions = {"status": "Left", "relieving_date": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
+   
     if filters.get("company"):
         conditions["company"] = filters["company"]
     
@@ -227,7 +223,8 @@ def get_left_employees_data(filters, department):
 
     return employees
 
-def get_summary_data(filters, department):
+def get_summary_data(filters):
+    
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
     
@@ -235,14 +232,16 @@ def get_summary_data(filters, department):
     current_date = start_date
 
     # Calculate the initial opening balance
-    opening_balance = get_opening_balance(start_date, department, filters.get("company"))
+    opening_balance = get_opening_balance(start_date, filters.get("company"))
 
     while current_date <= end_date:
         month_start = current_date
         month_end = add_months(current_date, 1) - timedelta(days=1)
 
-        new_joinees = count_new_joinees(month_start, month_end, department, filters.get("company"))
-        left_employees = count_left_employees(month_start, month_end, department, filters.get("company"))
+        new_joinees = count_new_joinees(month_start, month_end ,filters.get("company"))
+        
+        left_employees = count_left_employees(month_start, month_end,filters.get("company"))
+        
         closing_balance = opening_balance + new_joinees - left_employees
 
         data.append({
@@ -259,35 +258,27 @@ def get_summary_data(filters, department):
 
     return data
 
-def get_opening_balance(date, department, company):
+def get_opening_balance(date, company):
+    
     conditions = {"status": "Active", "date_of_joining": ["<", date]}
-    if department:
-        conditions["department"] = department
+    
     if company:
         conditions["company"] = company
     active_count = frappe.db.count("Employee", conditions)
     
-    conditions_left = {"status": "Left", "relieving_date": ["<", date]}
-    if department:
-        conditions_left["department"] = department
-    if company:
-        conditions_left["company"] = company
-    left_count = frappe.db.count("Employee", conditions_left)
     
-    return active_count - left_count
+    return active_count
 
-def count_new_joinees(start_date, end_date, department, company):
+def count_new_joinees(start_date, end_date,company):
+    
     conditions = {"status": "Active", "date_of_joining": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
     if company:
         conditions["company"] = company
     return frappe.db.count("Employee", conditions)
 
-def count_left_employees(start_date, end_date, department, company):
+def count_left_employees(start_date, end_date, company):
     conditions = {"status": "Left", "relieving_date": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
+    
     if company:
         conditions["company"] = company
     return frappe.db.count("Employee", conditions)
