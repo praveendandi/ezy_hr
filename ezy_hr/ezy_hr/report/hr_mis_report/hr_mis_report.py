@@ -72,31 +72,32 @@ def get_columns(report_type):
 
 def get_data(filters, report_type):
     
-    department = filters.get("department")
     
     if report_type == "Head Count Working":
-        return get_head_count_data(filters, department)
+        return get_head_count_data(filters)
     elif report_type == "New Joinees List":
-        return get_new_joinees_data(filters, department)
+        return get_new_joinees_data(filters)
     elif report_type == "Left Employees":
-        return get_left_employees_data(filters, department)
+        return get_left_employees_data(filters)
     elif report_type == "Summary Report":
-        return get_summary_data(filters, department)
+        return get_summary_data(filters)
 
-def get_head_count_data(filters, department):
+
+def get_head_count_data(filters):
     
+    start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
-    
+
     conditions = ["status = 'Active'"]
-    if department:
-        conditions.append("department = %(department)s")
+    
     if filters.get("company"):
         conditions.append("company = %(company)s")
     
     where_clause = " AND ".join(conditions)
-    # Query to get count of all employees including interns
+
+    # Query to get count of all active employees including interns
     employee_data = frappe.db.sql(f"""
-        SELECT department,COUNT(name) as staff_count
+        SELECT department, COUNT(name) as staff_count
         FROM `tabEmployee`
         WHERE {where_clause} AND date_of_joining <= %(end_date)s
         AND name NOT LIKE %(name_pattern)s
@@ -108,8 +109,9 @@ def get_head_count_data(filters, department):
             }, as_dict=True
     )
     
+    # Query to get count of interns
     interns_data = frappe.db.sql(f"""
-        SELECT department,COUNT(name) as staff_count
+        SELECT department, COUNT(name) as staff_count
         FROM `tabEmployee`
         WHERE {where_clause} AND date_of_joining <= %(end_date)s
         AND name LIKE %(name_pattern)s
@@ -121,40 +123,67 @@ def get_head_count_data(filters, department):
             }, as_dict=True
     )
     
-    # Initialize variables for total count and intern count
+    # Query to get count of left employees
+    left_conditions = ["status = 'Left'", "relieving_date BETWEEN %(start_date)s AND %(end_date)s"]
+   
+    if filters.get("company"):
+        left_conditions.append("company = %(company)s")
+    
+    left_where_clause = " AND ".join(left_conditions)
+    left_employees_data = frappe.db.sql(f"""
+        SELECT department, COUNT(name) as staff_count
+        FROM `tabEmployee`
+        WHERE {left_where_clause}
+        GROUP BY department
+        """, {
+            "start_date": start_date,
+            "end_date": end_date,
+            "company": filters.get("company")
+        }, as_dict=True
+    )
+
+    # Initialize variables for total counts
     total_count = 0
     intern_count = 0
-    
-    # Process data to separate interns and calculate total count
+    left_count = 0
+
     result = []
+
     for row in employee_data:
         total_count += row['staff_count']
         if not row.get('department'):
             row['department'] = "Not Defined"
         result.append({"department": row["department"], "staff_count": row["staff_count"]})
-         
+
     for row in interns_data:
         intern_count += row['staff_count']
         if not row.get('department'):
             row['department'] = "Not Defined"
         result.append({"department": row["department"], "staff_count": row["staff_count"]})
-        
-    # Add total count excluding interns to the result
+
+    for row in left_employees_data:
+        left_count += row['staff_count']
+        if not row.get('department'):
+            row['department'] = "Not Defined"
+        result.append({"department": row["department"], "staff_count": row["staff_count"]})
+
+    # Add total counts to the result
     result.append({"department": "Total (Excluding Interns)", "staff_count": total_count})
     result.append({"department": "Interns", "staff_count": intern_count})
-    total_employee = total_count + intern_count
+    result.append({"department": "Left Employees", "staff_count": left_count})
+    total_employee = (total_count + intern_count) - left_count
     result.append({"department": "Total Employees", "staff_count": total_employee})
 
     return result
 
-def get_new_joinees_data(filters, department):
+
+def get_new_joinees_data(filters):
     
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
     
     conditions = {"status": "Active", "date_of_joining": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
+   
     if filters.get("company"):
         conditions["company"] = filters["company"]
     
@@ -171,14 +200,13 @@ def get_new_joinees_data(filters, department):
 
     return employees
 
-def get_left_employees_data(filters, department):
+def get_left_employees_data(filters):
     
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
     
     conditions = {"status": "Left", "relieving_date": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
+   
     if filters.get("company"):
         conditions["company"] = filters["company"]
     
@@ -195,7 +223,8 @@ def get_left_employees_data(filters, department):
 
     return employees
 
-def get_summary_data(filters, department):
+def get_summary_data(filters):
+    
     start_date = getdate(filters.get("start_date"))
     end_date = getdate(filters.get("end_date"))
     
@@ -203,14 +232,16 @@ def get_summary_data(filters, department):
     current_date = start_date
 
     # Calculate the initial opening balance
-    opening_balance = get_opening_balance(start_date, department, filters.get("company"))
+    opening_balance = get_opening_balance(start_date, filters.get("company"))
 
     while current_date <= end_date:
         month_start = current_date
         month_end = add_months(current_date, 1) - timedelta(days=1)
 
-        new_joinees = count_new_joinees(month_start, month_end, department, filters.get("company"))
-        left_employees = count_left_employees(month_start, month_end, department, filters.get("company"))
+        new_joinees = count_new_joinees(month_start, month_end ,filters.get("company"))
+        
+        left_employees = count_left_employees(month_start, month_end,filters.get("company"))
+        
         closing_balance = opening_balance + new_joinees - left_employees
 
         data.append({
@@ -227,35 +258,27 @@ def get_summary_data(filters, department):
 
     return data
 
-def get_opening_balance(date, department, company):
+def get_opening_balance(date, company):
+    
     conditions = {"status": "Active", "date_of_joining": ["<", date]}
-    if department:
-        conditions["department"] = department
+    
     if company:
         conditions["company"] = company
     active_count = frappe.db.count("Employee", conditions)
     
-    conditions_left = {"status": "Left", "relieving_date": ["<", date]}
-    if department:
-        conditions_left["department"] = department
-    if company:
-        conditions_left["company"] = company
-    left_count = frappe.db.count("Employee", conditions_left)
     
-    return active_count - left_count
+    return active_count
 
-def count_new_joinees(start_date, end_date, department, company):
+def count_new_joinees(start_date, end_date,company):
+    
     conditions = {"status": "Active", "date_of_joining": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
     if company:
         conditions["company"] = company
     return frappe.db.count("Employee", conditions)
 
-def count_left_employees(start_date, end_date, department, company):
+def count_left_employees(start_date, end_date, company):
     conditions = {"status": "Left", "relieving_date": ["between", [start_date, end_date]]}
-    if department:
-        conditions["department"] = department
+    
     if company:
         conditions["company"] = company
     return frappe.db.count("Employee", conditions)

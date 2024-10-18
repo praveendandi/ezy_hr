@@ -4,42 +4,45 @@ from frappe.utils.data import get_first_day
 import sys,traceback
 
 def created_compensatory_leave_base_on_holidays_list():
+	try:
 	
-	check_date = add_days(getdate(), -1)
-	# get first day of current month
-	holiday_filters = [
-		["holiday_date", ">=", check_date],
-		["holiday_date", "<=", check_date]
-	]
-	get_holiday_details = frappe.db.get_value("Holiday",holiday_filters,["holiday_date",'parent', "description"])
-	
-	if get_holiday_details:
-
-		get_holiday_date,parent,description = get_holiday_details
+		check_date = add_days(getdate(), -1)
+		# get first day of current month
+		holiday_filters = [
+			["holiday_date", "=", check_date]
+		]
+		get_holiday_details = frappe.db.get_value("Holiday",holiday_filters,["holiday_date",'parent', "description"])
 		
-		for each_empl in  frappe. frappe.get_all("Employee",{"status":"Active","holiday_list":parent},["name",'company']):
-			is_present_that_day = check_attendance_details(each_empl,get_holiday_date)
-			already_comp_leave = check_already_compensatory_leave_is_or_not(each_empl,get_holiday_date)
+		if get_holiday_details:
 
-			if is_present_that_day and not already_comp_leave:
-				new_doc = frappe.get_doc({
-					"doctype":"Compensatory Leave Request",
-					"work_from_date":get_holiday_date,
-					"work_end_date":get_holiday_date,
-					"company":each_empl.get("company"),
-					"employee":each_empl.get("name"),
-					"reason":description,
-					"leave_type":"Compensatory Off"
-				})
-				new_doc.save(ignore_permissions=False)
-				frappe.db.commit()
+			get_holiday_date,parent,description = get_holiday_details
+			
+			for each_empl in  frappe. frappe.get_all("Employee",{"status":"Active","holiday_list":parent},["name",'company']):
+				is_present_that_day = check_attendance_details(each_empl,get_holiday_date)
+				already_comp_leave = check_already_compensatory_leave_is_or_not(each_empl,get_holiday_date)
 
+				if is_present_that_day and not already_comp_leave:
+					new_doc = frappe.get_doc({
+						"doctype":"Compensatory Leave Request",
+						"work_from_date":get_holiday_date,
+						"work_end_date":get_holiday_date,
+						"company":each_empl.get("company"),
+						"employee":each_empl.get("name"),
+						"reason":description,
+						"leave_type":"Compensatory Off"
+					})
+					new_doc.save(ignore_permissions=True)
+					frappe.db.commit()
+	
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Compensatory Leave")
 		
 def check_attendance_details(each_empl,get_holiday_date):
 
 	get_result = frappe.db.get_all("Attendance",
 				   {
-						"attendance_date":["Between",[get_holiday_date,get_holiday_date]],
+						"attendance_date":["=",get_holiday_date],
 						"employee":each_empl.get("name"),
 						"docstatus":1,
 						"status":"Present"
@@ -56,7 +59,7 @@ def check_already_compensatory_leave_is_or_not(each_empl,get_holiday_date):
 
 	get_result = frappe.db.get_value("Compensatory Leave Request",
 				   {
-						"work_from_date":["Between",[get_holiday_date,get_holiday_date]],
+						"work_from_date":["=",get_holiday_date],
 						"employee":each_empl.get("name")
 					},
 					["name"]
@@ -66,19 +69,3 @@ def check_already_compensatory_leave_is_or_not(each_empl,get_holiday_date):
 		return True
 	else:
 		return False
-	
-@frappe.whitelist()
-def background_job_for_compensatory_leave():
-	try:
-		frappe.enqueue(
-			method = "ezy_hr.ezy_hr.custom_script.compensatory_leave_request.compensatory_leave_request.created_compensatory_leave_base_on_holidays_list",
-			queue="long",
-			timeout="3600",
-			is_async=True,
-			job_id="Compensatory Leave Creation",
-			enqueue_after_commit=True,
-		)
-
-	except Exception as e:
-		exc_type, exc_obj, exc_tb = sys.exc_info()
-		frappe.log_error("line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()), "Compensatory Leave")
