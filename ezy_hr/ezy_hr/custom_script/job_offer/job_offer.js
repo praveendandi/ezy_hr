@@ -10,6 +10,8 @@ frappe.ui.form.on("Job Offer", {
                     empl.first_name = job_offer.custom_first_name;
                     empl.last_name = job_offer.custom_last_name;
                     empl.date_of_joining = job_offer.custom_date_of_joining;
+                    empl.date_of_birth = job_offer.custom_date_of_birth;
+                    empl.reports_to = job_offer.custom_reports_to;
                     empl.department = job_offer.custom_department;
                     empl.grade = job_offer.custom_level;
                     empl.designation = job_offer.designation;
@@ -39,7 +41,10 @@ frappe.ui.form.on("Job Offer", {
                             em_deduction.do_not_include_in_total = deduction.do_not_include_in_total
                         });
                     }
-                    empl.custom_effective_date = job_offer.custom_date_of_joining
+                    if (job_offer.company != "Paul Resorts And Hotels"){
+                        empl.custom_effective_date = job_offer.custom_date_of_joining
+                    }
+                        
                     frappe.set_route('Form', 'Employee', empl.name);
                 });
             });
