@@ -663,8 +663,11 @@ class SalarySlip(TransactionBase):
 		leave_type_map = self.get_leave_type_map()
 		# this code line use for prevoius 5 or 6 day consider as persent, actual behavior in current month
 		field_value = frappe.get_doc('EzyHr Settings')
-		frappe.log_error("field_value",field_value)
-		if field_value.from_date and field_value.to_date:
+		parent = f"{self.company}-{self.start_date}"
+		not_propose_details = frappe.db.get_value("Not Propose Child Tab",{'employee_id':self.employee,"docstatus":1,"parent":parent},['employee_id'])
+		
+		if (field_value.from_date and field_value.to_date) and not not_propose_details:
+			
 			from_day = int(field_value.from_date)
 			to_day = int(field_value.to_date)
 			if isinstance(self.start_date,str):
@@ -683,6 +686,7 @@ class SalarySlip(TransactionBase):
 					start_date=prevoius_five_day, end_date=actual_end_date
 				)
 		else:
+			
 			attendance_details = self.get_employee_attendance(
 				start_date=self.start_date, end_date=self.actual_end_date
 			)
