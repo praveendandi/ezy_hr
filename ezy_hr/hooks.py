@@ -329,12 +329,13 @@ doc_events = {
         # "on_update":"ezy_hr.ezy_hr.custom_script.employee.employee.after_update",
         "on_update":["ezy_hr.ezy_hr.custom_script.employee.employee.create_salary_structure_through_employee",
                      "ezy_hr.ezy_hr.custom_script.employee.employee.assign_leave_policy"],
-        "before_save":"ezy_hr.ezy_hr.custom_script.employee.employee.update_employee_biometric_id",
-        
+        "before_save":"ezy_hr.ezy_hr.custom_script.employee.employee.update_employee_biometric_id"
         
     },
     "Leave Application":{
-        "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month"
+        "on_update":"ezy_hr.ezy_hr.events.weekoff_limit_for_month",
+        "on_submit":"ezy_hr.ezy_hr.custom_script.validate_request.restrict_self_leave_approval"
+        
     },
     "Employee Promotion":{
         "on_submit":"ezy_hr.ezy_hr.custom_script.employee.employee.update_and_create_salary",
@@ -356,6 +357,13 @@ doc_events = {
     "Salary Structure Assignment":{
         "on_submit":"ezy_hr.ezy_hr.custom_script.esi_conditions.create_esi_entry.set_esi_for_employee",
         "on_cancel":"ezy_hr.ezy_hr.custom_script.esi_conditions.create_esi_entry.on_cancel_of_ssa"
+    },
+    "Compensatory Leave Request":{
+        "on_submit":"ezy_hr.ezy_hr.custom_script.validate_request.restrict_self_leave_approval"
+    },
+    "Attendance Request":{
+        "on_submit":"ezy_hr.ezy_hr.custom_script.validate_request.restrict_self_leave_approval"
+ 
     }
 }
 
