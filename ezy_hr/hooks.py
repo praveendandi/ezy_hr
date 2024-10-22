@@ -213,6 +213,12 @@ fixtures = [
                     "Leave Type-custom_flexi_off_detail",
                     "Leave Type-custom_flexi_saturday_off",
                     "Leave Type-custom_allocated_count",
+                    "Employee-reports_to",
+                    "Employee-department",
+                    "Employee-designation",
+                    "Employee-grade",
+                    "Employee-date_of_birth",
+                    "Employee-date_of_joining",
                 },
             ]]
     }
