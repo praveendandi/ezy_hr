@@ -14,6 +14,15 @@ frappe.ui.form.on('Employee', {
             frappe.set_route('Form', 'Employee Salary Update','new_employee_salary_update');
         }, __("Update Employee"));
         
+        frm.set_df_property('department', 'read_only', 1);
+        frm.set_df_property('designation', 'read_only', 1);
+        frm.set_df_property('grade', 'read_only', 1);
+        frm.set_df_property('branch', 'read_only', 1);
+        frm.set_df_property('date_of_birth', 'read_only', 1);
+        frm.set_df_property('date_of_joining', 'read_only', 1);
+        frm.set_df_property("custom_responsible_unit", 'read_only', 1);
+        frm.set_df_property("reports_to", 'read_only', 1);
+
         frappe.call({
             method: 'ezy_hr.employee_salary.get_user_employee_id',
             args: {
