@@ -36,14 +36,20 @@ def get_data(filters):
         from_date = getdate(filters['from_date'])
         to_date = getdate(filters['to_date'])
         date_range = [from_date + timedelta(days=i) for i in range((to_date - from_date).days + 1)]
-        employees = None
-        
+
+        employees_details = None
+        employee_filters = {}
+
         if filters.get("employee"):
-            employees = frappe.db.get_list("Employee", filters={"employee": filters.get("employee"),"company":filters.get("company")},fields=["name", "employee_name","designation","department","date_of_joining","holiday_list","relieving_date"])
-        else:
-            employees = frappe.db.get_list("Employee", filters={"company":filters.get("company")},fields=["name", "employee_name","designation","department","date_of_joining","holiday_list","relieving_date"])
-       
-        for employee in employees:
+            employee_filters.update({"employee":filters.get("employee")})
+        if filters.get("department"):
+            employee_filters.update({"department":filters.get("department")})
+        if filters.get("company"):
+            employee_filters.update({"company":filters.get("company")})
+    
+        employees_details = frappe.db.get_list("Employee", filters=employee_filters,fields=["name", "employee_name","designation","department","date_of_joining","holiday_list","relieving_date"])
+        
+        for employee in employees_details:
             for single_date in date_range:
                 if employee.get('relieving_date'):
                     relieving_date_change = employee.get('relieving_date') >= single_date
@@ -78,9 +84,7 @@ def get_data(filters):
                             if record.get("attendance_request"):
                                 onduty = frappe.db.get_list("Attendance Request",{"name":record.get("attendance_request")},["name","reason"])
                                 record["status"] = onduty[0]["reason"]
-                                # add_checkin_missing(record)
-                            # if not record.get("out_time") and record.get("status") != "On Leave":
-                            #     record["out_time"] = "MO"
+                                
                             record["add_checkin"] = add_checkin_missing(record)
                             
                             department_name = None
